@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3806ca48-0be5-4a65-a162-f29f3e7ab4f0" name="Changes" comment="" />
+    <list default="true" id="3806ca48-0be5-4a65-a162-f29f3e7ab4f0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/schedule-training/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/schedule-training/.gitignore" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -35,7 +37,7 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "feature/schedule-appointment-service",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
@@ -79,6 +81,7 @@
       <workItem from="1703346970396" duration="875000" />
       <workItem from="1703347872287" duration="186000" />
       <workItem from="1703348067645" duration="67000" />
+      <workItem from="1703348140170" duration="5090000" />
     </task>
     <servers />
   </component>
