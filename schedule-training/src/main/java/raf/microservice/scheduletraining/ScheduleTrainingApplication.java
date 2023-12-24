@@ -27,8 +27,8 @@ public class ScheduleTrainingApplication implements CommandLineRunner {
 		gym1.setShortDescription("desc1");
 		Sport tot1 = new Sport("powerlifting",true);
 		Sport tot2 = new Sport("pilates",false);
-		gym1.setTypeOfSport(tot1);
-		gym1.setTypeOfSport(tot2);
+		//gym1.setTypeOfSport(tot1);
+		//gym1.setTypeOfSport(tot2);
 		gymRepository.save(gym1);
 	}
 }
