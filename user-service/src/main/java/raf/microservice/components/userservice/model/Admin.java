@@ -11,22 +11,22 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "username")
+    @Column(name = "username", nullable = false)
     private String username;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "date_birth")
+    @Column(name = "date_birth", nullable = false)
     private LocalDate dateBirth;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private LocalDate name;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private LocalDate lastName;
 
     @ManyToOne(optional = false)
