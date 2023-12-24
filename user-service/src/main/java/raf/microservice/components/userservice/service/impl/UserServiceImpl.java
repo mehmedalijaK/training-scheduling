@@ -1,7 +1,5 @@
 package raf.microservice.components.userservice.service.impl;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raf.microservice.components.userservice.dto.UserCreateDto;
@@ -10,8 +8,6 @@ import raf.microservice.components.userservice.mapper.UserMapper;
 import raf.microservice.components.userservice.model.User;
 import raf.microservice.components.userservice.repository.UserRepository;
 import raf.microservice.components.userservice.service.UserService;
-
-import java.util.Optional;
 
 @Service
 @Transactional

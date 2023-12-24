@@ -7,8 +7,10 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import raf.microservice.components.userservice.dto.ManagerCreateDto;
 import raf.microservice.components.userservice.dto.UserCreateDto;
 import raf.microservice.components.userservice.model.User;
+import raf.microservice.components.userservice.service.ManagerService;
 import raf.microservice.components.userservice.service.UserService;
 
 import java.lang.reflect.Method;
@@ -18,9 +20,11 @@ import java.lang.reflect.Method;
 public class CheckExistsAspect {
 
     private UserService userService;
+    private ManagerService managerService;
 
-    public CheckExistsAspect(UserService userService){
+    public CheckExistsAspect(UserService userService, ManagerService managerService){
         this.userService = userService;
+        this.managerService = managerService;
     }
 
     @Around("@annotation(raf.microservice.components.userservice.security.CheckExists)")
@@ -31,14 +35,24 @@ public class CheckExistsAspect {
         String username = null;
 
         for (int i = 0; i < methodSignature.getParameterNames().length; i++) {
-            if (methodSignature.getParameterNames()[i].equals("userCreateDto")) {
-                username =  ((UserCreateDto)joinPoint.getArgs()[i]).getUsername();
+            if (methodSignature.getParameterNames()[i].equals("userCreateDto") ||
+                    methodSignature.getParameterNames()[i].equals("managerCreateDto")) {
+                if (joinPoint.getArgs()[i] instanceof UserCreateDto){
+                    username =  ((UserCreateDto)joinPoint.getArgs()[i]).getUsername();
+                    if(userService.findUsername(username)!=null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+
+
+                if (joinPoint.getArgs()[i] instanceof ManagerCreateDto){
+                    username =  ((ManagerCreateDto)joinPoint.getArgs()[i]).getUsername();
+                    if(managerService.findUsername(username)!=null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+
                 break;
             }
         }
 
         if(username == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        if(userService.findUsername(username)!=null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         return joinPoint.proceed();
     }
 

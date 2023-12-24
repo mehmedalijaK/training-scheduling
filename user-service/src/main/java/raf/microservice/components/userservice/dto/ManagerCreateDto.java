@@ -96,4 +96,18 @@ public class ManagerCreateDto {
     public void setDateEmployment(LocalDate dateEmployment) {
         this.dateEmployment = dateEmployment;
     }
+
+    @Override
+    public String toString() {
+        return "ManagerCreateDto{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", dateBirth=" + dateBirth +
+                ", name='" + name + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", sportsHall='" + sportsHall + '\'' +
+                ", dateEmployment=" + dateEmployment +
+                '}';
+    }
 }

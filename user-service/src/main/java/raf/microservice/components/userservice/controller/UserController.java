@@ -5,10 +5,7 @@ import io.swagger.models.Response;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import raf.microservice.components.userservice.dto.UserCreateDto;
 import raf.microservice.components.userservice.dto.UserDto;
 import raf.microservice.components.userservice.security.CheckExists;
@@ -27,10 +24,9 @@ public class UserController {
     @ApiOperation(value = "Register new user")
     @PostMapping
     @CheckExists
-    public ResponseEntity<UserDto> saveUser(@RequestBody @Valid UserCreateDto userCreateDto){
+    public ResponseEntity<UserDto> saveUser(@RequestHeader("Authorization") @RequestBody @Valid UserCreateDto userCreateDto){
         System.out.println(userCreateDto.toString());
         return new ResponseEntity<>(userService.add(userCreateDto), HttpStatus.CREATED);
     }
-
 
 }
