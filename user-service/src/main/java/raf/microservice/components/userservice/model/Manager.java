@@ -39,6 +39,8 @@ public class Manager {
     @ManyToOne(optional = false)
     private Role role;
 
+    public Manager(){}
+
     public Manager(long id, String username, String password, String email, LocalDate dateBirth, String name,
                    String lastName, String sportsHall, LocalDate dateEmployment, Role role) {
         this.id = id;

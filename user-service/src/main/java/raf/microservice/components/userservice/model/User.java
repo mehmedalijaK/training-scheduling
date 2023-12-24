@@ -3,6 +3,7 @@ package raf.microservice.components.userservice.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -30,14 +31,25 @@ public class User {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name="membership_card_id", unique = true, nullable = false)
+
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "membership_card_id", unique = true, nullable = false)
     private String membershipCardId;
 
-    @Column(name="scheduled_training_count", nullable = false)
-    private Integer scheduledTrainingCount;
+    @PrePersist
+    public void generateMembershipCardId() {
+        if (membershipCardId == null) {
+            membershipCardId = UUID.randomUUID().toString();
+        }
+    }
+
+    @Column(name="scheduled_training_count", nullable = false, columnDefinition = "integer default 0")
+    private Integer scheduledTrainingCount = 0;
 
     @ManyToOne(optional = false)
     private Role role;
+
+    public User(){}
 
     public User(long id, String username, String password, String email, LocalDate dateBirth, String name,
                 String lastName, String membershipCardId, Integer scheduledTrainingCount, Role role) {
