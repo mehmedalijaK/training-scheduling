@@ -25,10 +25,10 @@ public class Manager {
     private LocalDate dateBirth;
 
     @Column(name = "name", nullable = false)
-    private LocalDate name;
+    private String name;
 
     @Column(name = "last_name", nullable = false)
-    private LocalDate lastName;
+    private String lastName;
 
     @Column(name = "sports_hall", nullable = false)
     private String sportsHall;
@@ -39,8 +39,8 @@ public class Manager {
     @ManyToOne(optional = false)
     private Role role;
 
-    public Manager(long id, String username, String password, String email, LocalDate dateBirth, LocalDate name,
-                   LocalDate lastName, String sportsHall, LocalDate dateEmployment, Role role) {
+    public Manager(long id, String username, String password, String email, LocalDate dateBirth, String name,
+                   String lastName, String sportsHall, LocalDate dateEmployment, Role role) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -93,19 +93,19 @@ public class Manager {
         this.dateBirth = dateBirth;
     }
 
-    public LocalDate getName() {
+    public String getName() {
         return name;
     }
 
-    public void setName(LocalDate name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public LocalDate getLastName() {
+    public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(LocalDate lastName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 

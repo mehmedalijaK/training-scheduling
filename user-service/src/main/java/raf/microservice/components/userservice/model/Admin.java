@@ -24,15 +24,15 @@ public class Admin {
     private LocalDate dateBirth;
 
     @Column(name = "name", nullable = false)
-    private LocalDate name;
+    private String name;
 
     @Column(name = "last_name", nullable = false)
-    private LocalDate lastName;
+    private String lastName;
 
     @ManyToOne(optional = false)
     private Role role;
 
-    public Admin(long id, String username, String password, String email, LocalDate dateBirth, LocalDate name, LocalDate lastName,
+    public Admin(long id, String username, String password, String email, LocalDate dateBirth, String name, String lastName,
     Role role) {
         this.id = id;
         this.username = username;
@@ -43,6 +43,8 @@ public class Admin {
         this.lastName = lastName;
         this.role = role;
     }
+
+    public Admin(){}
 
     public long getId() {
         return id;
@@ -64,11 +66,11 @@ public class Admin {
         return dateBirth;
     }
 
-    public LocalDate getName() {
+    public String getName() {
         return name;
     }
 
-    public LocalDate getLastName() {
+    public String getLastName() {
         return lastName;
     }
 
@@ -92,11 +94,11 @@ public class Admin {
         this.dateBirth = dateBirth;
     }
 
-    public void setName(LocalDate name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setLastName(LocalDate lastName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
