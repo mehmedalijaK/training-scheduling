@@ -25,7 +25,6 @@ public class ManagerController {
     @PostMapping
     @CheckExists
     public ResponseEntity<ManagerDto> saveManager(@RequestBody @Valid ManagerCreateDto managerCreateDto){
-        System.out.println(managerCreateDto.toString());
         return new ResponseEntity<>(managerService.add(managerCreateDto), HttpStatus.CREATED);
     }
 

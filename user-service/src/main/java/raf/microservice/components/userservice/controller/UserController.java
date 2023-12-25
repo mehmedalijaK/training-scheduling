@@ -1,15 +1,13 @@
 package raf.microservice.components.userservice.controller;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import io.swagger.models.Response;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import raf.microservice.components.userservice.dto.AuthenticationResponseDto;
-import raf.microservice.components.userservice.dto.UserCreateDto;
-import raf.microservice.components.userservice.dto.UserDto;
-import raf.microservice.components.userservice.dto.UserLoginDto;
+import raf.microservice.components.userservice.dto.*;
 import raf.microservice.components.userservice.security.CheckExists;
 import raf.microservice.components.userservice.service.UserService;
 
@@ -33,7 +31,12 @@ public class UserController {
     @ApiOperation(value = "Login")
     @PostMapping("/login")  //  TODO: SHOULD SEND AN EMAIL THAT SOMEONE JUST LOGGED IN ACCOUNT
     public ResponseEntity<AuthenticationResponseDto> authenticate(@RequestBody @Valid UserLoginDto userLoginDto){
-        return new ResponseEntity<>(userService.authenticate(userLoginDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.authenticate(userLoginDto), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Refresh token")
+    @PostMapping("/refresh-token")
+    public ResponseEntity<SessionTokenDto> refreshToken(@RequestHeader("Authorization") String authorization){
+        return new ResponseEntity<>(userService.refreshToken(authorization), HttpStatus.OK);
+    }
 }

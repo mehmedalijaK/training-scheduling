@@ -5,10 +5,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import raf.microservice.components.userservice.dto.AuthenticationResponseDto;
-import raf.microservice.components.userservice.dto.UserCreateDto;
-import raf.microservice.components.userservice.dto.UserDto;
-import raf.microservice.components.userservice.dto.UserLoginDto;
+import raf.microservice.components.userservice.dto.*;
 import raf.microservice.components.userservice.mapper.UserMapper;
 import raf.microservice.components.userservice.model.Token;
 import raf.microservice.components.userservice.model.User;
@@ -16,6 +13,8 @@ import raf.microservice.components.userservice.repository.TokenRepository;
 import raf.microservice.components.userservice.repository.UserRepository;
 import raf.microservice.components.userservice.service.JwtService;
 import raf.microservice.components.userservice.service.UserService;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -103,5 +102,53 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUsername(String username) {
         return userRepository.findUserByUsername(username).orElse(null);
+    }
+
+    @Override
+    public SessionTokenDto refreshToken(String authorization) {
+        String refreshToken;
+        String username;
+        if(authorization == null ||!authorization.startsWith("Bearer "))
+            return null;
+
+        refreshToken = authorization.substring(7);
+        username = jwtService.extractUsername(refreshToken);
+
+        if (username != null) {
+            User user = userRepository.findUserByUsername(username)
+                    .orElseThrow();
+
+            boolean check = true;
+            boolean exist = false;
+
+            List<Token> allTokens = tokenRepository.findAllValidTokenByUser(user);
+            Token update = null;
+            for(Token t : allTokens){
+                if (t.token.equals(refreshToken)) {
+                    exist = true;
+                    update = t;
+                    if(t.expired || t.revoked)
+                        check = false;
+
+                    break;
+                }
+            }
+
+            if (jwtService.isTokenValid(refreshToken, user) && check && exist) {
+                System.out.println(allTokens);
+                String accessToken = jwtService.generateToken(user);
+                SessionTokenDto sessionTokenDto = new SessionTokenDto();
+                sessionTokenDto.setAccessToken(accessToken);
+                return sessionTokenDto;
+            }
+
+            if(update != null){  // token does not exist
+                update.setRevoked(true);
+                update.setExpired(true);
+                tokenRepository.save(update);
+            }
+        }
+
+        return null;
     }
 }
