@@ -6,13 +6,15 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import raf.microservice.components.userservice.dto.AuthenticationResponseDto;
 import raf.microservice.components.userservice.dto.UserCreateDto;
 import raf.microservice.components.userservice.dto.UserDto;
+import raf.microservice.components.userservice.dto.UserLoginDto;
 import raf.microservice.components.userservice.security.CheckExists;
 import raf.microservice.components.userservice.service.UserService;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
     private UserService userService;
@@ -22,11 +24,16 @@ public class UserController {
     }
 
     @ApiOperation(value = "Register new user")
-    @PostMapping
-    @CheckExists
-    public ResponseEntity<UserDto> saveUser(@RequestHeader("Authorization") @RequestBody @Valid UserCreateDto userCreateDto){
-        System.out.println(userCreateDto.toString());
+    @PostMapping("/register")
+    @CheckExists  //  TODO: SHOULD SEND AN EMAIL AND RETURN JUST STATUS CREATED!
+    public ResponseEntity<AuthenticationResponseDto> saveUser(@RequestBody @Valid UserCreateDto userCreateDto){
         return new ResponseEntity<>(userService.add(userCreateDto), HttpStatus.CREATED);
+    }
+
+    @ApiOperation(value = "Login")
+    @PostMapping("/login")  //  TODO: SHOULD SEND AN EMAIL THAT SOMEONE JUST LOGGED IN ACCOUNT
+    public ResponseEntity<AuthenticationResponseDto> authenticate(@RequestBody @Valid UserLoginDto userLoginDto){
+        return new ResponseEntity<>(userService.authenticate(userLoginDto), HttpStatus.CREATED);
     }
 
 }
