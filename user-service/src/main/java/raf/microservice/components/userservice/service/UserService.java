@@ -10,4 +10,5 @@ public interface UserService {
     AuthenticationResponseDto authenticate(UserLoginDto userLoginDto);
     User findUsername(String username);
     SessionTokenDto refreshToken(String authorization);
+    UserDto getMe(String authorization);
 }

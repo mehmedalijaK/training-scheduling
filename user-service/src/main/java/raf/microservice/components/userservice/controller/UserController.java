@@ -39,4 +39,10 @@ public class UserController {
     public ResponseEntity<SessionTokenDto> refreshToken(@RequestHeader("Authorization") String authorization){
         return new ResponseEntity<>(userService.refreshToken(authorization), HttpStatus.OK);
     }
+
+    @ApiOperation(value = "Get my information")
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> me(@RequestHeader("Authorization") String authorization){
+        return new ResponseEntity<>(userService.getMe(authorization), HttpStatus.OK);
+    }
 }

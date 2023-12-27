@@ -59,6 +59,7 @@ public class JwtServiceImpl implements JwtService {
             UserDetails userDetails,
             long expiration
     ) {
+        extraClaims.put("role", userDetails.getAuthorities());
         return Jwts
                 .builder()
                 .setClaims(extraClaims)

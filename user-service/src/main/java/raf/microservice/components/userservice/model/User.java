@@ -13,7 +13,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -57,7 +56,7 @@ public class User implements UserDetails {
     public User(){}
 
     public User(long id, String username, String password, String email, LocalDate dateBirth, String name,
-                String lastName, String membershipCardId, Integer scheduledTrainingCount, Role role) {
+                  String lastName, String membershipCardId, Integer scheduledTrainingCount, Role role) {
         this.id = id;
         this.username = username;
         this.password = password;

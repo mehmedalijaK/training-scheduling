@@ -15,6 +15,7 @@ import raf.microservice.components.userservice.service.JwtService;
 import raf.microservice.components.userservice.service.UserService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -150,5 +151,13 @@ public class UserServiceImpl implements UserService {
         }
 
         return null;
+    }
+
+    @Override
+    public UserDto getMe(String authorization) {
+        String token = authorization.substring(7);
+        Optional<User> user = userRepository.findUserByUsername(jwtService.extractUsername(token));
+        if(user.isEmpty()) return null;
+        return userMapper.userToUserDto(user.get());
     }
 }

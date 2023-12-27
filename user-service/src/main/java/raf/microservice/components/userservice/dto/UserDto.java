@@ -4,22 +4,13 @@ import java.time.LocalDate;
 
 public class UserDto {
 
-    private Long id;
     private String username;
     private String email;
-    private LocalDate dateBrith;
+    private LocalDate dateBirth;
     private String name;
     private String lastName;
     private String membershipCardId;
     private String scheduledTrainingCount;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getUsername() {
         return username;
@@ -38,11 +29,11 @@ public class UserDto {
     }
 
     public LocalDate getDateBrith() {
-        return dateBrith;
+        return dateBirth;
     }
 
-    public void setDateBrith(LocalDate dateBrith) {
-        this.dateBrith = dateBrith;
+    public void setDateBirth(LocalDate dateBrith) {
+        this.dateBirth = dateBrith;
     }
 
     public String getName() {
