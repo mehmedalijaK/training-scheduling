@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
         return authenticationResponseDto;
     }
 
-    private void revokeAllUserTokens(User user) {
+    private void revokeAllUserTokens(User user) { // TODO: transfer to JWT class
         var validUserTokens = tokenRepository.findAllValidTokenByUserDetails(user);
         if (validUserTokens.isEmpty())
             return;
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-    private void saveUserToken(User user, String jwt){
+    private void saveUserToken(User user, String jwt){ // TODO: transfer to JWT class
         Token token = new Token();
         token.setToken(jwt);
         token.setUserDetails(user);
@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public SessionTokenDto refreshToken(String authorization) {
+    public SessionTokenDto refreshToken(String authorization) { // TODO: transfer to JWT class
         String refreshToken;
         String username;
         if(authorization == null ||!authorization.startsWith("Bearer "))

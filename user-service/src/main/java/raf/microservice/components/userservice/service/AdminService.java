@@ -10,4 +10,10 @@ public interface AdminService {
     AdminDto getMe(String authorization);
 
     AdminDto edit(String authorization, AdminEditDto adminEditDto);
+
+    BanUserDto banUser(Long id);
+    BanManagerDto banManager(Long id);
+
+    BanUserDto unbanUser(Long id);
+    BanManagerDto unbanManger(Long id);
 }

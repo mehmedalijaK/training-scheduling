@@ -2,17 +2,19 @@ package raf.microservice.components.userservice.service.impl;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raf.microservice.components.userservice.dto.*;
 import raf.microservice.components.userservice.mapper.AdminMapper;
+import raf.microservice.components.userservice.mapper.ManagerMapper;
+import raf.microservice.components.userservice.mapper.UserMapper;
 import raf.microservice.components.userservice.model.Admin;
 import raf.microservice.components.userservice.model.Manager;
 import raf.microservice.components.userservice.model.Token;
 import raf.microservice.components.userservice.model.User;
-import raf.microservice.components.userservice.repository.AdminRepository;
-import raf.microservice.components.userservice.repository.TokenRepository;
+import raf.microservice.components.userservice.repository.*;
 import raf.microservice.components.userservice.service.AdminService;
 import raf.microservice.components.userservice.service.JwtService;
 
@@ -30,11 +32,17 @@ public class AdminServiceImpl implements AdminService {
     private final PasswordEncoder passwordEncoder;
     private final CustomUserDetailsService customUserDetailsService;
     private final AdminMapper adminMapper;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final UserMapper userMapper;
+    private final ManagerRepository managerRepository;
+    private final ManagerMapper managerMapper;
 
     public AdminServiceImpl(JwtService jwtService, TokenRepository tokenRepository,
                             AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder,
                             CustomUserDetailsService customUserDetailsService, AdminRepository adminRepository,
-                            AdminMapper adminMapper) {
+                            AdminMapper adminMapper, UserRepository userRepository, RoleRepository roleRepository,
+                            UserMapper userMapper, ManagerRepository managerRepository, ManagerMapper managerMapper) {
         this.jwtService = jwtService;
         this.tokenRepository = tokenRepository;
         this.authenticationManager = authenticationManager;
@@ -42,6 +50,11 @@ public class AdminServiceImpl implements AdminService {
         this.customUserDetailsService = customUserDetailsService;
         this.adminRepository = adminRepository;
         this.adminMapper = adminMapper;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.userMapper = userMapper;
+        this.managerRepository = managerRepository;
+        this.managerMapper = managerMapper;
     }
 
     @Override
@@ -140,6 +153,82 @@ public class AdminServiceImpl implements AdminService {
         adminNew.setDateBirth(adminEditDto.getDateBirth());
         adminRepository.save(adminNew);
         return adminMapper.adminToAdminDto(adminNew);
+    }
+
+    @Override
+    public BanUserDto banUser(Long id) {
+        Optional<User> user = userRepository.findById(id);
+
+        if(user.isEmpty())
+            return null; //throw exception
+
+        User userP = user.get();
+        userP.setRole(roleRepository.findRoleByName("ROLE_BANNED").get());
+
+        userRepository.save(userP);
+        BanUserDto banUserDto = new BanUserDto();
+
+        banUserDto.setUser(userMapper.userToUserDto(userP));
+        banUserDto.setBanned(true);
+
+        return banUserDto;
+    }
+
+    @Override
+    public BanManagerDto banManager(Long id) {
+        Optional<Manager> manager = managerRepository.findById(id);
+
+        if(manager.isEmpty())
+            return null; //throw exception
+
+        Manager managerP = manager.get();
+        managerP.setRole(roleRepository.findRoleByName("ROLE_BANNED").get());
+
+        managerRepository.save(managerP);
+        BanManagerDto banManagerDto = new BanManagerDto();
+
+        banManagerDto.setManager(managerMapper.managerToManagerDto(managerP));
+        banManagerDto.setBanned(true);
+
+        return banManagerDto;
+    }
+
+    @Override
+    public BanUserDto unbanUser(Long id) {
+        Optional<User> user = userRepository.findById(id);
+
+        if(user.isEmpty())
+            return null; //throw exception
+
+        User userP = user.get();
+        userP.setRole(roleRepository.findRoleByName("ROLE_USER").get());
+
+        userRepository.save(userP);
+        BanUserDto banUserDto = new BanUserDto();
+
+        banUserDto.setUser(userMapper.userToUserDto(userP));
+        banUserDto.setBanned(false);
+
+        return banUserDto;
+    }
+
+    @Override
+    public BanManagerDto unbanManger(Long id){
+        Optional<Manager> manager = managerRepository.findById(id);
+
+        if(manager.isEmpty())
+            return null; //throw exception
+
+        Manager managerP = manager.get();
+        managerP.setRole(roleRepository.findRoleByName("ROLE_MANAGER").get());
+
+        managerRepository.save(managerP);
+        BanManagerDto banManagerDto = new BanManagerDto();
+
+        banManagerDto.setManager(managerMapper.managerToManagerDto(managerP));
+        banManagerDto.setBanned(false);
+
+        return banManagerDto;
     }
 
     private void revokeAllUserTokens(Admin admin) {

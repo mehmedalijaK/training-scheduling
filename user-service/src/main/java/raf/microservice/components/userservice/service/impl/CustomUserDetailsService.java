@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import raf.microservice.components.userservice.model.Admin;
 import raf.microservice.components.userservice.model.Manager;
+import raf.microservice.components.userservice.model.Role;
 import raf.microservice.components.userservice.model.User;
 import raf.microservice.components.userservice.repository.AdminRepository;
 import raf.microservice.components.userservice.repository.ManagerRepository;
@@ -36,10 +37,14 @@ public class CustomUserDetailsService implements UserDetailsService {
             case "MANAGER" -> {
                 Optional<Manager> manager = managerRepository.findManagerByUsername(username);
                 userDetails = manager.orElseThrow(() -> new UsernameNotFoundException("Manager not found"));
+                if(userDetails.getAuthorities().toArray()[0].toString().equals("ROLE_BANNED"))
+                    return null; // TODO: exception throw
             }
             case "USER" -> {
                 Optional<User> user = userRepository.findUserByUsername(username);
                 userDetails = user.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                if(userDetails.getAuthorities().toArray()[0].toString().equals("ROLE_BANNED"))
+                    return null; // TODO: exception throw
             }
             case "ADMIN" -> {
                 Optional<Admin> admin = adminRepository.findAdminByUsername(username);

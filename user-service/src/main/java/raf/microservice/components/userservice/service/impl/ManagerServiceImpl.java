@@ -100,7 +100,7 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public ManagerDto getMe(String authorization) {
+    public ManagerDto getMe(String authorization) { // TODO: transfer to JWT class
         String token = authorization.substring(7);
         Optional<Manager> manager = managerRepository.findManagerByUsername(jwtService.extractUsername(token));
         if(manager.isEmpty()) return null;
@@ -172,7 +172,7 @@ public class ManagerServiceImpl implements ManagerService {
         return managerMapper.managerToManagerDto(managerNew);
     }
 
-    private void revokeAllUserTokens(Manager user) {
+    private void revokeAllUserTokens(Manager user) { // TODO: transfer to JWT class
         var validUserTokens = tokenRepository.findAllValidTokenByUserDetails(user);
         if (validUserTokens.isEmpty())
             return;

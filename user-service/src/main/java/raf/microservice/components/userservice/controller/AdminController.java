@@ -43,4 +43,28 @@ public class AdminController {
         return new ResponseEntity<>(adminService.edit(authorization, adminEditDto), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Ban user")
+    @PostMapping("/ban/user/{id}")
+    public ResponseEntity<BanUserDto> banUser(@PathVariable("id") Long id){
+        return new ResponseEntity<>(adminService.banUser(id), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Ban manager")
+    @PostMapping("/ban/manager/{id}")
+    public ResponseEntity<BanManagerDto> banManager(@PathVariable("id") Long id){
+        return new ResponseEntity<>(adminService.banManager(id), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Unban user")
+    @PostMapping("/unban/user/{id}")
+    public ResponseEntity<BanUserDto> unbanUser(@PathVariable("id") Long id){
+        return new ResponseEntity<>(adminService.unbanUser(id), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Unban manager")
+    @PostMapping("/unban/manager/{id}")
+    public ResponseEntity<BanManagerDto> unbanManager(@PathVariable("id") Long id){
+        return new ResponseEntity<>(adminService.unbanManger(id), HttpStatus.OK);
+    }
+
 }

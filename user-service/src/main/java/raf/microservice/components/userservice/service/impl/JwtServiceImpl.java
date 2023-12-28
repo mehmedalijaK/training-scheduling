@@ -12,9 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import raf.microservice.components.userservice.service.JwtService;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.SQLOutput;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -72,7 +71,11 @@ public class JwtServiceImpl implements JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails){
         final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        final Claims role = extractAllClaims(token);
+        final String roleName = (((LinkedHashMap<?, ?>)((ArrayList<?>)role.get("role")).get(0)).get("authority").toString()); // TODO: create extractRole
+
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token) &&
+                userDetails.getAuthorities().toArray()[0].toString().equals(roleName);
     }
 
     public boolean isTokenExpired(String token){

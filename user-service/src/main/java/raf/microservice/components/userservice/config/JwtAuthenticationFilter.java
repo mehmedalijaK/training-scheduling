@@ -52,18 +52,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final Claims role = jwtService.extractAllClaims(jwt);
 
         Object o = role.get("role");
-
-        if ((((LinkedHashMap<?, ?>)((ArrayList<?>)o).get(0)).get("authority").toString()).equals("ROLE_USER")) {
-            customUserDetailsService.setUserType("USER");
-        } else if ((((LinkedHashMap<?, ?>)((ArrayList<?>)o).get(0)).get("authority").toString()).equals("ROLE_ADMIN")) {
-            customUserDetailsService.setUserType("ADMIN");
-        } else {
-            customUserDetailsService.setUserType("MANAGER");
-        }
+        customUserDetailsService.setUserType((((LinkedHashMap<?, ?>)((ArrayList<?>)o).get(0)).
+                get("authority").toString().substring(5)));
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username); // exception banned
             if (jwtService.isTokenValid(jwt, userDetails)){
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
