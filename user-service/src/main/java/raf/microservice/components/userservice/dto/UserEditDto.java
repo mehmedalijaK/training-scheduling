@@ -1,24 +1,24 @@
 package raf.microservice.components.userservice.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
+
 import java.time.LocalDate;
 
-public class ManagerDto {
+public class UserEditDto {
 
-    private String username;
+    @NotBlank(message = "Email cannot be empty")
+    @Email
     private String email;
+    @Past
     private LocalDate dateBirth;
+
+    @NotBlank
     private String name;
+
+    @NotBlank
     private String lastName;
-    private String sportsHall;
-    private LocalDate dateEmployment;
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public String getEmail() {
         return email;
@@ -50,21 +50,5 @@ public class ManagerDto {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public String getSportsHall() {
-        return sportsHall;
-    }
-
-    public void setSportsHall(String sportsHall) {
-        this.sportsHall = sportsHall;
-    }
-
-    public LocalDate getDateEmployment() {
-        return dateEmployment;
-    }
-
-    public void setDateEmployment(LocalDate dateEmployment) {
-        this.dateEmployment = dateEmployment;
     }
 }

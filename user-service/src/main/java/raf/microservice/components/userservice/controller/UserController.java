@@ -45,4 +45,11 @@ public class UserController {
     public ResponseEntity<UserDto> me(@RequestHeader("Authorization") String authorization){
         return new ResponseEntity<>(userService.getMe(authorization), HttpStatus.OK);
     }
+
+    @ApiOperation(value = "Edit user")
+    @PutMapping("/edit")
+    public ResponseEntity<UserDto> edit(@RequestHeader("Authorization") String authorization,
+                                        @RequestBody @Valid UserEditDto userEditDto){
+        return new ResponseEntity<>(userService.edit(authorization, userEditDto), HttpStatus.OK);
+    }
 }

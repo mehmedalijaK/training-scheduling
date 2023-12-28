@@ -1,5 +1,6 @@
 package raf.microservice.components.userservice.config;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,9 +12,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import raf.microservice.components.userservice.service.impl.CustomUserDetailsService;
 import raf.microservice.components.userservice.service.impl.JwtServiceImpl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 @Component
 //@RequiredArgsConstructor
@@ -21,10 +25,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtServiceImpl jwtService;
     private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
 
-    public JwtAuthenticationFilter(JwtServiceImpl jwtService, UserDetailsService userDetailsService){
+    public JwtAuthenticationFilter(JwtServiceImpl jwtService, UserDetailsService userDetailsService,
+                                   CustomUserDetailsService customUserDetailsService){
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Override
@@ -42,8 +49,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         jwt = authHeader.substring(7);
         final String username = jwtService.extractUsername(jwt);
+        final Claims role = jwtService.extractAllClaims(jwt);
+
+        Object o = role.get("role");
+
+        if ((((LinkedHashMap<?, ?>)((ArrayList<?>)o).get(0)).get("authority").toString()).equals("ROLE_USER")) {
+            customUserDetailsService.setUserType("USER");
+        } else if ((((LinkedHashMap<?, ?>)((ArrayList<?>)o).get(0)).get("authority").toString()).equals("ROLE_ADMIN")) {
+            customUserDetailsService.setUserType("ADMIN");
+        } else {
+            customUserDetailsService.setUserType("MANAGER");
+        }
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
             if (jwtService.isTokenValid(jwt, userDetails)){
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(

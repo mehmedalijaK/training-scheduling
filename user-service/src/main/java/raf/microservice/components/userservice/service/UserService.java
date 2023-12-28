@@ -11,4 +11,5 @@ public interface UserService {
     User findUsername(String username);
     SessionTokenDto refreshToken(String authorization);
     UserDto getMe(String authorization);
+    UserDto edit(String authorization, UserEditDto userEditDto);
 }

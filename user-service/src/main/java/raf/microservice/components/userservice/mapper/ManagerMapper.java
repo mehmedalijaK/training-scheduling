@@ -43,6 +43,17 @@ public class ManagerMapper {
     }
 
     public ManagerDto managerToManagerDto(Manager manager){
-        return null;
+        ModelMapper modelMapper = new ModelMapper();
+        TypeMap<Manager, ManagerDto> propertyMapper = modelMapper.createTypeMap(Manager.class, ManagerDto.class);
+        propertyMapper.addMapping(Manager::getUsername, ManagerDto::setUsername);
+        propertyMapper.addMapping(Manager::getEmail, ManagerDto::setEmail);
+        propertyMapper.addMapping(Manager::getDateBirth, ManagerDto::setDateBirth);
+        propertyMapper.addMapping(Manager::getName, ManagerDto::setName);
+        propertyMapper.addMapping(Manager::getLastName, ManagerDto::setLastName);
+        propertyMapper.addMapping(Manager::getSportsHall, ManagerDto::setSportsHall);
+        propertyMapper.addMapping(Manager::getDateEmployment, ManagerDto::setDateEmployment);
+
+        ManagerDto managerDto = modelMapper.map(manager, ManagerDto.class);
+        return managerDto;
     }
 }

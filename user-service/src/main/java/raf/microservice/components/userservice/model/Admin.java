@@ -11,10 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "admins")
-public class Admin implements UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class Admin extends TokenUsers implements UserDetails{
 
     @Column(name = "username", nullable = false)
     private String username;
@@ -39,7 +36,7 @@ public class Admin implements UserDetails {
 
     public Admin(long id, String username, String password, String email, LocalDate dateBirth, String name, String lastName,
     Role role) {
-        this.id = id;
+        super(id);
         this.username = username;
         this.password = password;
         this.email = email;
@@ -51,9 +48,6 @@ public class Admin implements UserDetails {
 
     public Admin(){}
 
-    public long getId() {
-        return id;
-    }
 
     public String getUsername() {
         return username;
@@ -104,9 +98,6 @@ public class Admin implements UserDetails {
         return lastName;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public void setUsername(String username) {
         this.username = username;
@@ -143,7 +134,6 @@ public class Admin implements UserDetails {
     @Override
     public String toString() {
         return "Admin{" +
-                "id=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +

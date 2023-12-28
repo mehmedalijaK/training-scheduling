@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import raf.microservice.components.userservice.repository.ManagerRepository;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -11,11 +14,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "managers")
-public class Manager implements UserDetails {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class Manager extends TokenUsers implements UserDetails {
 
     @Column(name = "username", nullable = false)
     private String username;
@@ -44,11 +43,12 @@ public class Manager implements UserDetails {
     @ManyToOne(optional = false)
     private Role role;
 
-    public Manager(){}
+    public Manager(){
+    }
 
     public Manager(long id, String username, String password, String email, LocalDate dateBirth, String name,
                    String lastName, String sportsHall, LocalDate dateEmployment, Role role) {
-        this.id = id;
+        super(id);
         this.username = username;
         this.password = password;
         this.email = email;
@@ -58,14 +58,6 @@ public class Manager implements UserDetails {
         this.sportsHall = sportsHall;
         this.dateEmployment = dateEmployment;
         this.role = role;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getUsername() {
@@ -164,4 +156,5 @@ public class Manager implements UserDetails {
     public void setRole(Role role) {
         this.role = role;
     }
+
 }

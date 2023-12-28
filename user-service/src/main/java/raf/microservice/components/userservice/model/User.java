@@ -12,10 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class User extends TokenUsers implements UserDetails {
 
     @Column(name = "username", nullable = false)
     private String username;
@@ -57,7 +54,7 @@ public class User implements UserDetails {
 
     public User(long id, String username, String password, String email, LocalDate dateBirth, String name,
                   String lastName, String membershipCardId, Integer scheduledTrainingCount, Role role) {
-        this.id = id;
+        super(id);
         this.username = username;
         this.password = password;
         this.email = email;
@@ -69,13 +66,6 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getUsername() {
         return username;

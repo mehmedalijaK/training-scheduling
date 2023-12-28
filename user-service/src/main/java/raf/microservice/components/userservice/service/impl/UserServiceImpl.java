@@ -21,20 +21,22 @@ import java.util.Optional;
 @Transactional
 public class UserServiceImpl implements UserService {
 
-    private UserRepository userRepository;
-    private UserMapper userMapper;
-    private JwtService jwtService;
-    private TokenRepository tokenRepository;
-    private AuthenticationManager authenticationManager;
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final JwtService jwtService;
+    private final TokenRepository tokenRepository;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
+    private final CustomUserDetailsService customUserDetailsService;
     public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, JwtService jwtService, TokenRepository tokenRepository
-    , AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder){
+    , AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, CustomUserDetailsService customUserDetailsService){
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.jwtService = jwtService;
         this.tokenRepository = tokenRepository;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Override
@@ -55,6 +57,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthenticationResponseDto authenticate(UserLoginDto userLoginDto) {
+        customUserDetailsService.setUserType("USER");
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         userLoginDto.getUsername(),
@@ -81,7 +84,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void revokeAllUserTokens(User user) {
-        var validUserTokens = tokenRepository.findAllValidTokenByUser(user);
+        var validUserTokens = tokenRepository.findAllValidTokenByUserDetails(user);
         if (validUserTokens.isEmpty())
             return;
         validUserTokens.forEach(token -> {
@@ -94,7 +97,7 @@ public class UserServiceImpl implements UserService {
     private void saveUserToken(User user, String jwt){
         Token token = new Token();
         token.setToken(jwt);
-        token.setUser(user);
+        token.setUserDetails(user);
         token.setExpired(false);
         token.setRevoked(false);
         tokenRepository.save(token);
@@ -122,7 +125,7 @@ public class UserServiceImpl implements UserService {
             boolean check = true;
             boolean exist = false;
 
-            List<Token> allTokens = tokenRepository.findAllValidTokenByUser(user);
+            List<Token> allTokens = tokenRepository.findAllValidTokenByUserDetails(user);
             Token update = null;
             for(Token t : allTokens){
                 if (t.token.equals(refreshToken)) {
@@ -159,5 +162,20 @@ public class UserServiceImpl implements UserService {
         Optional<User> user = userRepository.findUserByUsername(jwtService.extractUsername(token));
         if(user.isEmpty()) return null;
         return userMapper.userToUserDto(user.get());
+    }
+
+    @Override
+    public UserDto edit(String authorization, UserEditDto userEditDto) {
+        String token = authorization.substring(7);
+        Optional<User> user = userRepository.findUserByUsername(jwtService.extractUsername(token));
+        if(user.isEmpty()) return null;
+
+        User userNew = user.get();
+        userNew.setEmail(userEditDto.getEmail());
+        userNew.setName(userEditDto.getName());
+        userNew.setLastName(userEditDto.getLastName());
+        userNew.setDateBirth(userEditDto.getDateBirth());
+        userRepository.save(userNew);
+        return userMapper.userToUserDto(userNew);
     }
 }
