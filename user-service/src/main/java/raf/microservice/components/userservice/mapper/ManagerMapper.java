@@ -53,7 +53,6 @@ public class ManagerMapper {
         propertyMapper.addMapping(Manager::getSportsHall, ManagerDto::setSportsHall);
         propertyMapper.addMapping(Manager::getDateEmployment, ManagerDto::setDateEmployment);
 
-        ManagerDto managerDto = modelMapper.map(manager, ManagerDto.class);
-        return managerDto;
+        return modelMapper.map(manager, ManagerDto.class);
     }
 }

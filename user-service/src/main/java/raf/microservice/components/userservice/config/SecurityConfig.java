@@ -22,7 +22,8 @@ public class SecurityConfig {
             "/api/user/register",
             "/api/user/login",
             "/api/manager/register",
-            "/api/manager/login"
+            "/api/manager/login",
+            "/api/admin/login"
     };
     public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, AuthenticationProvider authenticationProvider){
         this.jwtAuthFilter = jwtAuthFilter;

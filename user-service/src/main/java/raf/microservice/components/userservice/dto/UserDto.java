@@ -28,12 +28,12 @@ public class UserDto {
         this.email = email;
     }
 
-    public LocalDate getDateBrith() {
+    public LocalDate getDateBirth() {
         return dateBirth;
     }
 
-    public void setDateBirth(LocalDate dateBrith) {
-        this.dateBirth = dateBrith;
+    public void setDateBirth(LocalDate dateBirth) {
+        this.dateBirth = dateBirth;
     }
 
     public String getName() {

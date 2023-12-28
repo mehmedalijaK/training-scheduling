@@ -44,8 +44,9 @@ public class UserMapper {
         propertyMapper.addMapping(User::getDateBirth, UserDto::setDateBirth);
         propertyMapper.addMapping(User::getName, UserDto::setName);
         propertyMapper.addMapping(User::getLastName, UserDto::setLastName);
+        propertyMapper.addMapping(User::getMembershipCardId, UserDto::setMembershipCardId);
+        propertyMapper.addMapping(User::getScheduledTrainingCount, UserDto::setMembershipCardId);
 
-        UserDto userDto = modelMapper.map(user, UserDto.class);
-        return userDto;
+        return modelMapper.map(user, UserDto.class);
     }
 }

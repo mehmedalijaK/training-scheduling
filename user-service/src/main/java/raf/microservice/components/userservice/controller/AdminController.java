@@ -1,0 +1,46 @@
+package raf.microservice.components.userservice.controller;
+
+import io.swagger.annotations.ApiOperation;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import raf.microservice.components.userservice.dto.*;
+import raf.microservice.components.userservice.service.AdminService;
+
+@RestController
+@RequestMapping("/api/admin")
+public class AdminController {
+
+    private final AdminService adminService;
+
+    public AdminController(AdminService adminService){
+        this.adminService = adminService;
+    }
+
+    @ApiOperation(value = "Login admin")
+    @PostMapping("/login")  //  TODO: SHOULD SEND AN EMAIL THAT SOMEONE JUST LOGGED IN ACCOUNT
+    public ResponseEntity<AuthenticationResponseDto> authenticate(@RequestBody @Valid AdminLoginDto adminLoginDto){
+        return new ResponseEntity<>(adminService.authenticate(adminLoginDto), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Refresh token")
+    @PostMapping("/refresh-token")
+    public ResponseEntity<SessionTokenDto> refreshToken(@RequestHeader("Authorization") String authorization){
+        return new ResponseEntity<>(adminService.refreshToken(authorization), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Get my information")
+    @GetMapping("/me")
+    public ResponseEntity<AdminDto> me(@RequestHeader("Authorization") String authorization){
+        return new ResponseEntity<>(adminService.getMe(authorization), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Edit admin")
+    @PutMapping("/edit")
+    public ResponseEntity<AdminDto> edit(@RequestHeader("Authorization") String authorization,
+                                           @RequestBody @Valid AdminEditDto adminEditDto){
+        return new ResponseEntity<>(adminService.edit(authorization, adminEditDto), HttpStatus.OK);
+    }
+
+}

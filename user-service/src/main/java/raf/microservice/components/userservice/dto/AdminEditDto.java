@@ -1,23 +1,24 @@
 package raf.microservice.components.userservice.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
+
 import java.time.LocalDate;
 
-public class AdminDto {
+public class AdminEditDto {
 
-    private String username;
+    @NotBlank(message = "Email cannot be empty")
+    @Email
     private String email;
+    @Past
     private LocalDate dateBirth;
+
+    @NotBlank
     private String name;
+
+    @NotBlank
     private String lastName;
-
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public String getEmail() {
         return email;

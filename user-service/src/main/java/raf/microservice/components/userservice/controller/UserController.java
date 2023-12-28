@@ -15,7 +15,7 @@ import raf.microservice.components.userservice.service.UserService;
 @RequestMapping("/api/user")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -28,13 +28,13 @@ public class UserController {
         return new ResponseEntity<>(userService.add(userCreateDto), HttpStatus.CREATED);
     }
 
-    @ApiOperation(value = "Login")
+    @ApiOperation(value = "Login user")
     @PostMapping("/login")  //  TODO: SHOULD SEND AN EMAIL THAT SOMEONE JUST LOGGED IN ACCOUNT
     public ResponseEntity<AuthenticationResponseDto> authenticate(@RequestBody @Valid UserLoginDto userLoginDto){
         return new ResponseEntity<>(userService.authenticate(userLoginDto), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Refresh token")
+    @ApiOperation(value = "Refresh token user")
     @PostMapping("/refresh-token")
     public ResponseEntity<SessionTokenDto> refreshToken(@RequestHeader("Authorization") String authorization){
         return new ResponseEntity<>(userService.refreshToken(authorization), HttpStatus.OK);
@@ -48,8 +48,7 @@ public class UserController {
 
     @ApiOperation(value = "Edit user")
     @PutMapping("/edit")
-    public ResponseEntity<UserDto> edit(@RequestHeader("Authorization") String authorization,
-                                        @RequestBody @Valid UserEditDto userEditDto){
+    public ResponseEntity<UserDto> edit(@RequestHeader("Authorization") String authorization, @RequestBody @Valid UserEditDto userEditDto){
         return new ResponseEntity<>(userService.edit(authorization, userEditDto), HttpStatus.OK);
     }
 }

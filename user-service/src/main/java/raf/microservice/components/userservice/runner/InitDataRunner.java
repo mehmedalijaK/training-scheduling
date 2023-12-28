@@ -2,6 +2,7 @@ package raf.microservice.components.userservice.runner;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import raf.microservice.components.userservice.model.Admin;
 import raf.microservice.components.userservice.model.Role;
@@ -21,13 +22,16 @@ public class InitDataRunner implements CommandLineRunner {
     private UserRepository userRepository;
     private AdminRepository adminRepository;
     private ManagerRepository managerRepository;
+    private PasswordEncoder passwordEncoder;
 
     public InitDataRunner(RoleRepository roleRepository, UserRepository userRepository,
-                          AdminRepository adminRepository, ManagerRepository managerRepository) {
+                          AdminRepository adminRepository, ManagerRepository managerRepository,
+                          PasswordEncoder passwordEncoder) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.adminRepository = adminRepository;
         this.managerRepository = managerRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -46,7 +50,7 @@ public class InitDataRunner implements CommandLineRunner {
         Admin admin = new Admin();
         admin.setEmail("karisik.mehmedalija@gmail.com");
         admin.setUsername("karisikm");
-        admin.setPassword("biguser123");
+        admin.setPassword(passwordEncoder.encode("biguser123"));
         admin.setRole(roleAdmin);
         admin.setDateBirth(LocalDate.of(2002, Month.APRIL, 23));
         admin.setName("Mehmedalija");
