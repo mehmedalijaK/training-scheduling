@@ -8,14 +8,17 @@
 		<version>3.2.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+
 	<groupId>raf.microservice.components</groupId>
 	<artifactId>schedule-training</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>schedule-training</name>
 	<description>Microservice for scheduling trainings</description>
+
 	<properties>
 		<java.version>17</java.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -47,13 +50,11 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
-			<version>5.0.1.RELEASE</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
-			<version>1.8.12</version>
 			<scope>compile</scope>
 		</dependency>
 

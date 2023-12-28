@@ -1,5 +1,6 @@
 package raf.microservice.scheduletraining.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -10,13 +11,17 @@ import raf.microservice.scheduletraining.security.CheckSecurity;
 import raf.microservice.scheduletraining.service.GymService;
 
 @RestController
-@RequestMapping("/gym")
+@RequestMapping("/gyms")
 public class GymController {
 
     private GymService gymService;
-/*
+
+    public GymController(GymService gymService) {
+        this.gymService = gymService;
+    }
+
     @GetMapping
-    public ResponseEntity<Page<GymDto>> findAll(@RequestHeader("Authorization") String authorization, @ApiIgnore Pageable pageable) {
+    public ResponseEntity<Page<GymDto>> findAll(@RequestHeader("Authorization") String authorization, Pageable pageable) {
         return new ResponseEntity<>(gymService.findAll(pageable), HttpStatus.OK);
     }
 
@@ -28,7 +33,7 @@ public class GymController {
 
     @PostMapping
     @CheckSecurity(roles = {"ROLE_ADMIN"})
-    public ResponseEntity<GymDto> add(@RequestHeader("Authorization") String authorization, @RequestBody @Valid MovieCreateDto movieCreateDto) {
+    public ResponseEntity<GymDto> add(@RequestHeader("Authorization") String authorization, @RequestBody @Valid GymDto movieCreateDto) {
         return new ResponseEntity<>(gymService.add(movieCreateDto), HttpStatus.CREATED);
     }
 
@@ -38,6 +43,4 @@ public class GymController {
         gymService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-}
-*/
 }

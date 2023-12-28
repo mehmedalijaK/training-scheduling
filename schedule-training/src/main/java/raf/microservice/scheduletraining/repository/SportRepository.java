@@ -1,7 +1,7 @@
 package raf.microservice.scheduletraining.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import raf.microservice.scheduletraining.domain.Gym;
+import raf.microservice.scheduletraining.domain.Sport;
 
-public interface SportRepository extends JpaRepository<Gym, Long> {
+public interface SportRepository extends JpaRepository<Sport, Long> {
 }
