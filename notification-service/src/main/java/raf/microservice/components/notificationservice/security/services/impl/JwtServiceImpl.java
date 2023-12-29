@@ -6,15 +6,15 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import raf.microservice.components.notificationservice.security.services.JwtService;
 
 import java.security.Key;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -39,6 +39,32 @@ public class JwtServiceImpl implements JwtService {
     public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
     }
+
+    public Collection<? extends GrantedAuthority> extractRoles(String token) {
+        return extractClaim(token, claims -> {
+            Object rawRoles = claims.get("role");
+
+            if (rawRoles instanceof String) {
+                // Single role as a string
+                return Collections.singletonList(new SimpleGrantedAuthority((String) rawRoles));
+            } else if (rawRoles instanceof Collection) {
+                // Nested JSON structure, extract "authority" field
+                Collection<?> rolesCollection = (Collection<?>) rawRoles;
+
+                return rolesCollection.stream()
+                        .filter(role -> role instanceof Map)
+                        .map(role -> (Map<?, ?>) role)
+                        .filter(roleMap -> roleMap.containsKey("authority"))
+                        .map(roleMap -> roleMap.get("authority"))
+                        .filter(authority -> authority instanceof String)
+                        .map(authority -> new SimpleGrantedAuthority((String) authority))
+                        .collect(Collectors.toList());
+            } else {
+                return Collections.emptyList();
+            }
+        });
+    }
+
 
     @Override
     public boolean isTokenValid(String token){
