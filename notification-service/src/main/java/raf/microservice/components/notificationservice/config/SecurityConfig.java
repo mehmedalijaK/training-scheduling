@@ -28,7 +28,7 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/mail/me").hasRole("ADMIN")
+                        .requestMatchers("/types/**").hasRole("ADMIN")
                         .requestMatchers(WHITE_LIST_URL).permitAll() //  allow paths to access without auth
                         .anyRequest().authenticated() // all other paths need auth
                 )
