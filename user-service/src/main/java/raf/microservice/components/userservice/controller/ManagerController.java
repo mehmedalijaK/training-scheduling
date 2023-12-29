@@ -14,7 +14,7 @@ import raf.microservice.components.userservice.service.ManagerService;
 @RequestMapping("/api/manager")
 public class ManagerController {
 
-    private ManagerService managerService;
+    private final ManagerService managerService;
 
     public ManagerController(ManagerService managerService){this.managerService = managerService;}
 
@@ -27,8 +27,8 @@ public class ManagerController {
 
     @ApiOperation(value = "Login")
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponseDto> authenticate(@RequestBody @Valid ManagerLoginDto managerLoginDto) {
-        return new ResponseEntity<>(managerService.authenticate(managerLoginDto), HttpStatus.OK);
+    public ResponseEntity<AuthenticationResponseDto> authenticate(@RequestBody @Valid AuthLoginDto authLoginDto) {
+        return new ResponseEntity<>(managerService.authenticate(authLoginDto), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Refresh token")

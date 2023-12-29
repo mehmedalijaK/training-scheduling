@@ -1,6 +1,6 @@
 package raf.microservice.components.userservice.dto;
 
-public class AdminLoginDto {
+public class AuthLoginDto {
     private String username;
     private String password;
 

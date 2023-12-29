@@ -1,7 +1,6 @@
 package raf.microservice.components.userservice.model;
 
 import jakarta.persistence.*;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "tokens")
@@ -22,7 +21,7 @@ public class Token {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    public TokenUsers userDetails;
+    public Users usersDetails;
 
     public Token(){}
 
@@ -58,11 +57,11 @@ public class Token {
         this.expired = expired;
     }
 
-    public TokenUsers getUserDetails() {
-        return userDetails;
+    public Users getUsersDetails() {
+        return usersDetails;
     }
 
-    public void setUserDetails(TokenUsers userDetails) {
-        this.userDetails = userDetails;
+    public void setUsersDetails(Users usersDetails) {
+        this.usersDetails = usersDetails;
     }
 }

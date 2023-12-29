@@ -8,32 +8,16 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import raf.microservice.components.userservice.repository.ManagerRepository;
-import raf.microservice.components.userservice.repository.UserRepository;
 import raf.microservice.components.userservice.service.impl.CustomUserDetailsService;
 
 @Configuration
 public class ApplicationConfig {
 
-    private UserRepository userRepository;
-    private ManagerRepository managerRepository;
-    private CustomUserDetailsService customUserDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
 
-    public ApplicationConfig(UserRepository userRepository, ManagerRepository managerRepository, CustomUserDetailsService customUserDetailsService){
-        this.userRepository = userRepository;
-        this.managerRepository = managerRepository;
+    public ApplicationConfig(CustomUserDetailsService customUserDetailsService){
         this.customUserDetailsService = customUserDetailsService;
     }
-
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//        Optional<Manager> manager = managerRepository.findManagerByUsername(username);
-//        if (manager.isPresent()) {
-//            return (UserDetailsService) manager.get();
-//        } else {
-//            throw new UsernameNotFoundException("Manager not found");
-//        }
-//    }
 
     @Bean
     public AuthenticationProvider authenticationProvider(){

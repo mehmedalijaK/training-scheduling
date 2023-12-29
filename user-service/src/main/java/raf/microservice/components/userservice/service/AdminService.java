@@ -3,7 +3,7 @@ package raf.microservice.components.userservice.service;
 import raf.microservice.components.userservice.dto.*;
 
 public interface AdminService {
-    AuthenticationResponseDto authenticate(AdminLoginDto adminLoginDto);
+    AuthenticationResponseDto authenticate(AuthLoginDto authLoginDto);
 
     SessionTokenDto refreshToken(String authorization);
 

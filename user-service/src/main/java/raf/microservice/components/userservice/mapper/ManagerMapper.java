@@ -7,10 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import raf.microservice.components.userservice.dto.ManagerCreateDto;
 import raf.microservice.components.userservice.dto.ManagerDto;
-import raf.microservice.components.userservice.dto.UserCreateDto;
 import raf.microservice.components.userservice.model.Manager;
-import raf.microservice.components.userservice.model.Role;
-import raf.microservice.components.userservice.model.User;
 import raf.microservice.components.userservice.repository.RoleRepository;
 
 @Component

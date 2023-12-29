@@ -20,8 +20,8 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private static final String[] WHITE_LIST_URL = {
-            "/api/user/register",
-            "/api/user/login",
+            "/api/client/register",
+            "/api/client/login",
             "/api/manager/register",
             "/api/manager/login",
             "/api/admin/login"
@@ -37,8 +37,8 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/user/me").hasRole("USER")
-                        .requestMatchers("/api/user/edit").hasRole("USER")
+                        .requestMatchers("/api/client/me").hasRole("CLIENT")
+                        .requestMatchers("/api/client/edit").hasRole("CLIENT")
                         .requestMatchers("/api/manager/me").hasRole("MANAGER")
                         .requestMatchers("/api/manager/edit").hasRole("MANAGER")
                         .requestMatchers(WHITE_LIST_URL).permitAll() //  allow paths to access without auth

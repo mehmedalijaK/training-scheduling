@@ -6,10 +6,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raf.microservice.components.userservice.dto.*;
+import raf.microservice.components.userservice.exceptions.NotFoundException;
 import raf.microservice.components.userservice.mapper.ManagerMapper;
 import raf.microservice.components.userservice.model.Manager;
 import raf.microservice.components.userservice.model.Token;
-import raf.microservice.components.userservice.model.User;
 import raf.microservice.components.userservice.repository.ManagerRepository;
 import raf.microservice.components.userservice.repository.TokenRepository;
 import raf.microservice.components.userservice.service.JwtService;
@@ -61,7 +61,7 @@ public class ManagerServiceImpl implements ManagerService {
     private void saveUserToken(Manager user, String jwt){
         Token token = new Token();
         token.setToken(jwt);
-        token.setUserDetails(user);
+        token.setUsersDetails(user);
         token.setExpired(false);
         token.setRevoked(false);
         tokenRepository.save(token);
@@ -73,19 +73,16 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public AuthenticationResponseDto authenticate(ManagerLoginDto managerLoginDto) {
+    public AuthenticationResponseDto authenticate(AuthLoginDto authLoginDto) {
         customUserDetailsService.setUserType("MANAGER");
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        managerLoginDto.getUsername(),
-                        managerLoginDto.getPassword()
+                        authLoginDto.getUsername(),
+                        authLoginDto.getPassword()
                 )
         );
 
-        Manager manager = managerRepository.findManagerByUsername(managerLoginDto.getUsername()).orElseThrow();
-        if (!passwordEncoder.matches(managerLoginDto.getPassword(), manager.getPassword())){
-            return null;
-        }
+        Manager manager = managerRepository.findManagerByUsername(authLoginDto.getUsername()).orElseThrow();
 
         String jwtToken = jwtService.generateToken(manager);
         String refreshToken = jwtService.generateRefreshToken(manager);
@@ -103,7 +100,7 @@ public class ManagerServiceImpl implements ManagerService {
     public ManagerDto getMe(String authorization) { // TODO: transfer to JWT class
         String token = authorization.substring(7);
         Optional<Manager> manager = managerRepository.findManagerByUsername(jwtService.extractUsername(token));
-        if(manager.isEmpty()) return null;
+        if(manager.isEmpty()) throw new NotFoundException("Manager not found");
         return managerMapper.managerToManagerDto(manager.get());
     }
 
@@ -124,7 +121,7 @@ public class ManagerServiceImpl implements ManagerService {
             boolean check = true;
             boolean exist = false;
 
-            List<Token> allTokens = tokenRepository.findAllValidTokenByUserDetails(user);
+            List<Token> allTokens = tokenRepository.findAllValidTokenByUsersDetails(user);
             Token update = null;
             for(Token t : allTokens){
                 if (t.token.equals(refreshToken)) {
@@ -159,7 +156,7 @@ public class ManagerServiceImpl implements ManagerService {
     public ManagerDto edit(String authorization, ManagerEditDto managerEditDto) {
         String token = authorization.substring(7);
         Optional<Manager> manager = managerRepository.findManagerByUsername(jwtService.extractUsername(token));
-        if(manager.isEmpty()) return null;
+        if(manager.isEmpty()) throw new NotFoundException("Manager not found");
 
         Manager managerNew = manager.get();
         managerNew.setEmail(managerEditDto.getEmail());
@@ -173,7 +170,7 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     private void revokeAllUserTokens(Manager user) { // TODO: transfer to JWT class
-        var validUserTokens = tokenRepository.findAllValidTokenByUserDetails(user);
+        var validUserTokens = tokenRepository.findAllValidTokenByUsersDetails(user);
         if (validUserTokens.isEmpty())
             return;
         validUserTokens.forEach(token -> {

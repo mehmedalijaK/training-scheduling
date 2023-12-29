@@ -8,85 +8,61 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
-@Table(name = "managers")
-public class Manager extends Users implements UserDetails {
+@Table(name = "clients")
+public class Client extends Users implements UserDetails {
 
     @Column(name = "username", nullable = false)
     private String username;
-
     @Column(name = "password", nullable = false)
     private String password;
-
     @Column(name = "email", nullable = false)
     private String email;
-
     @Column(name = "date_birth", nullable = false)
     private LocalDate dateBirth;
-
     @Column(name = "name", nullable = false)
     private String name;
-
     @Column(name = "last_name", nullable = false)
     private String lastName;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "membership_card_id", unique = true, nullable = false)
+    private String membershipCardId;
 
-    @Column(name = "sports_hall", nullable = false)
-    private String sportsHall;
+    @PrePersist
+    public void generateMembershipCardId() {
+        if (membershipCardId == null) {
+            membershipCardId = UUID.randomUUID().toString();
+        }
+    }
 
-    @Column(name = "date_employment", nullable = false)
-    private LocalDate dateEmployment;
-
+    @Column(name="scheduled_training_count", nullable = false, columnDefinition = "integer default 0")
+    private Integer scheduledTrainingCount = 0;
     @ManyToOne(optional = false)
     private Role role;
 
-    public Manager(){
-    }
-
-    public Manager(long id, String username, String password, String email, LocalDate dateBirth, String name,
-                   String lastName, String sportsHall, LocalDate dateEmployment, Role role) {
+    public Client(long id, String username, String password, String email, LocalDate dateBirth, String name, String lastName,
+                  String membershipCardId, Integer scheduledTrainingCount, Role role) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.dateBirth = dateBirth;
         this.name = name;
         this.lastName = lastName;
-        this.sportsHall = sportsHall;
-        this.dateEmployment = dateEmployment;
+        this.membershipCardId = membershipCardId;
+        this.scheduledTrainingCount = scheduledTrainingCount;
         this.role = role;
     }
+
+    public Client(){}
 
     public String getUsername() {
         return username;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority((role.getName())));
     }
 
     public String getPassword() {
@@ -129,20 +105,20 @@ public class Manager extends Users implements UserDetails {
         this.lastName = lastName;
     }
 
-    public String getSportsHall() {
-        return sportsHall;
+    public String getMembershipCardId() {
+        return membershipCardId;
     }
 
-    public void setSportsHall(String sportsHall) {
-        this.sportsHall = sportsHall;
+    public void setMembershipCardId(String membershipCardId) {
+        this.membershipCardId = membershipCardId;
     }
 
-    public LocalDate getDateEmployment() {
-        return dateEmployment;
+    public Integer getScheduledTrainingCount() {
+        return scheduledTrainingCount;
     }
 
-    public void setDateEmployment(LocalDate dateEmployment) {
-        this.dateEmployment = dateEmployment;
+    public void setScheduledTrainingCount(Integer scheduledTrainingCount) {
+        this.scheduledTrainingCount = scheduledTrainingCount;
     }
 
     public Role getRole() {
@@ -151,6 +127,31 @@ public class Manager extends Users implements UserDetails {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority((role.getName())));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
 }

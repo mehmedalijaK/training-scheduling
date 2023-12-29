@@ -3,7 +3,7 @@ import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 
-public class UserCreateDto {
+public class ClientCreateDto {
 
     @NotBlank(message = "Username cannot be empty")
     @Size(min = 5, max = 16, message = "Username must be between 5 and 16 characters")

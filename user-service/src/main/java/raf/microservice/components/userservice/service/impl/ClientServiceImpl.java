@@ -6,32 +6,33 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raf.microservice.components.userservice.dto.*;
-import raf.microservice.components.userservice.mapper.UserMapper;
+import raf.microservice.components.userservice.exceptions.NotFoundException;
+import raf.microservice.components.userservice.mapper.ClientMapper;
+import raf.microservice.components.userservice.model.Client;
 import raf.microservice.components.userservice.model.Token;
-import raf.microservice.components.userservice.model.User;
+import raf.microservice.components.userservice.repository.ClientRepository;
 import raf.microservice.components.userservice.repository.TokenRepository;
-import raf.microservice.components.userservice.repository.UserRepository;
 import raf.microservice.components.userservice.service.JwtService;
-import raf.microservice.components.userservice.service.UserService;
+import raf.microservice.components.userservice.service.ClientService;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Transactional
-public class UserServiceImpl implements UserService {
+public class ClientServiceImpl implements ClientService {
 
-    private final UserRepository userRepository;
-    private final UserMapper userMapper;
+    private final ClientRepository clientRepository;
+    private final ClientMapper clientMapper;
     private final JwtService jwtService;
     private final TokenRepository tokenRepository;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final CustomUserDetailsService customUserDetailsService;
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, JwtService jwtService, TokenRepository tokenRepository
+    public ClientServiceImpl(ClientRepository clientRepository, ClientMapper clientMapper, JwtService jwtService, TokenRepository tokenRepository
     , AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, CustomUserDetailsService customUserDetailsService){
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
+        this.clientRepository = clientRepository;
+        this.clientMapper = clientMapper;
         this.jwtService = jwtService;
         this.tokenRepository = tokenRepository;
         this.authenticationManager = authenticationManager;
@@ -40,9 +41,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthenticationResponseDto add(UserCreateDto userCreateDto) {
-        User user = userMapper.userCreateDtoToUser(userCreateDto);
-        userRepository.save(user);
+    public AuthenticationResponseDto add(ClientCreateDto clientCreateDto) {
+        Client user = clientMapper.clientCreateDtoToClient(clientCreateDto);
+        clientRepository.save(user);
 
         String jwtToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
@@ -56,20 +57,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthenticationResponseDto authenticate(UserLoginDto userLoginDto) {
-        customUserDetailsService.setUserType("USER");
+    public AuthenticationResponseDto authenticate(AuthLoginDto authLoginDto) {
+        customUserDetailsService.setUserType("CLIENT");
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        userLoginDto.getUsername(),
-                        userLoginDto.getPassword()
+                        authLoginDto.getUsername(),
+                        authLoginDto.getPassword()
                 )
         );
 
-        User user = userRepository.findUserByUsername(userLoginDto.getUsername()).orElseThrow();
-
-        if (!passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword())){
-            return null;
-        }
+        Client user = clientRepository.findClientByUsername(authLoginDto.getUsername()).orElseThrow();
 
         String jwtToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
@@ -83,8 +80,8 @@ public class UserServiceImpl implements UserService {
         return authenticationResponseDto;
     }
 
-    private void revokeAllUserTokens(User user) { // TODO: transfer to JWT class
-        var validUserTokens = tokenRepository.findAllValidTokenByUserDetails(user);
+    private void revokeAllUserTokens(Client user) { // TODO: transfer to JWT class
+        var validUserTokens = tokenRepository.findAllValidTokenByUsersDetails(user);
         if (validUserTokens.isEmpty())
             return;
         validUserTokens.forEach(token -> {
@@ -94,18 +91,18 @@ public class UserServiceImpl implements UserService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-    private void saveUserToken(User user, String jwt){ // TODO: transfer to JWT class
+    private void saveUserToken(Client user, String jwt){ // TODO: transfer to JWT class
         Token token = new Token();
         token.setToken(jwt);
-        token.setUserDetails(user);
+        token.setUsersDetails(user);
         token.setExpired(false);
         token.setRevoked(false);
         tokenRepository.save(token);
     }
 
     @Override
-    public User findUsername(String username) {
-        return userRepository.findUserByUsername(username).orElse(null);
+    public Client findUsername(String username) {
+        return clientRepository.findClientByUsername(username).orElse(null);
     }
 
     @Override
@@ -119,13 +116,13 @@ public class UserServiceImpl implements UserService {
         username = jwtService.extractUsername(refreshToken);
 
         if (username != null) {
-            User user = userRepository.findUserByUsername(username)
+            Client user = clientRepository.findClientByUsername(username)
                     .orElseThrow();
 
             boolean check = true;
             boolean exist = false;
 
-            List<Token> allTokens = tokenRepository.findAllValidTokenByUserDetails(user);
+            List<Token> allTokens = tokenRepository.findAllValidTokenByUsersDetails(user);
             Token update = null;
             for(Token t : allTokens){
                 if (t.token.equals(refreshToken)) {
@@ -157,25 +154,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getMe(String authorization) {
+    public ClientDto getMe(String authorization) {
         String token = authorization.substring(7);
-        Optional<User> user = userRepository.findUserByUsername(jwtService.extractUsername(token));
-        if(user.isEmpty()) return null;
-        return userMapper.userToUserDto(user.get());
+        Optional<Client> user = clientRepository.findClientByUsername(jwtService.extractUsername(token));
+        if(user.isEmpty()) throw new NotFoundException("Client not found");
+        return clientMapper.clientToClientDto(user.get());
     }
 
     @Override
-    public UserDto edit(String authorization, UserEditDto userEditDto) {
+    public ClientDto edit(String authorization, ClientEditDto clientEditDto) {
         String token = authorization.substring(7);
-        Optional<User> user = userRepository.findUserByUsername(jwtService.extractUsername(token));
-        if(user.isEmpty()) return null;
+        Optional<Client> user = clientRepository.findClientByUsername(jwtService.extractUsername(token));
+        if(user.isEmpty()) throw new NotFoundException("Client not found");
 
-        User userNew = user.get();
-        userNew.setEmail(userEditDto.getEmail());
-        userNew.setName(userEditDto.getName());
-        userNew.setLastName(userEditDto.getLastName());
-        userNew.setDateBirth(userEditDto.getDateBirth());
-        userRepository.save(userNew);
-        return userMapper.userToUserDto(userNew);
+        Client userNew = user.get();
+        userNew.setEmail(clientEditDto.getEmail());
+        userNew.setName(clientEditDto.getName());
+        userNew.setLastName(clientEditDto.getLastName());
+        userNew.setDateBirth(clientEditDto.getDateBirth());
+        clientRepository.save(userNew);
+        return clientMapper.clientToClientDto(userNew);
     }
 }

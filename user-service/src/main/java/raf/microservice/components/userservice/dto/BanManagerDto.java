@@ -1,7 +1,5 @@
 package raf.microservice.components.userservice.dto;
 
-import raf.microservice.components.userservice.model.Manager;
-
 public class BanManagerDto {
 
     private ManagerDto manager;

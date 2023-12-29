@@ -1,18 +1,15 @@
 package raf.microservice.components.userservice.dto;
 
-import org.springframework.security.core.userdetails.UserDetails;
-import raf.microservice.components.userservice.model.User;
-
 public class BanUserDto {
-    UserDto user;
+    ClientDto user;
 
     boolean banned;
 
-    public UserDto getUser() {
+    public ClientDto getUser() {
         return user;
     }
 
-    public void setUser(UserDto user) {
+    public void setUser(ClientDto user) {
         this.user = user;
     }
 

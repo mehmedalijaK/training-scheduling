@@ -8,10 +8,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import raf.microservice.components.userservice.dto.ManagerCreateDto;
-import raf.microservice.components.userservice.dto.UserCreateDto;
-import raf.microservice.components.userservice.model.User;
+import raf.microservice.components.userservice.dto.ClientCreateDto;
 import raf.microservice.components.userservice.service.ManagerService;
-import raf.microservice.components.userservice.service.UserService;
+import raf.microservice.components.userservice.service.ClientService;
 
 import java.lang.reflect.Method;
 
@@ -19,11 +18,11 @@ import java.lang.reflect.Method;
 @Configuration
 public class CheckExistsAspect {
 
-    private UserService userService;
+    private ClientService clientService;
     private ManagerService managerService;
 
-    public CheckExistsAspect(UserService userService, ManagerService managerService){
-        this.userService = userService;
+    public CheckExistsAspect(ClientService clientService, ManagerService managerService){
+        this.clientService = clientService;
         this.managerService = managerService;
     }
 
@@ -35,11 +34,11 @@ public class CheckExistsAspect {
         String username = null;
 
         for (int i = 0; i < methodSignature.getParameterNames().length; i++) {
-            if (methodSignature.getParameterNames()[i].equals("userCreateDto") ||
+            if (methodSignature.getParameterNames()[i].equals("clientCreateDto") ||
                     methodSignature.getParameterNames()[i].equals("managerCreateDto")) {
-                if (joinPoint.getArgs()[i] instanceof UserCreateDto){
-                    username =  ((UserCreateDto)joinPoint.getArgs()[i]).getUsername();
-                    if(userService.findUsername(username)!=null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                if (joinPoint.getArgs()[i] instanceof ClientCreateDto){
+                    username =  ((ClientCreateDto)joinPoint.getArgs()[i]).getUsername();
+                    if(clientService.findUsername(username)!=null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
 
 

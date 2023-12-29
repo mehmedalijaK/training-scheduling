@@ -2,18 +2,18 @@ package raf.microservice.components.userservice.service.impl;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raf.microservice.components.userservice.dto.*;
+import raf.microservice.components.userservice.exceptions.NotFoundException;
 import raf.microservice.components.userservice.mapper.AdminMapper;
 import raf.microservice.components.userservice.mapper.ManagerMapper;
-import raf.microservice.components.userservice.mapper.UserMapper;
+import raf.microservice.components.userservice.mapper.ClientMapper;
 import raf.microservice.components.userservice.model.Admin;
+import raf.microservice.components.userservice.model.Client;
 import raf.microservice.components.userservice.model.Manager;
 import raf.microservice.components.userservice.model.Token;
-import raf.microservice.components.userservice.model.User;
 import raf.microservice.components.userservice.repository.*;
 import raf.microservice.components.userservice.service.AdminService;
 import raf.microservice.components.userservice.service.JwtService;
@@ -32,17 +32,17 @@ public class AdminServiceImpl implements AdminService {
     private final PasswordEncoder passwordEncoder;
     private final CustomUserDetailsService customUserDetailsService;
     private final AdminMapper adminMapper;
-    private final UserRepository userRepository;
+    private final ClientRepository clientRepository;
     private final RoleRepository roleRepository;
-    private final UserMapper userMapper;
+    private final ClientMapper clientMapper;
     private final ManagerRepository managerRepository;
     private final ManagerMapper managerMapper;
 
     public AdminServiceImpl(JwtService jwtService, TokenRepository tokenRepository,
                             AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder,
                             CustomUserDetailsService customUserDetailsService, AdminRepository adminRepository,
-                            AdminMapper adminMapper, UserRepository userRepository, RoleRepository roleRepository,
-                            UserMapper userMapper, ManagerRepository managerRepository, ManagerMapper managerMapper) {
+                            AdminMapper adminMapper, ClientRepository clientRepository, RoleRepository roleRepository,
+                            ClientMapper clientMapper, ManagerRepository managerRepository, ManagerMapper managerMapper) {
         this.jwtService = jwtService;
         this.tokenRepository = tokenRepository;
         this.authenticationManager = authenticationManager;
@@ -50,27 +50,24 @@ public class AdminServiceImpl implements AdminService {
         this.customUserDetailsService = customUserDetailsService;
         this.adminRepository = adminRepository;
         this.adminMapper = adminMapper;
-        this.userRepository = userRepository;
+        this.clientRepository = clientRepository;
         this.roleRepository = roleRepository;
-        this.userMapper = userMapper;
+        this.clientMapper = clientMapper;
         this.managerRepository = managerRepository;
         this.managerMapper = managerMapper;
     }
 
     @Override
-    public AuthenticationResponseDto authenticate(AdminLoginDto adminLoginDto) {
+    public AuthenticationResponseDto authenticate(AuthLoginDto authLoginDto) throws NotFoundException {
         customUserDetailsService.setUserType("ADMIN");
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        adminLoginDto.getUsername(),
-                        adminLoginDto.getPassword()
+                        authLoginDto.getUsername(),
+                        authLoginDto.getPassword()
                 )
         );
-        Admin admin = adminRepository.findAdminByUsername(adminLoginDto.getUsername()).orElseThrow();
 
-        if (!passwordEncoder.matches(adminLoginDto.getPassword(), admin.getPassword())){
-            return null;
-        }
+        Admin admin = adminRepository.findAdminByUsername(authLoginDto.getUsername()).orElseThrow();
 
         String jwtToken = jwtService.generateToken(admin);
         String refreshToken = jwtService.generateRefreshToken(admin);
@@ -101,7 +98,7 @@ public class AdminServiceImpl implements AdminService {
             boolean check = true;
             boolean exist = false;
 
-            List<Token> allTokens = tokenRepository.findAllValidTokenByUserDetails(admin);
+            List<Token> allTokens = tokenRepository.findAllValidTokenByUsersDetails(admin);
             Token update = null;
             for(Token t : allTokens){
                 if (t.token.equals(refreshToken)) {
@@ -136,7 +133,7 @@ public class AdminServiceImpl implements AdminService {
     public AdminDto getMe(String authorization) {
         String token = authorization.substring(7);
         Optional<Admin> admin = adminRepository.findAdminByUsername(jwtService.extractUsername(token));
-        if(admin.isEmpty()) return null;
+        if(admin.isEmpty()) throw new NotFoundException("Admin not found");
         return adminMapper.adminToAdminDto(admin.get());
     }
 
@@ -144,7 +141,7 @@ public class AdminServiceImpl implements AdminService {
     public AdminDto edit(String authorization, AdminEditDto adminEditDto) {
         String token = authorization.substring(7);
         Optional<Admin> admin = adminRepository.findAdminByUsername(jwtService.extractUsername(token));
-        if(admin.isEmpty()) return null;
+        if(admin.isEmpty()) throw new NotFoundException("Admin not found");
 
         Admin adminNew = admin.get();
         adminNew.setEmail(adminEditDto.getEmail());
@@ -156,19 +153,19 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public BanUserDto banUser(Long id) {
-        Optional<User> user = userRepository.findById(id);
+    public BanUserDto banUser(Long id) throws NotFoundException{
+        Optional<Client> user = clientRepository.findById(id);
 
         if(user.isEmpty())
-            return null; //throw exception
+            throw new NotFoundException("Client not found");
 
-        User userP = user.get();
+        Client userP = user.get();
         userP.setRole(roleRepository.findRoleByName("ROLE_BANNED").get());
 
-        userRepository.save(userP);
+        clientRepository.save(userP);
         BanUserDto banUserDto = new BanUserDto();
 
-        banUserDto.setUser(userMapper.userToUserDto(userP));
+        banUserDto.setUser(clientMapper.clientToClientDto(userP));
         banUserDto.setBanned(true);
 
         return banUserDto;
@@ -179,7 +176,7 @@ public class AdminServiceImpl implements AdminService {
         Optional<Manager> manager = managerRepository.findById(id);
 
         if(manager.isEmpty())
-            return null; //throw exception
+            throw new NotFoundException("Manager not found");
 
         Manager managerP = manager.get();
         managerP.setRole(roleRepository.findRoleByName("ROLE_BANNED").get());
@@ -195,18 +192,18 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public BanUserDto unbanUser(Long id) {
-        Optional<User> user = userRepository.findById(id);
+        Optional<Client> user = clientRepository.findById(id);
 
         if(user.isEmpty())
-            return null; //throw exception
+            throw new NotFoundException("Client not found");
 
-        User userP = user.get();
-        userP.setRole(roleRepository.findRoleByName("ROLE_USER").get());
+        Client userP = user.get();
+        userP.setRole(roleRepository.findRoleByName("ROLE_CLIENT").get());
 
-        userRepository.save(userP);
+        clientRepository.save(userP);
         BanUserDto banUserDto = new BanUserDto();
 
-        banUserDto.setUser(userMapper.userToUserDto(userP));
+        banUserDto.setUser(clientMapper.clientToClientDto(userP));
         banUserDto.setBanned(false);
 
         return banUserDto;
@@ -217,7 +214,7 @@ public class AdminServiceImpl implements AdminService {
         Optional<Manager> manager = managerRepository.findById(id);
 
         if(manager.isEmpty())
-            return null; //throw exception
+            throw new NotFoundException("Manager not found");
 
         Manager managerP = manager.get();
         managerP.setRole(roleRepository.findRoleByName("ROLE_MANAGER").get());
@@ -232,7 +229,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private void revokeAllUserTokens(Admin admin) {
-        var validUserTokens = tokenRepository.findAllValidTokenByUserDetails(admin);
+        var validUserTokens = tokenRepository.findAllValidTokenByUsersDetails(admin);
         if (validUserTokens.isEmpty())
             return;
         validUserTokens.forEach(token -> {
@@ -245,7 +242,7 @@ public class AdminServiceImpl implements AdminService {
     private void saveUserToken(Admin admin, String jwt){
         Token token = new Token();
         token.setToken(jwt);
-        token.setUserDetails(admin);
+        token.setUsersDetails(admin);
         token.setExpired(false);
         token.setRevoked(false);
         tokenRepository.save(token);

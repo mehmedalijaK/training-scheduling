@@ -50,7 +50,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwt = authHeader.substring(7);
         final String username = jwtService.extractUsername(jwt);
         final Claims role = jwtService.extractAllClaims(jwt);
-
         Object o = role.get("role");
         customUserDetailsService.setUserType((((LinkedHashMap<?, ?>)((ArrayList<?>)o).get(0)).
                 get("authority").toString().substring(5)));

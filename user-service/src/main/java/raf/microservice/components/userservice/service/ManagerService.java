@@ -6,7 +6,7 @@ import raf.microservice.components.userservice.model.Manager;
 public interface ManagerService {
     AuthenticationResponseDto add(ManagerCreateDto managerCreateDto);
     Manager findUsername(String username);
-    AuthenticationResponseDto authenticate(ManagerLoginDto managerLoginDto);
+    AuthenticationResponseDto authenticate(AuthLoginDto authLoginDto);
 
     ManagerDto getMe(String authorization);
 

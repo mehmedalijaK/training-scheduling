@@ -10,7 +10,6 @@ public class AdminDto {
     private String name;
     private String lastName;
 
-
     public String getUsername() {
         return username;
     }

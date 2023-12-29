@@ -20,8 +20,8 @@ public class AdminController {
 
     @ApiOperation(value = "Login admin")
     @PostMapping("/login")  //  TODO: SHOULD SEND AN EMAIL THAT SOMEONE JUST LOGGED IN ACCOUNT
-    public ResponseEntity<AuthenticationResponseDto> authenticate(@RequestBody @Valid AdminLoginDto adminLoginDto){
-        return new ResponseEntity<>(adminService.authenticate(adminLoginDto), HttpStatus.OK);
+    public ResponseEntity<AuthenticationResponseDto> authenticate(@RequestBody @Valid AuthLoginDto authLoginDto){
+        return new ResponseEntity<>(adminService.authenticate(authLoginDto), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Refresh token")

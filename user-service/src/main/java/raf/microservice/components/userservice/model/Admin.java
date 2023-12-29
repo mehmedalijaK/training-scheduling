@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "admins")
-public class Admin extends TokenUsers implements UserDetails{
+public class Admin extends Users implements UserDetails{
 
     @Column(name = "username", nullable = false)
     private String username;
@@ -36,7 +36,6 @@ public class Admin extends TokenUsers implements UserDetails{
 
     public Admin(long id, String username, String password, String email, LocalDate dateBirth, String name, String lastName,
     Role role) {
-        super(id);
         this.username = username;
         this.password = password;
         this.email = email;

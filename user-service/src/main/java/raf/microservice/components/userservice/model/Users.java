@@ -4,14 +4,14 @@ import jakarta.persistence.*;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class TokenUsers {
+public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    public TokenUsers(){}
+    public Users(){}
 
-    public TokenUsers(Long id) {
+    public Users(Long id) {
         this.id = id;
     }
 
@@ -22,4 +22,5 @@ public class TokenUsers {
     public void setId(Long id) {
         this.id = id;
     }
+
 }

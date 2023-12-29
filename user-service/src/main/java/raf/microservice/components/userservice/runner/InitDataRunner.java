@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 import raf.microservice.components.userservice.model.Admin;
 import raf.microservice.components.userservice.model.Role;
 import raf.microservice.components.userservice.repository.AdminRepository;
+import raf.microservice.components.userservice.repository.ClientRepository;
 import raf.microservice.components.userservice.repository.ManagerRepository;
 import raf.microservice.components.userservice.repository.RoleRepository;
-import raf.microservice.components.userservice.repository.UserRepository;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -18,17 +18,17 @@ import java.time.Month;
 @Component
 public class InitDataRunner implements CommandLineRunner {
 
-    private RoleRepository roleRepository;
-    private UserRepository userRepository;
-    private AdminRepository adminRepository;
+    private final RoleRepository roleRepository;
+    private ClientRepository clientRepository;
+    private final AdminRepository adminRepository;
     private ManagerRepository managerRepository;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public InitDataRunner(RoleRepository roleRepository, UserRepository userRepository,
+    public InitDataRunner(RoleRepository roleRepository, ClientRepository clientRepository,
                           AdminRepository adminRepository, ManagerRepository managerRepository,
                           PasswordEncoder passwordEncoder) {
         this.roleRepository = roleRepository;
-        this.userRepository = userRepository;
+        this.clientRepository = clientRepository;
         this.adminRepository = adminRepository;
         this.managerRepository = managerRepository;
         this.passwordEncoder = passwordEncoder;
@@ -36,7 +36,7 @@ public class InitDataRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Role roleUser = new Role("ROLE_USER", "User role");
+        Role roleUser = new Role("ROLE_CLIENT", "Client role");
         Role roleAdmin = new Role("ROLE_ADMIN", "Admin role");
         Role roleManager = new Role("ROLE_MANAGER", "Manager role");
         Role roleBanned = new Role("ROLE_BANNED", "Banned role");
