@@ -11,7 +11,7 @@ import raf.microservice.scheduletraining.security.service.TokenService;
 @Service
 public class TokenServiceImpl implements TokenService {
 
-    @Value("${oauth.jwt.secret}")
+    @Value("${jwt.secret.key}")
     private String jwtSecret;
 
     @Override

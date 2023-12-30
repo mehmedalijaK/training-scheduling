@@ -2,11 +2,13 @@ package raf.microservice.scheduletraining.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "training")
 @NoArgsConstructor
+@Data
 public class Training {
 
     @Id

@@ -26,4 +26,17 @@ public class GymMapper {
         gym.setTrainingDuration(gymDto.getTrainingDuration());
         return gym;
     }
+
+    public Gym updateGym(Gym gym,GymDto gymDto){
+        if(gymDto.getName() != null)
+            gym.setGymName(gymDto.getName());
+        if(gymDto.getShortDescription() != null)
+            gym.setShortDescription(gymDto.getShortDescription());
+        if(gymDto.getNumberOfCoaches() > 0)
+            gym.setNumberOfCoaches(gymDto.getNumberOfCoaches());
+        if(gymDto.getTrainingDuration() >0)
+            gym.setTrainingDuration(gymDto.getTrainingDuration());
+        return gym;
+
+    }
 }

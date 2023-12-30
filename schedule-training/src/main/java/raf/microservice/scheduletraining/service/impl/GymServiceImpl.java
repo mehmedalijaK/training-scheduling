@@ -11,8 +11,9 @@ import raf.microservice.scheduletraining.mapper.GymMapper;
 import raf.microservice.scheduletraining.repository.GymRepository;
 import raf.microservice.scheduletraining.service.GymService;
 
+import java.util.List;
+
 @AllArgsConstructor
-@NoArgsConstructor
 @Service
 public class GymServiceImpl implements GymService {
     private GymRepository gymRepository;
@@ -27,8 +28,11 @@ public class GymServiceImpl implements GymService {
     }
 
     @Override
-    public GymDto updateById(Long gymId, GymDto gymDto) {
-        Gym gym = gymMapper.gymDtoToGym(gymDto);
+    public GymDto updateById(Long gymId,GymDto gymDto) {
+       Gym gym = gymRepository.findById(gymId).orElseThrow(() ->
+               new RuntimeException(String.format
+                       ("Gym with id: %d does not exists.", gymId)));
+        gym = gymMapper.updateGym (gym,gymDto);
         gymRepository.save(gym);
         return gymMapper.gymToGymDto(gym);
     }
@@ -44,8 +48,8 @@ public class GymServiceImpl implements GymService {
     }
 
     @Override
-    public Page<GymDto> findAll(Pageable pageable) {
-        return gymRepository.findAll(pageable).map(gymMapper::gymToGymDto);
+    public List<GymDto> findAll() {
+        return gymRepository.findAll().stream().map(gymMapper::gymToGymDto).toList();
     }
 
     @Override

@@ -22,7 +22,7 @@ public class Gym {
     @Positive
     private int numberOfCoaches;
     @Divides24
-    private int trainingDuration = 1;//in hours
+    private int trainingDuration = 6;//in hours
 
 
 

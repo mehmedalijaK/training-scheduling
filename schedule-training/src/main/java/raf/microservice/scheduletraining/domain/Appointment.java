@@ -24,5 +24,6 @@ public class Appointment {
     @ManyToOne
     @NotNull
     private Training training;
+    private boolean canceled = false;
 
 }

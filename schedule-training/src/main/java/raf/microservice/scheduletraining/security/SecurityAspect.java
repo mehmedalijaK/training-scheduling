@@ -18,7 +18,7 @@ import raf.microservice.scheduletraining.security.service.TokenService;
 @Configuration
 public class SecurityAspect {
 
-    @Value("${oauth.jwt.secret}")
+    @Value("${jwt.secret.key}")
     private String jwtSecret;
 
     private TokenService tokenService;
@@ -53,7 +53,8 @@ public class SecurityAspect {
 
         CheckSecurity checkSecurity = method.getAnnotation(CheckSecurity.class);
         String role = claims.get("role", String.class);
-        if (Arrays.asList(checkSecurity.roles()).contains(role)) {
+
+        if (checkSecurity.roles().length == 0 || Arrays.asList(checkSecurity.roles()).contains(role)) {
             return joinPoint.proceed();
         }
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
