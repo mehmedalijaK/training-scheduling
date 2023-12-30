@@ -17,6 +17,8 @@ public class NotificationMapper {
         notificationDto.setTypeName(notification.getType().getName());
         notificationDto.setMessage(notification.getMessage());
         notificationDto.setMailReceiver(notification.getMailReceiver());
+        notificationDto.setUsername(notification.getUsername());
+        notificationDto.setDateSent(notification.getDateSent());
         return notificationDto;
     }
 

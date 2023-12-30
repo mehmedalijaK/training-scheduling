@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "notifications")
 @Getter
@@ -22,6 +25,12 @@ public class Notification {
 
     @Column(name = "message", nullable = false)
     private String message;
+
+    @Column(name = "username", nullable = false)
+    private String username;
+
+    @Column(name = "date_sent", nullable = false)
+    private LocalDateTime dateSent;
 
     public Notification(){}
 

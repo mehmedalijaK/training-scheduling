@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class NotificationDto {
@@ -17,4 +20,9 @@ public class NotificationDto {
     @JsonProperty("message")
     private String message;
 
+    @JsonProperty("username")
+    private String username;
+
+    @JsonProperty("date_sent")
+    private LocalDateTime dateSent;
 }

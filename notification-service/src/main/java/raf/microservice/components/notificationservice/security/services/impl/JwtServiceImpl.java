@@ -75,6 +75,11 @@ public class JwtServiceImpl implements JwtService {
         return extractExpiration(token).before(new Date());
     }
 
+    @Override
+    public String extractUsername(String jwt) {
+        return extractClaim(jwt, Claims::getSubject);
+    }
+
     private Key getSignInKey(){
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);

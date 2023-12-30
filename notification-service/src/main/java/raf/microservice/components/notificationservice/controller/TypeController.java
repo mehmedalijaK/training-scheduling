@@ -10,7 +10,7 @@ import raf.microservice.components.notificationservice.dto.TypeDto;
 import raf.microservice.components.notificationservice.service.TypeService;
 
 @RestController
-@RequestMapping("/types")
+@RequestMapping("/type")
 public class TypeController {
 
     private final TypeService typeService;
