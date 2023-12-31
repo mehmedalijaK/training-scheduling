@@ -33,8 +33,14 @@ public class AppointmentServiceImpl implements AppointmentService {
     public AppointmentDto add(AppointmentDto apDTO) {
         Appointment appointment = appointmentMapper.appointmentDtoToAppointment(apDTO);
         if(appointment.getScheduledTime().isAfter(LocalDateTime.now().plusWeeks(2)))
-            return null; //todo: vrati nesto drugo
+            throw new IllegalArgumentException("You can't schedule that much earlier!");
+        if(appointmentRepository.findAppointmentByTimeAndGym(appointment.getScheduledTime(),appointment.getTraining().getGym()) != null)
+            throw new IllegalArgumentException("You can't schedule taken appointment!");
+        int discount = appointmentRepository.countClientDiscount(appointment.getClientId());
+        if (discount % appointment.getTraining().getGym().getDiscountAfter() == 0)
+            appointment.getTraining().setPrice(0);
         appointmentRepository.save(appointment);
+        //todo: posalji mejl
         return appointmentMapper.appointmentToAppointmentDto(appointment);
     }
 
@@ -91,11 +97,14 @@ public class AppointmentServiceImpl implements AppointmentService {
                 for(int i = 0; i< 24 ; i+=duration){
                     Appointment tmp;
                     ldt = ldt.plusHours(duration);
+
                     if((tmp = appointmentRepository.findAppointmentByTimeAndGym(ldt, gym)) != null){
                         if(tmp.getTraining().getSport().isIndividual())
                             continue;
+
                         if(appointmentRepository.findAppointmentsByGroupTraining(ldt,gym) == 12)
                             continue;
+
                         if(!now.plusDays(1).isBefore(tmp.getScheduledTime()) &&
                                 !tmp.getTraining().getSport().isIndividual() &&
                                 appointmentRepository.findAppointmentsByGroupTraining(tmp.getScheduledTime(),tmp.getTraining().getGym())<3)
@@ -106,7 +115,6 @@ public class AppointmentServiceImpl implements AppointmentService {
                     FreeAppointmentDto dto = appointmentMapper.makeAppointmentDto(gym, ldt);
                     free.add(dto);
                 }
-
             }
             ldt = now;
         }
@@ -141,6 +149,13 @@ public class AppointmentServiceImpl implements AppointmentService {
             dtList.add(appointmentMapper.appointmentToAppointmentDto(a));
         }
         return dtList;
+    }
+
+    @Override
+    public void cancelForManager(Long id) {
+        Appointment a = appointmentRepository.findById(id).orElseThrow();
+        a.setCanceled(true);
+        appointmentRepository.save(a);
     }
 
     @Override

@@ -24,12 +24,13 @@ public class GymController {
     }
 
     @GetMapping
+    @CheckSecurity
     public ResponseEntity<List<GymDto>> findAll(@RequestHeader("Authorization") String authorization, Pageable pageable) {
         return new ResponseEntity<>(gymService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    @CheckSecurity(roles = {"ROLE_USER", "ROLE_ADMIN"})
+    @CheckSecurity
     public ResponseEntity<GymDto> findById(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id) {
         return new ResponseEntity<>(gymService.findById(id), HttpStatus.OK);
     }

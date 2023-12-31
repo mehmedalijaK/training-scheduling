@@ -1,6 +1,7 @@
 package raf.microservice.scheduletraining.mapper;
 
 import jakarta.persistence.Column;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import raf.microservice.scheduletraining.domain.Appointment;
 import raf.microservice.scheduletraining.domain.Gym;
@@ -8,14 +9,20 @@ import raf.microservice.scheduletraining.domain.Sport;
 import raf.microservice.scheduletraining.domain.Training;
 import raf.microservice.scheduletraining.dto.AppointmentDto;
 import raf.microservice.scheduletraining.dto.FreeAppointmentDto;
+import raf.microservice.scheduletraining.repository.GymRepository;
+import raf.microservice.scheduletraining.repository.SportRepository;
+import raf.microservice.scheduletraining.repository.TrainingRepository;
 
 import java.time.LocalDateTime;
 
 @Component
+@AllArgsConstructor
 public class AppointmentMapper {
+    GymRepository gymRepository;
+    SportRepository sportRepository;
+    TrainingRepository trainingRepository;
     public AppointmentDto appointmentToAppointmentDto(Appointment appointment) {
         AppointmentDto appointmentDto = new AppointmentDto();
-        // gymDto.setId(gym.getId());
         appointmentDto.setClientId(appointment.getClientId());
         appointmentDto.setIndividual(appointment.getTraining().getSport().isIndividual());
         appointmentDto.setPrice(appointment.getTraining().getPrice());
@@ -32,36 +39,31 @@ public class AppointmentMapper {
         //gym.setId(gymDto.getId());
         appointment.setClientId(appointmentDto.getClientId());
         appointment.setScheduledTime(appointmentDto.getScheduledTime());
-        Training training = new Training();
-        Sport s = new Sport();
-        Gym g = new Gym();
-        g.setGymName(appointmentDto.getGymName());
-        g.setTrainingDuration(appointmentDto.getTrainingDuration());
-        g.setShortDescription(appointmentDto.getShortDescription());
-        s.setIndividual(appointmentDto.isIndividual());
-        s.setSportName(appointmentDto.getSportName());
-        training.setGym(g);
-        training.setSport(s);
-        training.setPrice(appointmentDto.getPrice());
+
+        Sport s = sportRepository.findBySportName(appointmentDto.getSportName());
+        Gym g = gymRepository.findByGymName(appointmentDto.getGymName());
+
+        if(g == null || s == null)throw new IllegalArgumentException("Wrong");
+
+        Training training = trainingRepository.findTraining(g,s);
+
+        if(training == null)throw new IllegalArgumentException("Wrong");
+
         appointment.setTraining(training);
+
         return appointment;
     }
 
     public Appointment updateAppo(Appointment appointment, AppointmentDto appointmentDto){
-       if(appointmentDto.getClientId() > -1)
+        if(appointmentDto.getSportName() != null || appointmentDto.getPrice()>-1
+                || appointmentDto.getShortDescription() != null
+                || appointmentDto.getTrainingDuration() >0
+                || appointmentDto.getGymName() != null)
+            throw new IllegalArgumentException("Cannot change non-appointment properties");
+        if(appointmentDto.getClientId() != null)
            appointment.setClientId(appointmentDto.getClientId());
        if(appointmentDto.getScheduledTime() != null)
            appointment.setScheduledTime(appointmentDto.getScheduledTime());
-       if(appointmentDto.getSportName() != null)
-           appointment.getTraining().getSport().setSportName(appointmentDto.getSportName());
-       if(appointmentDto.getPrice()>-1)
-           appointment.getTraining().setPrice(appointmentDto.getPrice());
-       if(appointmentDto.getShortDescription() != null)
-           appointment.getTraining().getGym().setShortDescription(appointmentDto.getShortDescription());
-       if(appointmentDto.getTrainingDuration() >0)
-           appointment.getTraining().getGym().setTrainingDuration(appointmentDto.getTrainingDuration());
-       if(appointmentDto.getGymName() != null)
-           appointment.getTraining().getGym().setGymName(appointmentDto.getGymName());
 
         return appointment;
     }

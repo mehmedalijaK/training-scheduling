@@ -40,7 +40,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/{id}")
-    @CheckSecurity(roles = {"ROLE_USER", "ROLE_ADMIN"})
+    @CheckSecurity
     public ResponseEntity<AppointmentDto> findById(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id) {
         return new ResponseEntity<>(appointmentService.findById(id), HttpStatus.OK);
     }
@@ -61,20 +61,26 @@ public class AppointmentController {
     }
 
     @PostMapping
-    @CheckSecurity(roles = {"ROLE_ADMIN"})
+    @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_CLIENT"})
     public ResponseEntity<AppointmentDto> add(@RequestHeader("Authorization") String authorization, @RequestBody @Valid AppointmentDto appointmentDto) {
         return new ResponseEntity<>(appointmentService.add(appointmentDto), HttpStatus.CREATED);
     }
     @PostMapping("/{id}")
-    @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_MANAGER"})
+    @CheckSecurity(roles = "ROLE_ADMIN")
     public ResponseEntity<AppointmentDto> updateById(@RequestHeader("Authorization") String authorization, @RequestBody @Valid AppointmentDto appointmentDto,  @PathVariable String id) {
         return new ResponseEntity<>(appointmentService.updateById(Long.valueOf(id),appointmentDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    @CheckSecurity(roles = {"ROLE_ADMIN"})
+    @CheckSecurity(roles = {"ROLE_ADMIN","ROLE_CLIENT"})
     public ResponseEntity<?> delete(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id) {
         appointmentService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @DeleteMapping("/delete/{id}")
+    @CheckSecurity(roles = {"ROLE_ADMIN","ROLE_CLIENT"})
+    public ResponseEntity<?> deleteForManager(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id) {
+        appointmentService.cancelForManager(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

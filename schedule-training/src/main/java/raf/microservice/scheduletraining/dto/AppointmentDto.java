@@ -9,15 +9,12 @@ import raf.microservice.scheduletraining.security.Divides24;
 import java.time.LocalDateTime;
 @Data
 public class AppointmentDto {
-    @NotNull
     private LocalDateTime scheduledTime;
     private String sportName;
     private boolean individual;
     private String gymName;
     private String shortDescription;
-    @Divides24
     private int trainingDuration;
-    @PositiveOrZero
-    private int price;
+    private int price = -1;
     private Long clientId;
 }
