@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raf.microservice.components.notificationservice.dto.FilterDto;
 import raf.microservice.components.notificationservice.dto.NotificationDto;
+import raf.microservice.components.notificationservice.exceptions.NotFoundException;
 import raf.microservice.components.notificationservice.mapper.NotificationMapper;
 import raf.microservice.components.notificationservice.model.Notification;
 import raf.microservice.components.notificationservice.model.Type;
@@ -49,7 +50,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         Page<Notification> notificationList = notificationRepository.findNotificationByUsername(jwtService.extractUsername(token), pageable);
 
-        if(notificationList.isEmpty()) return null;
+        if(notificationList.isEmpty()) throw new NotFoundException("Notification not found");
 
         List<NotificationDto> notificationDtoList = notificationList
                 .stream()
@@ -77,7 +78,7 @@ public class NotificationServiceImpl implements NotificationService {
                 type, filterDto.getEmail(), filterDto.getDateFrom(), filterDto.getDateTo(), pageable);
 
 
-        if(notificationList.isEmpty()) return null;
+        if(notificationList.isEmpty())  throw new NotFoundException("Notification list not found");
 
         List<NotificationDto> notificationDtoList = notificationList
                 .stream()

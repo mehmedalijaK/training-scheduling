@@ -5,6 +5,7 @@ import jakarta.jms.Message;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 import raf.microservice.components.notificationservice.dto.TransferDto;
+import raf.microservice.components.notificationservice.exceptions.NotFoundException;
 import raf.microservice.components.notificationservice.listener.helper.MessageHelper;
 import raf.microservice.components.notificationservice.model.Notification;
 import raf.microservice.components.notificationservice.model.Type;
@@ -38,7 +39,7 @@ public class EmailListener {
 
         Optional<Type> type = typeRepository.findTypeByName(transferDto.getTypeName());
 
-        if(type.isEmpty()) return;
+        if(type.isEmpty()) throw new NotFoundException("Type not found");
 
         String messageToSend = type.get().getFormat();
 

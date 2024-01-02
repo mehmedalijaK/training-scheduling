@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raf.microservice.components.notificationservice.dto.TypeDto;
+import raf.microservice.components.notificationservice.exceptions.NotFoundException;
 import raf.microservice.components.notificationservice.mapper.TypeMapper;
 import raf.microservice.components.notificationservice.model.Type;
 import raf.microservice.components.notificationservice.repository.TypeRepository;
@@ -35,7 +36,7 @@ public class TypeServiceImpl implements TypeService {
     @Override
     public TypeDto editType(Long id, TypeDto typeDto) {
         Optional<Type> type = typeRepository.findById(id);
-        if(type.isEmpty()) return null; //exception
+        if(type.isEmpty()) throw new NotFoundException("Type not found"); //exception
 
         Type myType = type.get();
         myType.setFormat(typeDto.getFormat());
