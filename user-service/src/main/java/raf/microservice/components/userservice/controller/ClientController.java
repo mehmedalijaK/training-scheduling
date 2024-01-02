@@ -27,14 +27,12 @@ public class ClientController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-
     @ApiOperation(value = "Verify user")
-    @PostMapping("/verify/{id}")
+    @GetMapping("/verify/{id}")
     public ResponseEntity<Void> findById(@PathVariable("id") String id) {
         clientService.verify(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
     @ApiOperation(value = "Login user")
     @PostMapping("/login")  //  TODO: SHOULD SEND AN EMAIL THAT SOMEONE JUST LOGGED IN ACCOUNT

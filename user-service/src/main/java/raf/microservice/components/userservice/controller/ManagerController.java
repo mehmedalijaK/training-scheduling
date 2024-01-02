@@ -27,7 +27,7 @@ public class ManagerController {
     }
 
     @ApiOperation(value = "Verify manager")
-    @PostMapping("/verify/{id}")
+    @GetMapping("/verify/{id}")
     public ResponseEntity<Void> findById(@PathVariable("id") String id) {
         managerService.verify(id);
         return new ResponseEntity<>(HttpStatus.OK);

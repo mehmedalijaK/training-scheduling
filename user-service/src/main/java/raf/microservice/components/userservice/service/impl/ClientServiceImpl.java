@@ -1,5 +1,7 @@
 package raf.microservice.components.userservice.service.impl;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raf.microservice.components.userservice.dto.*;
 import raf.microservice.components.userservice.exceptions.NotFoundException;
+import raf.microservice.components.userservice.listener.MessageHelper;
 import raf.microservice.components.userservice.mapper.ClientMapper;
 import raf.microservice.components.userservice.model.Client;
 import raf.microservice.components.userservice.model.Token;
@@ -19,6 +22,7 @@ import raf.microservice.components.userservice.service.JwtService;
 import raf.microservice.components.userservice.service.ClientService;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,9 +38,15 @@ public class ClientServiceImpl implements ClientService {
     private final CustomUserDetailsService customUserDetailsService;
     private final VerifyTokenRepository verifyTokenRepository;
     private final RoleRepository roleRepository;
+    private final String sendEmailDestination;
+    private final JmsTemplate jmsTemplate;
+    private final MessageHelper messageHelper;
+
     public ClientServiceImpl(ClientRepository clientRepository, ClientMapper clientMapper, JwtService jwtService, TokenRepository tokenRepository
     , AuthenticationManager authenticationManager, CustomUserDetailsService customUserDetailsService,
-                             VerifyTokenRepository verifyTokenRepository, RoleRepository roleRepository){
+                             VerifyTokenRepository verifyTokenRepository, RoleRepository roleRepository
+            , @Value("${destination.sendEmails}") String sendEmailDestination, JmsTemplate jmsTemplate,
+                             MessageHelper messageHelper){
         this.clientRepository = clientRepository;
         this.clientMapper = clientMapper;
         this.jwtService = jwtService;
@@ -45,6 +55,9 @@ public class ClientServiceImpl implements ClientService {
         this.customUserDetailsService = customUserDetailsService;
         this.verifyTokenRepository = verifyTokenRepository;
         this.roleRepository = roleRepository;
+        this.sendEmailDestination = sendEmailDestination;
+        this.jmsTemplate = jmsTemplate;
+        this.messageHelper = messageHelper;
     }
 
     @Override
@@ -58,6 +71,13 @@ public class ClientServiceImpl implements ClientService {
         verifyToken.generateVerifyToken();
         verifyToken.setUsername(clientCreateDto.getUsername());
         verifyTokenRepository.save(verifyToken);
+        HashMap<String, String> paramsMap = new HashMap<>();
+        paramsMap.put("%name%", clientCreateDto.getName());
+        paramsMap.put("%lastname%", clientCreateDto.getLastName());
+        paramsMap.put("%link%", "http://localhost:9090/api/client/verify/" + verifyToken.getVerifyToken());
+        TransferDto transferDto = new TransferDto(clientCreateDto.getEmail(), "REGISTER_USER", paramsMap, clientCreateDto.getUsername());
+        jmsTemplate.convertAndSend(sendEmailDestination, messageHelper.createTextMessage(transferDto));
+
 
         return new VerifyTokenDto(verifyToken.verifyToken);
     }
