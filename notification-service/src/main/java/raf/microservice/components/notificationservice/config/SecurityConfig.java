@@ -32,6 +32,7 @@ public class SecurityConfig {
                         .requestMatchers("/notification/all").hasRole("ADMIN")
                         .requestMatchers("/notification/me").hasAnyRole("ADMIN", "CLIENT", "MANAGER")
                         .requestMatchers("/notification/me/filter").hasAnyRole("ADMIN", "CLIENT", "MANAGER")
+                        .requestMatchers("/type/**").hasRole("ADMIN")
                         .requestMatchers(WHITE_LIST_URL).permitAll() //  allow paths to access without auth
                         .anyRequest().authenticated() // all other paths need auth
                 )
