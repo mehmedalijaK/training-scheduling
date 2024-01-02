@@ -21,9 +21,18 @@ public class ManagerController {
     @ApiOperation(value = "Register new manager")
     @PostMapping("/register")
     @CheckExists
-    public ResponseEntity<AuthenticationResponseDto> saveManager(@RequestBody @Valid ManagerCreateDto managerCreateDto){
-        return new ResponseEntity<>(managerService.add(managerCreateDto), HttpStatus.CREATED);
+    public ResponseEntity<Void> saveManager(@RequestBody @Valid ManagerCreateDto managerCreateDto){
+        managerService.add(managerCreateDto);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+    @ApiOperation(value = "Verify manager")
+    @PostMapping("/verify/{id}")
+    public ResponseEntity<Void> findById(@PathVariable("id") String id) {
+        managerService.verify(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @ApiOperation(value = "Login")
     @PostMapping("/login")

@@ -34,7 +34,7 @@ public class ManagerMapper {
         propertyMapper.addMapping(ManagerCreateDto::getDateEmployment, Manager::setDateEmployment);
 
         Manager manager = modelMapper.map(managerCreateDto, Manager.class);
-        manager.setRole(roleRepository.findRoleByName("ROLE_MANAGER").get());
+        manager.setRole(roleRepository.findRoleByName("ROLE_PENDING").get());
         manager.setPassword(passwordEncoder.encode(manager.getPassword()));
         return manager;
     }

@@ -8,13 +8,18 @@ import org.springframework.transaction.annotation.Transactional;
 import raf.microservice.components.userservice.dto.*;
 import raf.microservice.components.userservice.exceptions.NotFoundException;
 import raf.microservice.components.userservice.mapper.ManagerMapper;
+import raf.microservice.components.userservice.model.Client;
 import raf.microservice.components.userservice.model.Manager;
 import raf.microservice.components.userservice.model.Token;
+import raf.microservice.components.userservice.model.VerifyToken;
 import raf.microservice.components.userservice.repository.ManagerRepository;
+import raf.microservice.components.userservice.repository.RoleRepository;
 import raf.microservice.components.userservice.repository.TokenRepository;
+import raf.microservice.components.userservice.repository.VerifyTokenRepository;
 import raf.microservice.components.userservice.service.JwtService;
 import raf.microservice.components.userservice.service.ManagerService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,10 +34,13 @@ public class ManagerServiceImpl implements ManagerService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final CustomUserDetailsService customUserDetailsService;
+    private final VerifyTokenRepository verifyTokenRepository;
+    private final RoleRepository roleRepository;
 
     public ManagerServiceImpl(ManagerRepository managerRepository, ManagerMapper managerMapper, JwtService jwtService,
                               TokenRepository tokenRepository, AuthenticationManager authenticationManager,
-                              PasswordEncoder passwordEncoder, CustomUserDetailsService customUserDetailsService){
+                              PasswordEncoder passwordEncoder, CustomUserDetailsService customUserDetailsService,
+                              VerifyTokenRepository verifyTokenRepository, RoleRepository roleRepository){
         this.managerMapper = managerMapper;
         this.managerRepository = managerRepository;
         this.jwtService = jwtService;
@@ -40,22 +48,24 @@ public class ManagerServiceImpl implements ManagerService {
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.customUserDetailsService = customUserDetailsService;
+        this.verifyTokenRepository = verifyTokenRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
-    public AuthenticationResponseDto add(ManagerCreateDto managerCreateDto) {
+    public VerifyTokenDto add(ManagerCreateDto managerCreateDto) {
         Manager manager = managerMapper.managerCreateDtoToManager(managerCreateDto);
         managerRepository.save(manager);
 
-        String jwtToken = jwtService.generateToken(manager);
-        String refreshToken = jwtService.generateRefreshToken(manager);
+        VerifyToken verifyToken = new VerifyToken();
+        verifyToken.setDateValidTo(LocalDateTime.now().plusDays(1));
+        verifyToken.setRevoked(false);
+        verifyToken.generateVerifyToken();
+        verifyToken.setUsername(managerCreateDto.getUsername());
+        verifyTokenRepository.save(verifyToken);
 
-        AuthenticationResponseDto authenticationResponseDto = new AuthenticationResponseDto();
-        authenticationResponseDto.setAccessToken(jwtToken);
-        authenticationResponseDto.setRefreshToken(refreshToken);
-        saveUserToken(manager, refreshToken);
 
-        return authenticationResponseDto;
+        return new VerifyTokenDto(verifyToken.verifyToken);
     }
 
     private void saveUserToken(Manager user, String jwt){
@@ -167,6 +177,23 @@ public class ManagerServiceImpl implements ManagerService {
         managerNew.setSportsHall(managerEditDto.getSportsHall());
         managerRepository.save(managerNew);
         return managerMapper.managerToManagerDto(managerNew);
+    }
+
+    @Override
+    public void verify(String id) {
+        Optional<VerifyToken> verifyToken = verifyTokenRepository.findVerifyTokenByVerifyToken(id);
+        if(verifyToken.isEmpty()) throw new NotFoundException("Verify token not found");
+        VerifyToken verifyTokenF = verifyToken.get();
+
+        if(verifyTokenF.isRevoked() || verifyTokenF.getDateValidTo().isBefore(LocalDateTime.now())) throw new NotFoundException("Not valid token");
+
+        verifyTokenF.setRevoked(true);
+        verifyTokenRepository.save(verifyTokenF);
+        Optional<Manager> manager = managerRepository.findManagerByUsername(verifyTokenF.getUsername());
+        if(manager.isEmpty()) throw new NotFoundException("User not found");
+
+        manager.get().setRole(roleRepository.findRoleByName("ROLE_MANAGER").get());
+        managerRepository.save(manager.get());
     }
 
     private void revokeAllUserTokens(Manager user) { // TODO: transfer to JWT class

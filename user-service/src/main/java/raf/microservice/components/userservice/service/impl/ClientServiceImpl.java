@@ -31,19 +31,17 @@ public class ClientServiceImpl implements ClientService {
     private final JwtService jwtService;
     private final TokenRepository tokenRepository;
     private final AuthenticationManager authenticationManager;
-    private final PasswordEncoder passwordEncoder;
     private final CustomUserDetailsService customUserDetailsService;
     private final VerifyTokenRepository verifyTokenRepository;
     private final RoleRepository roleRepository;
     public ClientServiceImpl(ClientRepository clientRepository, ClientMapper clientMapper, JwtService jwtService, TokenRepository tokenRepository
-    , AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, CustomUserDetailsService customUserDetailsService,
+    , AuthenticationManager authenticationManager, CustomUserDetailsService customUserDetailsService,
                              VerifyTokenRepository verifyTokenRepository, RoleRepository roleRepository){
         this.clientRepository = clientRepository;
         this.clientMapper = clientMapper;
         this.jwtService = jwtService;
         this.tokenRepository = tokenRepository;
         this.authenticationManager = authenticationManager;
-        this.passwordEncoder = passwordEncoder;
         this.customUserDetailsService = customUserDetailsService;
         this.verifyTokenRepository = verifyTokenRepository;
         this.roleRepository = roleRepository;
