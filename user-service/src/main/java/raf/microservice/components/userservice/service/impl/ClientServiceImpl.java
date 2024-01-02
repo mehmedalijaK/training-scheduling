@@ -10,11 +10,15 @@ import raf.microservice.components.userservice.exceptions.NotFoundException;
 import raf.microservice.components.userservice.mapper.ClientMapper;
 import raf.microservice.components.userservice.model.Client;
 import raf.microservice.components.userservice.model.Token;
+import raf.microservice.components.userservice.model.VerifyToken;
 import raf.microservice.components.userservice.repository.ClientRepository;
+import raf.microservice.components.userservice.repository.RoleRepository;
 import raf.microservice.components.userservice.repository.TokenRepository;
+import raf.microservice.components.userservice.repository.VerifyTokenRepository;
 import raf.microservice.components.userservice.service.JwtService;
 import raf.microservice.components.userservice.service.ClientService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,8 +33,11 @@ public class ClientServiceImpl implements ClientService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final CustomUserDetailsService customUserDetailsService;
+    private final VerifyTokenRepository verifyTokenRepository;
+    private final RoleRepository roleRepository;
     public ClientServiceImpl(ClientRepository clientRepository, ClientMapper clientMapper, JwtService jwtService, TokenRepository tokenRepository
-    , AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, CustomUserDetailsService customUserDetailsService){
+    , AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, CustomUserDetailsService customUserDetailsService,
+                             VerifyTokenRepository verifyTokenRepository, RoleRepository roleRepository){
         this.clientRepository = clientRepository;
         this.clientMapper = clientMapper;
         this.jwtService = jwtService;
@@ -38,22 +45,23 @@ public class ClientServiceImpl implements ClientService {
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.customUserDetailsService = customUserDetailsService;
+        this.verifyTokenRepository = verifyTokenRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
-    public AuthenticationResponseDto add(ClientCreateDto clientCreateDto) {
+    public VerifyTokenDto add(ClientCreateDto clientCreateDto) {
         Client user = clientMapper.clientCreateDtoToClient(clientCreateDto);
         clientRepository.save(user);
 
-        String jwtToken = jwtService.generateToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+        VerifyToken verifyToken = new VerifyToken();
+        verifyToken.setDateValidTo(LocalDateTime.now().plusDays(1));
+        verifyToken.setRevoked(false);
+        verifyToken.generateVerifyToken();
+        verifyToken.setUsername(clientCreateDto.getUsername());
+        verifyTokenRepository.save(verifyToken);
 
-        AuthenticationResponseDto authenticationResponseDto = new AuthenticationResponseDto();
-        authenticationResponseDto.setAccessToken(jwtToken);
-        authenticationResponseDto.setRefreshToken(refreshToken);
-        saveUserToken(user, refreshToken);
-
-        return authenticationResponseDto;
+        return new VerifyTokenDto(verifyToken.verifyToken);
     }
 
     @Override
@@ -174,5 +182,22 @@ public class ClientServiceImpl implements ClientService {
         userNew.setDateBirth(clientEditDto.getDateBirth());
         clientRepository.save(userNew);
         return clientMapper.clientToClientDto(userNew);
+    }
+
+    @Override
+    public void verify(String id) {
+        Optional<VerifyToken> verifyToken = verifyTokenRepository.findVerifyTokenByVerifyToken(id);
+        if(verifyToken.isEmpty()) throw new NotFoundException("Verify token not found");
+        VerifyToken verifyTokenF = verifyToken.get();
+
+        if(verifyTokenF.isRevoked() || verifyTokenF.getDateValidTo().isBefore(LocalDateTime.now())) throw new NotFoundException("Not valid token");
+
+        verifyTokenF.setRevoked(true);
+        verifyTokenRepository.save(verifyTokenF);
+        Optional<Client> user = clientRepository.findClientByUsername(verifyTokenF.getUsername());
+        if(user.isEmpty()) throw new NotFoundException("User not found");
+
+        user.get().setRole(roleRepository.findRoleByName("ROLE_CLIENT").get());
+        clientRepository.save(user.get());
     }
 }

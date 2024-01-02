@@ -22,9 +22,19 @@ public class ClientController {
     @ApiOperation(value = "Register new user")
     @PostMapping("/register")
     @CheckExists  //  TODO: SHOULD SEND AN EMAIL AND RETURN JUST STATUS CREATED!
-    public ResponseEntity<AuthenticationResponseDto> saveUser(@RequestBody @Valid ClientCreateDto clientCreateDto){
-        return new ResponseEntity<>(clientService.add(clientCreateDto), HttpStatus.CREATED);
+    public ResponseEntity<Void> saveUser(@RequestBody @Valid ClientCreateDto clientCreateDto){
+        clientService.add(clientCreateDto);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+
+    @ApiOperation(value = "Verify user")
+    @PostMapping("/verify/{id}")
+    public ResponseEntity<Void> findById(@PathVariable("id") String id) {
+        clientService.verify(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @ApiOperation(value = "Login user")
     @PostMapping("/login")  //  TODO: SHOULD SEND AN EMAIL THAT SOMEONE JUST LOGGED IN ACCOUNT

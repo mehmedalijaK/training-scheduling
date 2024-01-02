@@ -44,12 +44,17 @@ public class CustomUserDetailsService implements UserDetailsService {
                 userDetails = manager.orElseThrow(() -> new NotFoundException("Manager not found!"));
                 if(userDetails.getAuthorities().toArray()[0].toString().equals("ROLE_BANNED"))
                     throw new BannedUserException("Manager is banned");
+                if(userDetails.getAuthorities().toArray()[0].toString().equals("ROLE_PENDING"))
+                    throw new BannedUserException("Manager is on pending");
+
             }
             case "CLIENT" -> {
                 Optional<Client> user = clientRepository.findClientByUsername(username);
                 userDetails = user.orElseThrow(() -> new NotFoundException("Client not found!"));
                 if(userDetails.getAuthorities().toArray()[0].toString().equals("ROLE_BANNED"))
                     throw new BannedUserException("Client is banned");
+                if(userDetails.getAuthorities().toArray()[0].toString().equals("ROLE_PENDING"))
+                    throw new BannedUserException("Client is on pending");
             }
             case "ADMIN" -> {
                 Optional<Admin> admin = adminRepository.findAdminByUsername(username);

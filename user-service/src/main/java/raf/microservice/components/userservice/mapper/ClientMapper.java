@@ -29,7 +29,7 @@ public class ClientMapper {
         propertyMapper.addMapping(ClientCreateDto::getLastName, Client::setLastName);
 
         Client user = modelMapper.map(clientCreateDto, Client.class);
-        user.setRole(roleRepository.findRoleByName("ROLE_CLIENT").get());
+        user.setRole(roleRepository.findRoleByName("ROLE_PENDING").get());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return user;
