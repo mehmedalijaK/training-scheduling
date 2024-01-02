@@ -1,6 +1,5 @@
 package raf.microservice.components.notificationservice.service.impl;
 
-import org.aspectj.weaver.ast.Not;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -10,8 +9,8 @@ import raf.microservice.components.notificationservice.dto.FilterDto;
 import raf.microservice.components.notificationservice.dto.NotificationDto;
 import raf.microservice.components.notificationservice.exceptions.NotFoundException;
 import raf.microservice.components.notificationservice.mapper.NotificationMapper;
-import raf.microservice.components.notificationservice.model.Notification;
-import raf.microservice.components.notificationservice.model.Type;
+import raf.microservice.components.notificationservice.mapper.model.Notification;
+import raf.microservice.components.notificationservice.mapper.model.Type;
 import raf.microservice.components.notificationservice.repository.NotificationRepository;
 import raf.microservice.components.notificationservice.repository.TypeRepository;
 import raf.microservice.components.notificationservice.security.services.JwtService;

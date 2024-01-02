@@ -7,11 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import raf.microservice.components.notificationservice.dto.TypeDto;
 import raf.microservice.components.notificationservice.exceptions.NotFoundException;
 import raf.microservice.components.notificationservice.mapper.TypeMapper;
-import raf.microservice.components.notificationservice.model.Type;
+import raf.microservice.components.notificationservice.mapper.model.Type;
 import raf.microservice.components.notificationservice.repository.TypeRepository;
 import raf.microservice.components.notificationservice.service.TypeService;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service

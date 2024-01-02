@@ -2,7 +2,7 @@ package raf.microservice.components.notificationservice.mapper;
 
 import org.springframework.stereotype.Component;
 import raf.microservice.components.notificationservice.dto.TypeDto;
-import raf.microservice.components.notificationservice.model.Type;
+import raf.microservice.components.notificationservice.mapper.model.Type;
 
 @Component
 public class TypeMapper {
