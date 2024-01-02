@@ -1,8 +1,11 @@
 package raf.microservice.components.notificationservice.runner;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
+import raf.microservice.components.notificationservice.listener.helper.MessageHelper;
 import raf.microservice.components.notificationservice.model.Notification;
 import raf.microservice.components.notificationservice.model.Type;
 import raf.microservice.components.notificationservice.repository.NotificationRepository;
@@ -18,10 +21,18 @@ public class DataRunner implements CommandLineRunner {
 
     private final TypeRepository typeRepository;
     private final NotificationRepository notificationRepository;
+    private final JmsTemplate jmsTemplate;
+    private final String sendEmailDestination;
+    private final MessageHelper messageHelper;
 
-    public DataRunner(TypeRepository typeRepository, NotificationRepository notificationRepository){
+    public DataRunner(TypeRepository typeRepository, NotificationRepository notificationRepository
+    , JmsTemplate jmsTemplate, @Value("${destination.sendEmails}") String sendEmailDestination,
+                      MessageHelper messageHelper){
         this.typeRepository = typeRepository;
         this.notificationRepository = notificationRepository;
+        this.jmsTemplate = jmsTemplate;
+        this.sendEmailDestination = sendEmailDestination;
+        this.messageHelper = messageHelper;
     }
 
     @Override
@@ -55,6 +66,8 @@ public class DataRunner implements CommandLineRunner {
         notification2.setDateSent(LocalDateTime.of(2023, Month.DECEMBER, 29, 14, 33, 11));
         notificationRepository.save(notification2);
 
+        
+        jmsTemplate.convertAndSend(sendEmailDestination, messageHelper.createTextMessage(orderCreateDto));
 
     }
 }

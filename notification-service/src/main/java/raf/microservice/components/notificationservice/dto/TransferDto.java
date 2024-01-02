@@ -3,6 +3,8 @@ import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
+
 @Getter
 @Setter
 public class TransferDto {
@@ -15,6 +17,18 @@ public class TransferDto {
     private String typeName;
 
     @NotBlank
-    private String[] params;
+    private HashMap<String, String> params;
 
+    @NotBlank
+    private String username;
+
+    @Override
+    public String toString() {
+        return "TransferDto{" +
+                "emailReceiver='" + emailReceiver + '\'' +
+                ", typeName='" + typeName + '\'' +
+                ", params=" + params +
+                ", username='" + username + '\'' +
+                '}';
+    }
 }
