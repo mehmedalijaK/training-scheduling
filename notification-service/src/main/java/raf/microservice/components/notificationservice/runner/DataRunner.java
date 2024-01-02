@@ -5,6 +5,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
+import raf.microservice.components.notificationservice.dto.TransferDto;
 import raf.microservice.components.notificationservice.listener.helper.MessageHelper;
 import raf.microservice.components.notificationservice.model.Notification;
 import raf.microservice.components.notificationservice.model.Type;
@@ -14,6 +15,7 @@ import raf.microservice.components.notificationservice.repository.TypeRepository
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.HashMap;
 
 @Profile({"default"})
 @Component
@@ -66,8 +68,15 @@ public class DataRunner implements CommandLineRunner {
         notification2.setDateSent(LocalDateTime.of(2023, Month.DECEMBER, 29, 14, 33, 11));
         notificationRepository.save(notification2);
 
-        
-        jmsTemplate.convertAndSend(sendEmailDestination, messageHelper.createTextMessage(orderCreateDto));
+        HashMap<String, String> paramsMap = new HashMap<>();
+        paramsMap.put("%name%", "Mehmedalija");
+        paramsMap.put("%lastname%", "Karisik");
+        paramsMap.put("%link%", "/link.com");
+//        type.setFormat("Hello %name% %lastname% ! To verify your account please open following link %link%");
+        TransferDto transferDto = new TransferDto("karisik.mehmedalija@gmail.com", "REGISTER_USER", paramsMap, "john_doe");
+
+
+        jmsTemplate.convertAndSend(sendEmailDestination, messageHelper.createTextMessage(transferDto));
 
     }
 }

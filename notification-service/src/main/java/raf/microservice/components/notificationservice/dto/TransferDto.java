@@ -16,11 +16,17 @@ public class TransferDto {
     @NotBlank(message = "Type name can not be empty")
     private String typeName;
 
-    @NotBlank
     private HashMap<String, String> params;
 
     @NotBlank
     private String username;
+
+    public TransferDto(String emailReceiver, String typeName, HashMap<String, String> params, String username) {
+        this.emailReceiver = emailReceiver;
+        this.typeName = typeName;
+        this.params = params;
+        this.username = username;
+    }
 
     @Override
     public String toString() {
