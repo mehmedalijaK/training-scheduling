@@ -40,6 +40,14 @@ public class ClientController {
         return new ResponseEntity<>(clientService.authenticate(authLoginDto), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Change password")
+    @PostMapping("/change-password")
+    public ResponseEntity<Void> changePassword(@RequestHeader("Authorization") String authorization,
+                                               @RequestBody @Valid ChangePasswordDto changePasswordDto){
+        clientService.changePassword(changePasswordDto, authorization);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @ApiOperation(value = "Refresh token user")
     @PostMapping("/refresh-token")
     public ResponseEntity<SessionTokenDto> refreshToken(@RequestHeader("Authorization") String authorization){

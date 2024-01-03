@@ -41,6 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/client/me").hasRole("CLIENT")
                         .requestMatchers("/api/client/edit").hasRole("CLIENT")
+                        .requestMatchers("/api/client/change-password").hasRole("CLIENT")
                         .requestMatchers("/api/manager/me").hasRole("MANAGER")
                         .requestMatchers("/api/manager/edit").hasRole("MANAGER")
                         .requestMatchers(WHITE_LIST_URL).permitAll() //  allow paths to access without auth

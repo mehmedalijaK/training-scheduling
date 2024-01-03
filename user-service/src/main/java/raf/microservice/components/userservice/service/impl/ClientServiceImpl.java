@@ -41,12 +41,13 @@ public class ClientServiceImpl implements ClientService {
     private final String sendEmailDestination;
     private final JmsTemplate jmsTemplate;
     private final MessageHelper messageHelper;
+    private final PasswordEncoder passwordEncoder;
 
     public ClientServiceImpl(ClientRepository clientRepository, ClientMapper clientMapper, JwtService jwtService, TokenRepository tokenRepository
     , AuthenticationManager authenticationManager, CustomUserDetailsService customUserDetailsService,
                              VerifyTokenRepository verifyTokenRepository, RoleRepository roleRepository
             , @Value("${destination.sendEmails}") String sendEmailDestination, JmsTemplate jmsTemplate,
-                             MessageHelper messageHelper){
+                             MessageHelper messageHelper, PasswordEncoder passwordEncoder){
         this.clientRepository = clientRepository;
         this.clientMapper = clientMapper;
         this.jwtService = jwtService;
@@ -57,6 +58,7 @@ public class ClientServiceImpl implements ClientService {
         this.roleRepository = roleRepository;
         this.sendEmailDestination = sendEmailDestination;
         this.jmsTemplate = jmsTemplate;
+        this.passwordEncoder = passwordEncoder;
         this.messageHelper = messageHelper;
     }
 
@@ -218,4 +220,29 @@ public class ClientServiceImpl implements ClientService {
         user.get().setRole(roleRepository.findRoleByName("ROLE_CLIENT").get());
         clientRepository.save(user.get());
     }
+
+    @Override
+    public void changePassword(ChangePasswordDto changePasswordDto, String authorization) {
+        String token = authorization.substring(7);
+        Optional<Client> user = clientRepository.findClientByUsername(jwtService.extractUsername(token));
+        if(user.isEmpty()) throw new NotFoundException("Client not found");
+
+        Client userNew = user.get();
+
+        if(!passwordEncoder.matches(changePasswordDto.getOldPassword(), userNew.getPassword()))
+            throw new NotFoundException("Password not found!");
+
+        userNew.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
+        clientRepository.save(userNew);
+
+        HashMap<String, String> paramsMap = new HashMap<>();
+        paramsMap.put("%name%", userNew.getName());
+        paramsMap.put("%lastname%", userNew.getLastName());
+        TransferDto transferDto = new TransferDto(userNew.getEmail(), "CHANGE_PASSWORD", paramsMap, userNew.getUsername());
+        jmsTemplate.convertAndSend(sendEmailDestination, messageHelper.createTextMessage(transferDto));
+
+
+    }
+
+
 }
