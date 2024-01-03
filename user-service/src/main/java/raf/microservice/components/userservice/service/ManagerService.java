@@ -15,4 +15,6 @@ public interface ManagerService {
     ManagerDto edit(String authorization, ManagerEditDto managerEditDto);
 
     void verify(String id);
+
+    void changePassword(ChangePasswordDto changePasswordDto, String authorization);
 }

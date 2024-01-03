@@ -212,6 +212,27 @@ public class ManagerServiceImpl implements ManagerService {
         managerRepository.save(manager.get());
     }
 
+    @Override
+    public void changePassword(ChangePasswordDto changePasswordDto, String authorization) {
+        String token = authorization.substring(7);
+        Optional<Manager> user = managerRepository.findManagerByUsername(jwtService.extractUsername(token));
+        if(user.isEmpty()) throw new NotFoundException("Client not found");
+
+        Manager managerNew = user.get();
+
+        if(!passwordEncoder.matches(changePasswordDto.getOldPassword(), managerNew.getPassword()))
+            throw new NotFoundException("Password not found!");
+
+        managerNew.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
+        managerRepository.save(managerNew);
+
+        HashMap<String, String> paramsMap = new HashMap<>();
+        paramsMap.put("%name%", managerNew.getName());
+        paramsMap.put("%lastname%", managerNew.getLastName());
+        TransferDto transferDto = new TransferDto(managerNew.getEmail(), "CHANGE_PASSWORD", paramsMap, managerNew.getUsername());
+        jmsTemplate.convertAndSend(sendEmailDestination, messageHelper.createTextMessage(transferDto));
+    }
+
     private void revokeAllUserTokens(Manager user) { // TODO: transfer to JWT class
         var validUserTokens = tokenRepository.findAllValidTokenByUsersDetails(user);
         if (validUserTokens.isEmpty())
