@@ -21,20 +21,9 @@ import { useState } from 'react';
 
 const defaultTheme = createTheme();
 
-function Copyright(props: any) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright Mehmedalija i Ana RAF proj © '}{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
-const LoginPage = () => {
+const AdminLoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [type, setType] = useState('1');
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
 
@@ -56,13 +45,9 @@ const LoginPage = () => {
     console.log({
       username,
       password,
-      type,
     });
   };
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setType(event.target.value as string);
-  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -70,7 +55,7 @@ const LoginPage = () => {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            marginTop: 0,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -118,18 +103,6 @@ const LoginPage = () => {
                 setPasswordError(false);
               }}
             />
-            <InputLabel id="select-label">User type</InputLabel>
-            <Select
-              labelId="select-label"
-              id="select-group"
-              value={type}
-              label="Type"
-              defaultValue="1"
-              onChange={handleChange}
-            >
-              <MenuItem value={'1'}>Client</MenuItem>
-              <MenuItem value={'2'}>Manager</MenuItem>
-            </Select>
             <Button
               type="submit"
               fullWidth
@@ -137,27 +110,13 @@ const LoginPage = () => {
               style={{ background: 'royalblue' }}
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Sign In Admin
             </Button>
-
-            <Grid container>
-              <Grid item>
-              <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up as User"}
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up as Manager"}
-                </Link>
-              </Grid>
-            </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>
   );
 };
 
-export default LoginPage;
+export default AdminLoginPage;
