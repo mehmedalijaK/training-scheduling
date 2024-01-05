@@ -17,7 +17,9 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import AuthContext from '@/context/AuthContext';
 
 const defaultTheme = createTheme();
 
@@ -39,11 +41,13 @@ const RegisterManagerPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const [dateBirth, setDateBirth] = useState('');
+  const [dateBirth, setDateBirth] = useState<Date>();
   const [name, setName] = useState('');
   const [lastName, setLastName] = useState('');
   const [sportsHall, setSportHall] = useState('');
-  const [dateEmployment, setDateEmployment] = useState('');
+  const [dateEmployment, setDateEmployment] = useState<Date>();
+  const {registerManager} = useContext(AuthContext)
+  const router = useRouter();
 
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
@@ -54,7 +58,7 @@ const RegisterManagerPage = () => {
   const [sportsHallError, setSportsHallError] = useState(false);
   const [dateEmploymentError, setDateEmploymentError] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     // Basic validation
@@ -73,7 +77,7 @@ const RegisterManagerPage = () => {
       return;
     }
 
-    if (dateBirth.trim() === '') {
+    if (dateBirth ==null) {
       setDateBirthError(true);
       return;
     }
@@ -93,7 +97,7 @@ const RegisterManagerPage = () => {
       return;
     }
 
-    if (dateEmployment.trim() === '') {
+    if (dateEmployment == null) {
       setDateEmploymentError(true);
       return;
     }
@@ -109,6 +113,13 @@ const RegisterManagerPage = () => {
       sportsHall,
       dateEmployment,
     });
+
+    const response = await registerManager( username, password, email, dateBirth, name, lastName, sportsHall, dateEmployment);
+    if (response.ok) {
+      router.push("/validation?email="+email)
+    } else
+      console.log("error")
+      
   };
 
   return (
@@ -192,6 +203,7 @@ const RegisterManagerPage = () => {
               helperText={dateBirthError ? 'Date of Birth is required' : ''}
               value={dateBirth}
               onChange={(e) => {
+                //@ts-ignore
                 setDateBirth(e.target.value);
                 setDateBirthError(false);
               }}
@@ -254,6 +266,7 @@ const RegisterManagerPage = () => {
               helperText={dateEmploymentError}
               value={dateEmployment}
               onChange={(e) => {
+                //@ts-ignore
                 setDateEmployment(e.target.value);
                 setDateEmploymentError(false);
               }}

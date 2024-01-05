@@ -43,7 +43,6 @@ const RegisterUserPage = () => {
   const [lastName, setLastName] = useState('');
   const {registerUser} = useContext(AuthContext)
   const router = useRouter();
-  const [open, setOpen] = useState(true)
 
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
