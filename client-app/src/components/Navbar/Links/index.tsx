@@ -17,14 +17,10 @@ const Links = () => {
             title: "My profile",
             path: "/my-profile"
         },
-        {
-            title: "Sign out",
-            path: "/sign-out"
-        }
     ]
 
-    const session = true
-    const isAdmin = true
+    const session = false
+    const isAdmin = false
 
     return (
         <div className={styles.links}>

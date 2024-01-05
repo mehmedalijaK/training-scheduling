@@ -142,12 +142,12 @@ const LoginPage = () => {
 
             <Grid container>
               <Grid item>
-              <Link href="#" variant="body2">
+              <Link href="/register/user" variant="body2">
                   {"Don't have an account? Sign Up as User"}
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/register/manager" variant="body2">
                   {"Don't have an account? Sign Up as Manager"}
                 </Link>
               </Grid>
