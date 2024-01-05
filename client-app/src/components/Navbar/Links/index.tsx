@@ -1,6 +1,9 @@
+"use client"
 import Link from "next/link"
 import styles from "./links.module.css"
 import NavbarLink from "./NavbarLink"
+import { useContext, useEffect } from "react"
+import { AuthContext } from "@/context/AuthContext"
 
 const Links = () => {
 
@@ -9,28 +12,29 @@ const Links = () => {
             title: "Homepage",
             path: "/"
         },
-        {
-            title: "Trainings",
-            path: "/trainings"
-        },
-        {
-            title: "My profile",
-            path: "/my-profile"
-        },
     ]
 
-    const session = false
+    const {authenticated} = useContext(AuthContext)
+
+    useEffect(()=>{
+
+    }, [authenticated])
+
     const isAdmin = false
+    const isManager = false
 
     return (
         <div className={styles.links}>
             {links.map((link => (
                 <NavbarLink item={link} key={link.title}/>
             )))}{
-                session ? (
+                authenticated ? (
                     <>
                         {isAdmin && <NavbarLink item={{title: "Admin", path: "/admin"}}/>}
-                        <button className={styles.logout}>Logout</button>
+                        {isManager && <NavbarLink item={{title: "Manager", path: "/manager"}}/>}
+                        <NavbarLink item={{title: "My profile", path: "/my-profile"}}/>
+                        <NavbarLink item={{title: "Trainings", path: "/trainings"}}/>
+                        <NavbarLink item={{title: "Logout", path: "/logout"}}/>
                     </>
                 ) : (
                     <NavbarLink item={{title: "Login", path: "/login"}}/>

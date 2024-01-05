@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { Box, Container, Stack, Typography, Unstable_Grid2 as Grid } from '@mui/material';
 import { AccountProfile } from '@/components/account/account-profile';
 import { AccountProfileDetails } from '@/components/account/account-profile-details';
+import { ProtectedRoute } from '@/context/AuthContext';
 const states = [
     {
       value: 'alabama',
@@ -24,7 +25,7 @@ const states = [
   
 
   const EditPage = () => (
-    <>
+    <ProtectedRoute>
       <Head>
         <title>
           Account | Devias Kit
@@ -68,7 +69,7 @@ const states = [
           </Stack>
         </Container>
       </Box>
-    </>
+    </ProtectedRoute>
   );
 
 export default EditPage;

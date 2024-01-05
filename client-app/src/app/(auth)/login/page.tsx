@@ -17,7 +17,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
@@ -40,7 +40,7 @@ const LoginPage = () => {
   const router = useRouter();
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-  const {login} = useContext(AuthContext)
+  const {loginUser, loginManager, user} = useContext(AuthContext)
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -63,17 +63,30 @@ const LoginPage = () => {
       type,
     });
 
-    const {response, data} = await login(username, password);
-    if (response.ok) {
-        await router.push("/");
-        //enqueueSnackbar("Signed up successfully.", {variant: "success"});
-    } else
-      console.log("error")
-        //enqueueSnackbar(data.message, {variant: "error"});
-
+    if(type=='1'){
+      const {response, data} = await loginUser(username, password);
+      if (response.ok) {
+          await router.push("/");
+          console.log(user)
+      } else
+        console.log("error")
+    }else{
+      const {response, data} = await loginManager(username, password);
+      if (response.ok) {
+          await router.push("/");
+      } else
+        console.log("error")
+    }
 
 
   };
+
+  const {authenticated} = useContext(AuthContext);
+
+  useEffect(() => {
+      if(authenticated)
+          router.push("/");
+  }, [authenticated])
 
   const handleChange = (event: SelectChangeEvent) => {
     setType(event.target.value as string);
