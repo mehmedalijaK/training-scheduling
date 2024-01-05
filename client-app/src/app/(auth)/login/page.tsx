@@ -17,7 +17,9 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { AuthContext } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 const defaultTheme = createTheme();
 
@@ -35,10 +37,12 @@ const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [type, setType] = useState('1');
+  const router = useRouter();
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const {login} = useContext(AuthContext)
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     // Basic validation
@@ -58,6 +62,17 @@ const LoginPage = () => {
       password,
       type,
     });
+
+    const {response, data} = await login(username, password);
+    if (response.ok) {
+        await router.push("/");
+        //enqueueSnackbar("Signed up successfully.", {variant: "success"});
+    } else
+      console.log("error")
+        //enqueueSnackbar(data.message, {variant: "error"});
+
+
+
   };
 
   const handleChange = (event: SelectChangeEvent) => {
