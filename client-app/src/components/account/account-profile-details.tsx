@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import {
   Box,
   Button,
@@ -8,54 +8,90 @@ import {
   CardHeader,
   Divider,
   TextField,
-  Unstable_Grid2 as Grid
+  Unstable_Grid2 as Grid,
+  Snackbar,
+  IconButton
 } from '@mui/material';
+import { IAccountProfileProps } from './account-profile';
+import React from 'react';
+import AuthContext from '@/context/AuthContext';
 
-const states = [
-  {
-    value: 'alabama',
-    label: 'Alabama'
-  },
-  {
-    value: 'new-york',
-    label: 'New York'
-  },
-  {
-    value: 'san-francisco',
-    label: 'San Francisco'
-  },
-  {
-    value: 'los-angeles',
-    label: 'Los Angeles'
+export const AccountProfileDetails = (props : IAccountProfileProps) => {
+  const{
+    user
+  } = props
+
+  const [name, setName] = useState<string>(user.name)
+  const [lastName, setLastName] = useState<string>(user.lastName)
+  const [email, setEmail] = useState<string>(user.email)
+  const [dateBirth, setDateBirth] = useState(user.dateBirth)
+  const [open, setOpen] = useState(false);
+  const {editUser} = useContext(AuthContext)
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+
+  const handleSubmit = async () => {
+    if (!name.trim()) {
+      console.error('Name is required');
+      return;
+    }
+
+    // Validate the lastName field
+    if (!lastName.trim()) {
+      console.error('Last name is required');
+      return;
+    }
+
+    // Validate the email field
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim() || !emailRegex.test(email)) {
+      console.error('Invalid email address');
+      return;
+    }
+
+    // Validate the dateBirth field
+    const isValidDate = (dateString: string) => !isNaN(Date.parse(dateString));
+    //@ts-ignore
+    if (!dateBirth || !isValidDate(dateBirth)) {
+      console.error('Invalid date of birth');
+      return;
+    }
+
+    const response = await editUser(email, dateBirth, name, lastName);
+    if (response.ok) {
+        setOpen(true)
+    } else
+      console.log("error")
+
+    console.log("ok")
   }
-];
 
-export const AccountProfileDetails = () => {
-  const [values, setValues] = useState({
-    firstName: 'Anika',
-    lastName: 'Visser',
-    email: 'demo@devias.io',
-    dateBirth: '',
-    state: 'los-angeles',
-    country: 'USA'
-  });
-
-  const handleChange = useCallback(
-    (event : any) => {
-      setValues((prevState) => ({
-        ...prevState,
-        [event.target.name]: event.target.value
-      }));
-    },
-    []
+  const action = (
+    <React.Fragment>
+      <Button color="secondary" size="small" onClick={handleClose}>
+        CLOSE
+      </Button>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+      </IconButton>
+    </React.Fragment>
   );
-
-  const handleSubmit = useCallback(
-    (event : any) => {
-      event.preventDefault();
-    },
-    []
-  );
+    
 
   return (
     <form
@@ -83,9 +119,9 @@ export const AccountProfileDetails = () => {
                   helperText="Please specify the first name"
                   label="First name"
                   name="firstName"
-                  onChange={handleChange}
+                  onChange={(e)=>{setName(e.target.value)}}
                   required
-                  value={values.firstName}
+                  value={name}
                 />
               </Grid>
               <Grid
@@ -96,9 +132,9 @@ export const AccountProfileDetails = () => {
                   fullWidth
                   label="Last name"
                   name="lastName"
-                  onChange={handleChange}
+                  onChange={(e)=>{setLastName(e.target.value)}}
                   required
-                  value={values.lastName}
+                  value={lastName}
                 />
               </Grid>
               <Grid
@@ -109,9 +145,9 @@ export const AccountProfileDetails = () => {
                   fullWidth
                   label="Email Address"
                   name="email"
-                  onChange={handleChange}
+                  onChange={(e)=>{setEmail(e.target.value)}}
                   required
-                  value={values.email}
+                  value={email}
                 />
               </Grid>
               <Grid
@@ -121,9 +157,10 @@ export const AccountProfileDetails = () => {
                 <TextField
                   fullWidth
                   name="dateBirth"
-                  onChange={handleChange}
+                  onChange={(e)=>{//@ts-ignore
+                    setDateBirth(e.target.value)}}
                   type="date"
-                  value={values.dateBirth}
+                  value={dateBirth}
                   helperText="Please specify your birth date"
                 />
               </Grid>
@@ -132,11 +169,18 @@ export const AccountProfileDetails = () => {
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button variant="contained" className='bg-blue-500'>
+          <Button variant="contained" className='bg-blue-500' onClick={handleSubmit}>
             Save details
           </Button>
         </CardActions>
       </Card>
+      <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        message="Successfully updated your info"
+        action={action}
+      />
     </form>
   );
 };

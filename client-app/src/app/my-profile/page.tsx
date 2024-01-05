@@ -3,7 +3,9 @@ import Head from 'next/head';
 import { Box, Container, Stack, Typography, Unstable_Grid2 as Grid } from '@mui/material';
 import { AccountProfile } from '@/components/account/account-profile';
 import { AccountProfileDetails } from '@/components/account/account-profile-details';
-import { ProtectedRoute } from '@/context/AuthContext';
+import AuthContext, { ProtectedRoute, UserRole } from '@/context/AuthContext';
+import { useContext } from 'react';
+import IUser from '@/model/IUser';
 const states = [
     {
       value: 'alabama',
@@ -24,8 +26,13 @@ const states = [
   ];
   
 
-  const EditPage = () => (
-    <ProtectedRoute>
+  const EditPage = () => {
+
+    const {role, user} = useContext(AuthContext);
+    console.log(user)
+
+    return(
+      <ProtectedRoute>
       <Head>
         <title>
           Account | Devias Kit
@@ -55,14 +62,17 @@ const states = [
                   md={6}
                   lg={4}
                 >
-                  <AccountProfile />
+                  {role == UserRole.USER ? <AccountProfile user={user as IUser}/> : <></>}
+                  
+                  
                 </Grid>
                 <Grid
                   xs={12}
                   md={6}
                   lg={8}
                 >
-                  <AccountProfileDetails />
+                  {role == UserRole.USER ? <AccountProfileDetails user={user as IUser}/> : <></>}
+                  
                 </Grid>
               </Grid>
             </div>
@@ -70,6 +80,7 @@ const states = [
         </Container>
       </Box>
     </ProtectedRoute>
-  );
+    )
+  };
 
 export default EditPage;

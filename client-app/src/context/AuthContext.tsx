@@ -1,5 +1,5 @@
 "use client"
-import { sendGetMyselfAdmin, sendGetMyselfManager, sendGetMyselfUser, sendLoginRequestAdmin, sendLoginRequestManager, sendLoginRequestUser, sendRegisterRequestManager, sendRegisterRequestUser } from "@/api/auth/route";
+import { sendEditUserRequest, sendGetMyselfAdmin, sendGetMyselfManager, sendGetMyselfUser, sendLoginRequestAdmin, sendLoginRequestManager, sendLoginRequestUser, sendRegisterRequestManager, sendRegisterRequestUser } from "@/api/auth/route";
 import IAdmin from "@/model/IAdmin";
 import IManager from "@/model/IManager";
 import IUser from "@/model/IUser";
@@ -27,6 +27,7 @@ export interface IAuthContext {
             email: string, dateBirth: Date, name: string, lastName: string, sportsHall: string, dateEmployment: Date) => Promise<Response>;
     logout: () => void;
     token: string | null;
+    editUser: (email: string, dateBirth: Date, name: string, lastName: string) => Promise<Response>;
     //authFetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 }
 
@@ -108,6 +109,17 @@ export const AuthProvider = ({children}: { children: JSX.Element | JSX.Element[]
         return {response, data};
     }
 
+    const editUser = async (email: string, dateBirth: Date, name: string, lastName: string) => { 
+        const response = await sendEditUserRequest(email, dateBirth, name, lastName, token as string)
+        if(response.ok){
+            const userData = await getUser(token as string);
+            if (userData) {
+                setUser(userData);
+            }
+        }
+        return response;
+    }
+
     const loginAdmin = async (username: string, password: string) => {
         const response = await sendLoginRequestAdmin(username, password)
         const data = await response.json()
@@ -164,7 +176,7 @@ export const AuthProvider = ({children}: { children: JSX.Element | JSX.Element[]
     };
 
     return (
-        <AuthContext.Provider value={{authenticated: !!user, user, role, loginUser, loginManager, loginAdmin, loading, token, registerUser, logout, registerManager }}>
+        <AuthContext.Provider value={{authenticated: !!user, user, role, editUser, loginUser, loginManager, loginAdmin, loading, token, registerUser, logout, registerManager }}>
             {loading ? <p>Loading</p> : children}
         </AuthContext.Provider>
     )

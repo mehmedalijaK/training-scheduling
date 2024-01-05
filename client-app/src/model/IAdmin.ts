@@ -1,4 +1,4 @@
-export default interface IUser{
+export default interface IAdmin{
     username: string
     email: string
     dateBirth: Date

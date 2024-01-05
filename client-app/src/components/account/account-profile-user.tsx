@@ -1,4 +1,3 @@
-import IUser from '@/model/IUser';
 import {
     Avatar,
     Box,
@@ -18,17 +17,9 @@ import {
     name: 'Anika Visser',
     timezone: 'GTM-7'
   };
-
-  export interface IAccountProfileProps {
-    user : IUser
-  }
   
-  export const AccountProfile = (props : IAccountProfileProps) => {
-    const{
-      user
-    } = props
-    return(
-      <Card>
+  export const AccountProfile = () => (
+    <Card>
       <CardContent>
         <Box
           sx={{
@@ -38,7 +29,7 @@ import {
           }}
         >
           <Avatar
-            src={""}
+            src={user.avatar}
             sx={{
               height: 80,
               mb: 2,
@@ -49,41 +40,22 @@ import {
             gutterBottom
             variant="h5"
           >
-            {user.name + " " + user.lastName}
+            {user.name}
           </Typography>
           <Typography
             color="text.secondary"
             variant="body2"
           >
-            <p className='text-center font-semibold mt-2'>Username</p>
-            {user.username}
+            {user.city} {user.country}
           </Typography>
           <Typography
             color="text.secondary"
             variant="body2"
           >
-            <p className='text-center font-semibold mt-2'>Email</p>
-            {user.email}
-          </Typography>
-          <Typography
-            color="text.secondary"
-            variant="body2"
-          >
-            <p className='text-center font-semibold mt-2'>Membership Card Id</p>
-            {user.membershipCardId}
-          </Typography>
-          <Typography
-            color="text.secondary"
-            variant="body2"
-            className='text-center'
-          >
-            <p className='text-center font-semibold mt-2'>Count of scheduled trainings</p>
-            {user.scheduledTrainingCount}
+            {user.timezone}
           </Typography>
         </Box>
       </CardContent>
       <Divider />
     </Card>
-    )
-  
-  };
+  );
