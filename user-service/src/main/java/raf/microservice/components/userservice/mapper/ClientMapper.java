@@ -44,7 +44,7 @@ public class ClientMapper {
         propertyMapper.addMapping(Client::getName, ClientDto::setName);
         propertyMapper.addMapping(Client::getLastName, ClientDto::setLastName);
         propertyMapper.addMapping(Client::getMembershipCardId, ClientDto::setMembershipCardId);
-        propertyMapper.addMapping(Client::getScheduledTrainingCount, ClientDto::setMembershipCardId);
+        propertyMapper.addMapping(Client::getScheduledTrainingCount, ClientDto::setScheduledTrainingCount);
 
         return modelMapper.map(client, ClientDto.class);
     }
