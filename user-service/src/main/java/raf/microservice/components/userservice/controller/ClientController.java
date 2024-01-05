@@ -11,6 +11,7 @@ import raf.microservice.components.userservice.service.ClientService;
 
 @RestController
 @RequestMapping("/api/client")
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class ClientController {
 
     private final ClientService clientService;
