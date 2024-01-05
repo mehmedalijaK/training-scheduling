@@ -17,7 +17,9 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import AuthContext from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 const defaultTheme = createTheme();
 
@@ -26,8 +28,12 @@ const AdminLoginPage = () => {
   const [password, setPassword] = useState('');
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const {loginAdmin} = useContext(AuthContext)
+  const router = useRouter();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     // Basic validation
@@ -46,6 +52,12 @@ const AdminLoginPage = () => {
       username,
       password,
     });
+
+    const {response, data} = await loginAdmin(username, password);
+      if (response.ok) {
+          await router.push("/");
+      } else
+        console.log("error")
   };
 
 

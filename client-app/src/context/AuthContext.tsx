@@ -1,5 +1,6 @@
 "use client"
-import { sendGetMyselfManager, sendGetMyselfUser, sendLoginRequestManager, sendLoginRequestUser } from "@/api/auth/route";
+import { sendGetMyselfAdmin, sendGetMyselfManager, sendGetMyselfUser, sendLoginRequestAdmin, sendLoginRequestManager, sendLoginRequestUser, sendRegisterRequestUser } from "@/api/auth/route";
+import IAdmin from "@/model/IAdmin";
 import IManager from "@/model/IManager";
 import IUser from "@/model/IUser";
 import { useRouter } from "next/navigation";
@@ -14,20 +15,30 @@ interface IAuthResponse {
 
 export interface IAuthContext {
     authenticated: boolean;
-    user: IUser | IManager |null;
+    user: IUser | IManager | IAdmin | null;
     loading: boolean;
+    role: UserRole;
     loginUser: (username: string, password: string) => Promise<IAuthResponse>;
     loginManager: (username: string, password: string) => Promise<IAuthResponse>;
-    //register: (userName: string, email: string, password: string) => Promise<IAuthResponse>;
+    loginAdmin: (username: string, password: string) => Promise<IAuthResponse>;
+    registerUser: (username: string, password: string,
+        email: string, dateBirth: Date, name: string, lastName: string) => Promise<Response>;
     logout: () => void;
     token: string | null;
     //authFetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+}
+
+export enum UserRole {
+    USER = 'user',
+    MANAGER = 'manager',
+    ADMIN = 'admin',
 }
 
 export const AuthProvider = ({children}: { children: JSX.Element | JSX.Element[] }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
     const [token, setToken] = useState<string | null>(null);
+    const [role, setRole] = useState<UserRole>(UserRole.USER)
 
     const getUser = async (token: string) => {
         const response = await sendGetMyselfUser(token);
@@ -39,10 +50,19 @@ export const AuthProvider = ({children}: { children: JSX.Element | JSX.Element[]
         }
         return null;
     }
-
     
     const getManager = async (token: string) => {
         const response = await sendGetMyselfManager(token);
+        if (response.ok) {
+            const user = (await response.json());
+            user.token = token;
+            return user;
+        }
+        return null;
+    }
+
+    const getAdmin = async (token: string) => {
+        const response = await sendGetMyselfAdmin(token);
         if (response.ok) {
             const user = (await response.json());
             user.token = token;
@@ -59,11 +79,11 @@ export const AuthProvider = ({children}: { children: JSX.Element | JSX.Element[]
             localStorage.setItem("token", data.access_token);
             const userData = await getUser(data.access_token);
             console.log(userData);
-            alert(userData)
             if (userData) {
                 setUser(userData);
             console.log(data.access_token)
             setToken(data.access_token);
+            setRole(UserRole.USER)
             }
         }
         return {response, data};
@@ -72,17 +92,41 @@ export const AuthProvider = ({children}: { children: JSX.Element | JSX.Element[]
     const loginManager = async (username: string, password: string) => {
         const response = await sendLoginRequestManager(username, password)
         const data = await response.json()
-        if (response.ok && data.success) {
-            localStorage.setItem("token", data.token);
-            const userData = await getManager(data.token);
+        if (response.ok && data) {
+            localStorage.setItem("token", data.access_token);
+            const userData = await getManager(data.access_token);
             console.log(userData);
             if (userData) {
                 setUser(userData);
-            console.log(data.token)
-            setToken(data.token);
+            console.log(data.access_token)
+            setToken(data.access_token);
+            setRole(UserRole.MANAGER)
             }
         }
         return {response, data};
+    }
+
+    const loginAdmin = async (username: string, password: string) => {
+        const response = await sendLoginRequestAdmin(username, password)
+        const data = await response.json()
+        if (response.ok && data) {
+            localStorage.setItem("token", data.access_token);
+            const userData = await getAdmin(data.access_token);
+            console.log(userData);
+            if (userData) {
+                setUser(userData);
+            console.log(data.access_token)
+            setToken(data.access_token);
+            setRole(UserRole.ADMIN)
+            }
+        }
+        return {response, data};
+    }
+
+    const registerUser = async (username: string, password: string,
+        email: string, dateBirth: Date, name: string, lastName: string) => {
+        const response = await sendRegisterRequestUser(username, password, email, dateBirth, name, lastName);
+        return response;
     }
 
     useEffect(() => {
@@ -112,7 +156,7 @@ export const AuthProvider = ({children}: { children: JSX.Element | JSX.Element[]
     };
 
     return (
-        <AuthContext.Provider value={{authenticated: !!user, user, loginUser, loginManager, loading, token, logout}}>
+        <AuthContext.Provider value={{authenticated: !!user, user, role, loginUser, loginManager, loginAdmin, loading, token, registerUser, logout }}>
             {loading ? <p>Loading</p> : children}
         </AuthContext.Provider>
     )

@@ -17,8 +17,9 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { useState } from 'react';
-
+import { useContext, useState } from 'react';
+import AuthContext from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 const defaultTheme = createTheme();
 
 function Copyright(props: any) {
@@ -37,9 +38,12 @@ const RegisterUserPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
-  const [dateBirth, setDateBirth] = useState('');
+  const [dateBirth, setDateBirth] = useState<Date>();
   const [name, setName] = useState('');
   const [lastName, setLastName] = useState('');
+  const {registerUser} = useContext(AuthContext)
+  const router = useRouter();
+  const [open, setOpen] = useState(true)
 
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
@@ -48,7 +52,7 @@ const RegisterUserPage = () => {
   const [nameError, setNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     // Basic validation
@@ -67,7 +71,7 @@ const RegisterUserPage = () => {
       return;
     }
 
-    if (dateBirth.trim() === '') {
+    if (dateBirth == null) {
       setDateBirthError(true);
       return;
     }
@@ -91,6 +95,12 @@ const RegisterUserPage = () => {
       name,
       lastName,
     });
+
+    const response = await registerUser( username, password, email, dateBirth, name, lastName);
+      if (response.ok) {
+        router.push("/validation?email="+email)
+      } else
+        console.log("error")
   };
 
   return (
@@ -163,6 +173,7 @@ const RegisterUserPage = () => {
                 setEmailError(false);
               }}
             />
+            
             <TextField
               margin="normal"
               fullWidth
@@ -173,7 +184,7 @@ const RegisterUserPage = () => {
               error={dateBirthError}
               helperText={dateBirthError ? 'Date of Birth is required' : ''}
               value={dateBirth}
-              onChange={(e) => {
+              onChange={(e) => {// @ts-ignore
                 setDateBirth(e.target.value);
                 setDateBirthError(false);
               }}
