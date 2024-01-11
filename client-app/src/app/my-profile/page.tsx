@@ -6,25 +6,6 @@ import { AccountProfileDetails } from '@/components/account/account-profile-deta
 import AuthContext, { ProtectedRoute, UserRole } from '@/context/AuthContext';
 import { useContext } from 'react';
 import IUser from '@/model/IUser';
-const states = [
-    {
-      value: 'alabama',
-      label: 'Alabama'
-    },
-    {
-      value: 'new-york',
-      label: 'New York'
-    },
-    {
-      value: 'san-francisco',
-      label: 'San Francisco'
-    },
-    {
-      value: 'los-angeles',
-      label: 'Los Angeles'
-    }
-  ];
-  
 
   const EditPage = () => {
 

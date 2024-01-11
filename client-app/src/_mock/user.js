@@ -23,3 +23,9 @@ export const users = [...Array(24)].map((_, index) => ({
     'Full Stack Developer',
   ]),
 }));
+
+export const messages = [...Array(24)].map((_, index) => ({
+  date_sent: "2023-05-2222",
+  message: 'JOHN',
+  type: 'tip',
+}));
