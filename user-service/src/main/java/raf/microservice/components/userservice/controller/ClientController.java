@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import raf.microservice.components.userservice.dto.*;
 import raf.microservice.components.userservice.security.CheckExists;
@@ -66,4 +67,13 @@ public class ClientController {
     public ResponseEntity<ClientDto> edit(@RequestHeader("Authorization") String authorization, @RequestBody @Valid ClientEditDto clientEditDto){
         return new ResponseEntity<>(clientService.edit(authorization, clientEditDto), HttpStatus.OK);
     }
+
+    @ApiOperation(value = "Edit user")
+    @PutMapping("/edit/training-count")
+    public ResponseEntity<ClientDto> edit(@RequestHeader("Authorization") String authorization, @RequestBody @Valid TrainingDto trainingDto){
+        return new ResponseEntity<>(clientService.editTrainingCount(authorization, trainingDto), HttpStatus.OK);
+    }
+
+
+
 }
