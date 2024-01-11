@@ -10,6 +10,7 @@ import raf.microservice.components.userservice.service.AdminService;
 
 @RestController
 @RequestMapping("/api/admin")
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class AdminController {
 
     private final AdminService adminService;

@@ -244,5 +244,17 @@ public class ClientServiceImpl implements ClientService {
 
     }
 
+    @Override
+    public ClientDto editTrainingCount(String authorization, TrainingDto trainingDto) {
+        String token = authorization.substring(7);
+        Optional<Client> user = clientRepository.findClientByUsername(jwtService.extractUsername(token));
+        if(user.isEmpty()) throw new NotFoundException("Client not found");
+
+        Client userNew = user.get();
+        userNew.setScheduledTrainingCount(trainingDto.getTrainingCount());
+        clientRepository.save(userNew);
+        return clientMapper.clientToClientDto(userNew);
+    }
+
 
 }
