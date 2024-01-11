@@ -11,6 +11,7 @@ import raf.microservice.components.notificationservice.service.TypeService;
 
 @RestController
 @RequestMapping("/type")
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class TypeController {
 
     private final TypeService typeService;
