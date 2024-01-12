@@ -15,5 +15,5 @@ public class ClientDto {
     private String name;
     private String lastName;
     private String membershipCardId;
-    private String scheduledTrainingCount;
+    private int scheduledTrainingCount;
 }

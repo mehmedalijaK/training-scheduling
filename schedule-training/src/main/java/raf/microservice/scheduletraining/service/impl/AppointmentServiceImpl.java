@@ -1,6 +1,7 @@
 package raf.microservice.scheduletraining.service.impl;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -35,6 +36,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     private RestTemplate userServiceRestTemplate;
     private JmsTemplate jmsTemplate;
     private MessageHelper messageHelper;
+    @Value("${secret.help}")
+    private String sh;
 
 
     @Override
@@ -50,13 +53,17 @@ public class AppointmentServiceImpl implements AppointmentService {
         ResponseEntity<ClientDto> res =  userServiceRestTemplate.exchange
                 ("/client/me",HttpMethod.GET,new HttpEntity<>(hh),ClientDto.class);
 
-        int discount =  Integer.parseInt(Objects.requireNonNull(res.getBody()).getScheduledTrainingCount());
+        int discount =  Objects.requireNonNull(res.getBody()).getScheduledTrainingCount();
+        discount++;
         if (discount % appointment.getTraining().getGym().getDiscountAfter() == 0)
             appointment.getTraining().setPrice(0);
         appointmentRepository.save(appointment);
-        res.getBody().setScheduledTrainingCount(String.valueOf(++discount));
+        res.getBody().setScheduledTrainingCount(discount);
+        hh = new HttpHeaders();
+
+        hh.add("Authorization","Bearer " + sh);
         userServiceRestTemplate.exchange
-                ("/edit/training-count",HttpMethod.PUT,new HttpEntity<>(res.getBody(),hh),ClientDto.class);
+                ("/client/edit/training-count",HttpMethod.PUT,new HttpEntity<>(res.getBody()),ClientDto.class);
 
 
         TransferDto transferDto = new TransferDto(res.getBody().getEmail(),"SCHED_TR", new HashMap<>(),
