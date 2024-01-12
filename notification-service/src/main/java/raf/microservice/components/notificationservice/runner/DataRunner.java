@@ -43,6 +43,11 @@ public class DataRunner implements CommandLineRunner {
         type.setFormat("Hello %name% %lastname% ! To verify your account please open following link %link%");
         typeRepository.save(type);
 
+        Type type1 = new Type();
+        type1.setName("LOGIN_USER");
+        type1.setFormat("Hello %name% %lastname% ! Someone just logged in to your account.");
+        typeRepository.save(type1);
+
         Notification notification = new Notification();
         notification.setMessage("Poruka");
         notification.setMailReceiver("karisik.mehmedalija@gmail.com");
