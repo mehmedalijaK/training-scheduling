@@ -12,5 +12,5 @@ public interface ClientService {
     ClientDto edit(String authorization, ClientEditDto clientEditDto);
     void verify(String id);
     void changePassword(ChangePasswordDto changePasswordDto, String authorization);
-    ClientDto editTrainingCount(String authorization, TrainingDto trainingDto);
+    ClientDto editTrainingCount(ClientDto clientDto);
 }

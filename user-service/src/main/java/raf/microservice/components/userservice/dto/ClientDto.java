@@ -10,7 +10,7 @@ public class ClientDto {
     private String name;
     private String lastName;
     private String membershipCardId;
-    private String scheduledTrainingCount;
+    private int scheduledTrainingCount;
 
     public String getUsername() {
         return username;
@@ -60,11 +60,11 @@ public class ClientDto {
         this.membershipCardId = membershipCardId;
     }
 
-    public String getScheduledTrainingCount() {
+    public int getScheduledTrainingCount() {
         return scheduledTrainingCount;
     }
 
-    public void setScheduledTrainingCount(String scheduledTrainingCount) {
+    public void setScheduledTrainingCount(int scheduledTrainingCount) {
         this.scheduledTrainingCount = scheduledTrainingCount;
     }
 }

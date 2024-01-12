@@ -73,11 +73,13 @@ public class ClientServiceImpl implements ClientService {
         verifyToken.generateVerifyToken();
         verifyToken.setUsername(clientCreateDto.getUsername());
         verifyTokenRepository.save(verifyToken);
+
         HashMap<String, String> paramsMap = new HashMap<>();
         paramsMap.put("%name%", clientCreateDto.getName());
         paramsMap.put("%lastname%", clientCreateDto.getLastName());
         paramsMap.put("%link%", "http://localhost:9090/api/client/verify/" + verifyToken.getVerifyToken());
         TransferDto transferDto = new TransferDto(clientCreateDto.getEmail(), "REGISTER_USER", paramsMap, clientCreateDto.getUsername());
+
         jmsTemplate.convertAndSend(sendEmailDestination, messageHelper.createTextMessage(transferDto));
 
 
@@ -251,13 +253,12 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ClientDto editTrainingCount(String authorization, TrainingDto trainingDto) {
-        String token = authorization.substring(7);
-        Optional<Client> user = clientRepository.findClientByUsername(jwtService.extractUsername(token));
+    public ClientDto editTrainingCount(ClientDto clientDto) {
+        Optional<Client> user = clientRepository.findClientByUsername(clientDto.getUsername());
         if(user.isEmpty()) throw new NotFoundException("Client not found");
 
         Client userNew = user.get();
-        userNew.setScheduledTrainingCount(trainingDto.getTrainingCount());
+        userNew.setScheduledTrainingCount(clientDto.getScheduledTrainingCount());
         clientRepository.save(userNew);
         return clientMapper.clientToClientDto(userNew);
     }

@@ -70,8 +70,8 @@ public class ClientController {
 
     @ApiOperation(value = "Edit user")
     @PutMapping("/edit/training-count")
-    public ResponseEntity<ClientDto> edit(@RequestHeader("Authorization") String authorization, @RequestBody @Valid TrainingDto trainingDto){
-        return new ResponseEntity<>(clientService.editTrainingCount(authorization, trainingDto), HttpStatus.OK);
+    public ResponseEntity<ClientDto> edit(@RequestBody @Valid ClientDto clientDto){
+        return new ResponseEntity<>(clientService.editTrainingCount(clientDto), HttpStatus.OK);
     }
 
 
