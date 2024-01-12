@@ -12,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import raf.microservice.scheduletraining.security.service.TokenService;
 
 @Aspect
@@ -52,9 +55,10 @@ public class SecurityAspect {
         }
 
         CheckSecurity checkSecurity = method.getAnnotation(CheckSecurity.class);
-        String role = claims.get("role", String.class);
+        @SuppressWarnings("unchecked")
+        List<Map<String,String>> role = claims.get("role", List.class);
 
-        if (checkSecurity.roles().length == 0 || Arrays.asList(checkSecurity.roles()).contains(role)) {
+        if (checkSecurity.roles().length == 0 || Arrays.asList(checkSecurity.roles()).contains(role.get(0).get("authority"))) {
             return joinPoint.proceed();
         }
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);

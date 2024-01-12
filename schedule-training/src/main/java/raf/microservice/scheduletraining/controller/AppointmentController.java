@@ -63,7 +63,7 @@ public class AppointmentController {
     @PostMapping
     @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_CLIENT"})
     public ResponseEntity<AppointmentDto> add(@RequestHeader("Authorization") String authorization, @RequestBody @Valid AppointmentDto appointmentDto) {
-        return new ResponseEntity<>(appointmentService.add(appointmentDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(appointmentService.add(appointmentDto,authorization), HttpStatus.CREATED);
     }
     @PostMapping("/{id}")
     @CheckSecurity(roles = "ROLE_ADMIN")

@@ -2,6 +2,7 @@ package raf.microservice.scheduletraining.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +19,7 @@ public class Training {
     private Sport sport;
     @ManyToOne
     private Gym gym;
-    @Positive
+    @PositiveOrZero
     private int price;
 
     public Training(Sport sport, Gym gym, int price) {

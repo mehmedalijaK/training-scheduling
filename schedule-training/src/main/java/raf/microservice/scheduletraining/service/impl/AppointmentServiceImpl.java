@@ -1,15 +1,20 @@
 package raf.microservice.scheduletraining.service.impl;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import raf.microservice.scheduletraining.domain.Appointment;
 import raf.microservice.scheduletraining.domain.Gym;
 import raf.microservice.scheduletraining.dto.AppointmentDto;
+import raf.microservice.scheduletraining.dto.ClientDto;
 import raf.microservice.scheduletraining.dto.FreeAppointmentDto;
+import raf.microservice.scheduletraining.dto.TransferDto;
+import raf.microservice.scheduletraining.helper.MessageHelper;
 import raf.microservice.scheduletraining.mapper.AppointmentMapper;
 import raf.microservice.scheduletraining.mapper.GymMapper;
 import raf.microservice.scheduletraining.repository.AppointmentRepository;
@@ -18,29 +23,48 @@ import raf.microservice.scheduletraining.service.AppointmentService;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @AllArgsConstructor
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
 
-    AppointmentRepository appointmentRepository;
-    AppointmentMapper appointmentMapper;
-    GymRepository gymRepository;
+    private AppointmentRepository appointmentRepository;
+    private AppointmentMapper appointmentMapper;
+    private GymRepository gymRepository;
+    private RestTemplate userServiceRestTemplate;
+    private JmsTemplate jmsTemplate;
+    private MessageHelper messageHelper;
+
 
     @Override
-    public AppointmentDto add(AppointmentDto apDTO) {
+    public AppointmentDto add(AppointmentDto apDTO, String aut) {
         Appointment appointment = appointmentMapper.appointmentDtoToAppointment(apDTO);
         if(appointment.getScheduledTime().isAfter(LocalDateTime.now().plusWeeks(2)))
             throw new IllegalArgumentException("You can't schedule that much earlier!");
         if(appointmentRepository.findAppointmentByTimeAndGym(appointment.getScheduledTime(),appointment.getTraining().getGym()) != null)
             throw new IllegalArgumentException("You can't schedule taken appointment!");
-        int discount = appointmentRepository.countClientDiscount(appointment.getClientId());
+
+        HttpHeaders hh = new HttpHeaders();
+        hh.add("Authorization",aut);
+        ResponseEntity<ClientDto> res =  userServiceRestTemplate.exchange
+                ("/client/me",HttpMethod.GET,new HttpEntity<>(hh),ClientDto.class);
+
+        int discount =  Integer.parseInt(Objects.requireNonNull(res.getBody()).getScheduledTrainingCount());
         if (discount % appointment.getTraining().getGym().getDiscountAfter() == 0)
             appointment.getTraining().setPrice(0);
         appointmentRepository.save(appointment);
-        //todo: posalji mejl
+        res.getBody().setScheduledTrainingCount(String.valueOf(++discount));
+        userServiceRestTemplate.exchange
+                ("/edit/training-count",HttpMethod.PUT,new HttpEntity<>(res.getBody(),hh),ClientDto.class);
+
+
+        TransferDto transferDto = new TransferDto(res.getBody().getEmail(),"SCHED_TR", new HashMap<>(),
+                res.getBody().getUsername());
+
+        jmsTemplate.convertAndSend("send_mail_destination",
+                messageHelper.createTextMessage(transferDto));
+
         return appointmentMapper.appointmentToAppointmentDto(appointment);
     }
 
