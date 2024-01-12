@@ -105,6 +105,12 @@ public class ClientServiceImpl implements ClientService {
         authenticationResponseDto.setRefreshToken(refreshToken);
         saveUserToken(user, refreshToken);
 
+        HashMap<String, String> paramsMap = new HashMap<>();
+        paramsMap.put("%name%", user.getName());
+        paramsMap.put("%lastname%", user.getLastName());
+        TransferDto transferDto = new TransferDto(user.getEmail(), "LOGIN_USER", paramsMap, user.getUsername());
+        jmsTemplate.convertAndSend(sendEmailDestination, messageHelper.createTextMessage(transferDto));
+
         return authenticationResponseDto;
     }
 
