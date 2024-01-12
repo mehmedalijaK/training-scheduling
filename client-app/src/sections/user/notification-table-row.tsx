@@ -53,7 +53,14 @@ const NotificationTableRow = (props : INotificationTableRowProps) => {
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
 
-        <TableCell>{date_sent.toString()}</TableCell>
+        <TableCell>{new Date(date_sent).toLocaleString('en-US', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        })}</TableCell>
 
         <TableCell>{message}</TableCell>
         <TableCell>{type}</TableCell>
@@ -70,7 +77,7 @@ const NotificationTableRow = (props : INotificationTableRowProps) => {
         </TableCell> */}
       </TableRow>
 
-      {/* <Popover
+       {/* <Popover
         open={!!open}
         anchorEl={open}
         onClose={handleCloseMenu}
@@ -89,7 +96,7 @@ const NotificationTableRow = (props : INotificationTableRowProps) => {
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
-      </Popover> */}
+      </Popover>  */}
     </>
   );
 }
