@@ -15,6 +15,7 @@ import {
 import { IAccountProfileProps } from './account-profile';
 import React from 'react';
 import AuthContext from '@/context/AuthContext';
+import IManager from '@/model/IManager';
 
 export const AccountProfileDetails = (props : IAccountProfileProps) => {
   const{
@@ -25,8 +26,10 @@ export const AccountProfileDetails = (props : IAccountProfileProps) => {
   const [lastName, setLastName] = useState<string>(user.lastName)
   const [email, setEmail] = useState<string>(user.email)
   const [dateBirth, setDateBirth] = useState(user.dateBirth)
+  const [sportsHall, setSportsHall] = useState((user as IManager).sportsHall)
+  const [dateEmployment, setDateEmployment] = useState((user as IManager).dateEmployment)
   const [open, setOpen] = useState(false);
-  const {editUser} = useContext(AuthContext)
+  const {editUser, editManager} = useContext(AuthContext)
 
   const handleClick = () => {
     setOpen(true);
@@ -68,13 +71,35 @@ export const AccountProfileDetails = (props : IAccountProfileProps) => {
       return;
     }
 
-    const response = await editUser(email, dateBirth, name, lastName);
-    if (response.ok) {
+    if(((user as IManager).sportsHall)){
+        if(!sportsHall.trim()){
+          console.error('Sports hall is required');
+          return;
+        }
+        if(!dateEmployment || !isValidDate(dateEmployment.toString())){
+          console.error('Sports hall is required');
+          return;
+        }
+    }
+
+    if(((user as IManager).sportsHall)){
+      const response = await editManager(email, dateBirth, name, lastName, sportsHall, dateEmployment);
+      console.log("here")
+      if (response.ok) {
         setOpen(true)
     } else
       console.log("error")
+    }else{
+      const response = await editUser(email, dateBirth, name, lastName);
+      if (response.ok) {
+          setOpen(true)
+      } else
+        console.log("error")
+  
+      console.log("ok")
+    }
 
-    console.log("ok")
+
   }
 
   const action = (
@@ -135,6 +160,7 @@ export const AccountProfileDetails = (props : IAccountProfileProps) => {
                   onChange={(e)=>{setLastName(e.target.value)}}
                   required
                   value={lastName}
+                  helperText="Please specify your last name"
                 />
               </Grid>
               <Grid
@@ -148,6 +174,7 @@ export const AccountProfileDetails = (props : IAccountProfileProps) => {
                   onChange={(e)=>{setEmail(e.target.value)}}
                   required
                   value={email}
+                  helperText="Please specify your email address"
                 />
               </Grid>
               <Grid
@@ -164,6 +191,39 @@ export const AccountProfileDetails = (props : IAccountProfileProps) => {
                   helperText="Please specify your birth date"
                 />
               </Grid>
+              {(user as IManager).sportsHall ? <>
+                <Grid
+                xs={12}
+                md={6}
+              >
+                <TextField
+                  fullWidth
+                  name="sportsHall"
+                  label="Sports hall name"
+                  onChange={(e)=>{//@ts-ignore
+                    setSportsHall(e.target.value)}}
+                  type="text"
+                  value={sportsHall}
+                  helperText="Please specify name of your sports hall"
+                />
+              </Grid>
+              </> : <></>}
+              {(user as IManager).sportsHall ? <>
+                <Grid
+                xs={12}
+                md={6}
+              >
+                <TextField
+                  fullWidth
+                  name="dateEmployment"
+                  onChange={(e)=>{//@ts-ignore
+                    setDateEmployment(e.target.value)}}
+                  type="date"
+                  value={dateEmployment}
+                  helperText="Please specify your employment date"
+                />
+              </Grid>
+              </> : <></>}
             </Grid>
           </Box>
         </CardContent>

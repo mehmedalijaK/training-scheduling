@@ -55,6 +55,7 @@ import IManager from '@/model/IManager';
                   lg={8}
                 >
                   {role == UserRole.USER ? <AccountProfileDetails user={user as IUser}/> : <></>}
+                  {role == UserRole.MANAGER ? <AccountProfileDetails user={user as IManager}/> : <></>}
                   
                 </Grid>
               </Grid>
