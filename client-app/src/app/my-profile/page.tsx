@@ -61,6 +61,7 @@ import IManager from '@/model/IManager';
               </Grid>
               <Grid>
                   {role == UserRole.USER ? <AccountChangePassword/> : <></>}
+                  {role == UserRole.MANAGER ? <AccountChangePassword/> : <></>}
               </Grid>
             </div>
           </Stack>

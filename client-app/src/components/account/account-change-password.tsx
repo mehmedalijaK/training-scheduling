@@ -1,15 +1,17 @@
-import { changePasswordUser } from "@/api/auth/route";
-import AuthContext from "@/context/AuthContext";
+import { changePasswordManager, changePasswordUser } from "@/api/auth/route";
+import AuthContext, { UserRole } from "@/context/AuthContext";
 import { Box, Button, Card, CardActions, CardContent, CardHeader, Divider, Grid, IconButton, Snackbar, TextField } from "@mui/material";
 import React, { useContext } from "react";
 import { useState } from "react";
+
+
 
 const AccountChangePassword = () => {
 
     const [currentPassword, setCurrentPassword] = useState<string>();
     const [newPassword, setNewPassword] = useState<string>();
     const [open, setOpen] = useState(false);
-    const {token} = useContext(AuthContext);
+    const {token, role} = useContext(AuthContext);
 
     const handleClick = () => {
         setOpen(true);
@@ -35,13 +37,25 @@ const AccountChangePassword = () => {
             return;
         }
 
-        const response = await changePasswordUser(currentPassword, newPassword, token || "");
-        if (response.ok) {
-            setOpen(true)
-        } else
-        console.log("error")
+        if(role == UserRole.MANAGER){
+            const response = await changePasswordManager(currentPassword, newPassword, token || "");
+            if (response.ok) {
+                setOpen(true)
+            } else
+            console.log("error")
+    
+            console.log("ok")
+        }
+        if(role == UserRole.USER){
+            const response = await changePasswordUser(currentPassword, newPassword, token || "");
+            if (response.ok) {
+                setOpen(true)
+            } else
+            console.log("error")
+    
+            console.log("ok")
+        }
 
-        console.log("ok")
     }
     const action = (
         <React.Fragment>

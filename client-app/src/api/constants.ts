@@ -8,7 +8,7 @@ export const API_SING_IN_ADMIN = `${API_URL}/api/admin/login`;
 export const API_EDIT_USER = `${API_URL}/api/client/edit`;
 export const API_CHANGE_PASSWORD_USER = `${API_URL}/api/client/change-password`;
 export const API_EDIT_MANAGER = `${API_URL}/api/manager/edit`;
-
+export const API_CHANGE_PASSWORD_MANAGER = `${API_URL}/api/manager/change-password`;
 
 export const API_GET_MYSELF_USER = `${API_URL}/api/client/me`;
 export const API_GET_MYSELF_MANAGER = `${API_URL}/api/manager/me`;
