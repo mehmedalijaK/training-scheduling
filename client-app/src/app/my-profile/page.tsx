@@ -7,6 +7,7 @@ import AuthContext, { ProtectedRoute, UserRole } from '@/context/AuthContext';
 import { useContext } from 'react';
 import IUser from '@/model/IUser';
 import AccountChangePassword from '@/components/account/account-change-password';
+import IManager from '@/model/IManager';
 
   const EditPage = () => {
 
@@ -45,7 +46,7 @@ import AccountChangePassword from '@/components/account/account-change-password'
                   lg={4}
                 >
                   {role == UserRole.USER ? <AccountProfile user={user as IUser}/> : <></>}
-                  
+                  {role == UserRole.MANAGER ? <AccountProfile user={user as IManager}/> : <></>}
                   
                 </Grid>
                 <Grid

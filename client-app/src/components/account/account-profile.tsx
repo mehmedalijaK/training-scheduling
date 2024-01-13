@@ -1,3 +1,4 @@
+import IManager from '@/model/IManager';
 import IUser from '@/model/IUser';
 import {
     Avatar,
@@ -11,7 +12,7 @@ import {
   } from '@mui/material';
 
   export interface IAccountProfileProps {
-    user : IUser
+    user : IUser | IManager
   }
   
   export const AccountProfile = (props : IAccountProfileProps) => {
@@ -45,6 +46,7 @@ import {
           <Typography
             color="text.secondary"
             variant="body2"
+            textAlign={'center'}
           >
             <p className='text-center font-semibold mt-2'>Username</p>
             {user.username}
@@ -52,25 +54,64 @@ import {
           <Typography
             color="text.secondary"
             variant="body2"
+            textAlign={'center'}
           >
             <p className='text-center font-semibold mt-2'>Email</p>
             {user.email}
           </Typography>
+
           <Typography
             color="text.secondary"
             variant="body2"
+            textAlign={'center'}
+          >
+            <p className='text-center font-semibold mt-2'>Date of birth</p>
+            {user.dateBirth.toString()}
+          </Typography>
+
+          {(user as IManager).sportsHall ? <>
+              <Typography
+              color="text.secondary"
+              variant="body2"
+              textAlign={'center'}
+            >
+              <p className='text-center font-semibold mt-2'>Sports hall</p>
+              {(user as IManager).sportsHall}
+            </Typography>
+          </> : <></>}
+            
+          {(user as IManager).dateEmployment ? <>
+            <Typography
+              color="text.secondary"
+              variant="body2"
+              textAlign={'center'}
+            >
+              <p className='text-center font-semibold mt-2'>Employment date</p>
+              {(user as IManager).dateEmployment.toString()}
+            </Typography>
+          </>:<></>}
+
+          {(user as IUser).membershipCardId ? <>
+            <Typography
+            color="text.secondary"
+            variant="body2"
+            textAlign={'center'}
           >
             <p className='text-center font-semibold mt-2'>Membership Card Id</p>
-            {user.membershipCardId}
+            {(user as IUser).membershipCardId}
           </Typography>
-          <Typography
+          </>:<></>}
+
+          {(user as IUser).scheduledTrainingCount ? <>
+            <Typography
             color="text.secondary"
             variant="body2"
-            className='text-center'
+            textAlign={'center'}
           >
             <p className='text-center font-semibold mt-2'>Count of scheduled trainings</p>
-            {user.scheduledTrainingCount}
+            {(user as IUser).scheduledTrainingCount}
           </Typography>
+          </>:<></>}
         </Box>
       </CardContent>
       <Divider />

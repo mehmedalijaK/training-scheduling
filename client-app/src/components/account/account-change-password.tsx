@@ -67,8 +67,8 @@ const AccountChangePassword = () => {
         >
         <Card>
             <CardHeader
-            subheader="The information can be edited"
-            title="Profile"
+            subheader=""
+            title="Change password"
             />
             <CardContent sx={{ pt: 0 }}>
             <Box sx={{ p: 2 }}>
@@ -86,6 +86,7 @@ const AccountChangePassword = () => {
                         type="password"
                         helperText="Please enter your current password"
                         label="Current password"
+                        className="w-72 mx-auto"
                         name="currentPassword"
                         onChange={(e)=>{setCurrentPassword(e.target.value)}}
                         required
@@ -95,7 +96,9 @@ const AccountChangePassword = () => {
                         <TextField
                         fullWidth
                         type="password"
+                        helperText="Please enter your new password"
                         label="New password"
+                        className="w-72 mx-auto"
                         name="newPassword"
                         onChange={(e)=>{setNewPassword(e.target.value)}}
                         required
