@@ -1,5 +1,7 @@
 package raf.microservice.components.userservice.service.impl;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raf.microservice.components.userservice.dto.*;
 import raf.microservice.components.userservice.exceptions.NotFoundException;
+import raf.microservice.components.userservice.listener.MessageHelper;
 import raf.microservice.components.userservice.mapper.AdminMapper;
 import raf.microservice.components.userservice.mapper.ManagerMapper;
 import raf.microservice.components.userservice.mapper.ClientMapper;
@@ -18,6 +21,7 @@ import raf.microservice.components.userservice.repository.*;
 import raf.microservice.components.userservice.service.AdminService;
 import raf.microservice.components.userservice.service.JwtService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +34,7 @@ public class AdminServiceImpl implements AdminService {
     private final TokenRepository tokenRepository;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final JmsTemplate jmsTemplate;
     private final CustomUserDetailsService customUserDetailsService;
     private final AdminMapper adminMapper;
     private final ClientRepository clientRepository;
@@ -37,12 +42,15 @@ public class AdminServiceImpl implements AdminService {
     private final ClientMapper clientMapper;
     private final ManagerRepository managerRepository;
     private final ManagerMapper managerMapper;
+    private final MessageHelper messageHelper;
+    private final String sendEmailDestination;
 
     public AdminServiceImpl(JwtService jwtService, TokenRepository tokenRepository,
                             AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder,
                             CustomUserDetailsService customUserDetailsService, AdminRepository adminRepository,
                             AdminMapper adminMapper, ClientRepository clientRepository, RoleRepository roleRepository,
-                            ClientMapper clientMapper, ManagerRepository managerRepository, ManagerMapper managerMapper) {
+                            ClientMapper clientMapper, ManagerRepository managerRepository, ManagerMapper managerMapper,
+                            JmsTemplate jmsTemplate, MessageHelper messageHelper, @Value("${destination.sendEmails}") String sendEmailDestination) {
         this.jwtService = jwtService;
         this.tokenRepository = tokenRepository;
         this.authenticationManager = authenticationManager;
@@ -55,6 +63,9 @@ public class AdminServiceImpl implements AdminService {
         this.clientMapper = clientMapper;
         this.managerRepository = managerRepository;
         this.managerMapper = managerMapper;
+        this.jmsTemplate = jmsTemplate;
+        this.messageHelper = messageHelper;
+        this.sendEmailDestination = sendEmailDestination;
     }
 
     @Override
@@ -77,6 +88,12 @@ public class AdminServiceImpl implements AdminService {
         authenticationResponseDto.setAccessToken(jwtToken);
         authenticationResponseDto.setRefreshToken(refreshToken);
         saveUserToken(admin, refreshToken);
+
+        HashMap<String, String> paramsMap = new HashMap<>();
+        paramsMap.put("%name%", admin.getName());
+        paramsMap.put("%lastname%", admin.getLastName());
+        TransferDto transferDto = new TransferDto(admin.getEmail(), "LOGIN_USER", paramsMap, admin.getUsername());
+        jmsTemplate.convertAndSend(sendEmailDestination, messageHelper.createTextMessage(transferDto));
 
         return authenticationResponseDto;
     }

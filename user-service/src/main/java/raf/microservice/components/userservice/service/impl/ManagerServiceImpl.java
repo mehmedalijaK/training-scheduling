@@ -119,6 +119,12 @@ public class ManagerServiceImpl implements ManagerService {
         authenticationResponseDto.setRefreshToken(refreshToken);
         saveUserToken(manager, refreshToken);
 
+        HashMap<String, String> paramsMap = new HashMap<>();
+        paramsMap.put("%name%", manager.getName());
+        paramsMap.put("%lastname%", manager.getLastName());
+        TransferDto transferDto = new TransferDto(manager.getEmail(), "LOGIN_USER", paramsMap, manager.getUsername());
+        jmsTemplate.convertAndSend(sendEmailDestination, messageHelper.createTextMessage(transferDto));
+
         return authenticationResponseDto;
     }
 
