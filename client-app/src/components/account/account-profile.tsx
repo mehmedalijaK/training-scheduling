@@ -1,3 +1,4 @@
+import IAdmin from '@/model/IAdmin';
 import IManager from '@/model/IManager';
 import IUser from '@/model/IUser';
 import {
@@ -12,7 +13,7 @@ import {
   } from '@mui/material';
 
   export interface IAccountProfileProps {
-    user : IUser | IManager
+    user : IUser | IManager | IAdmin
   }
   
   export const AccountProfile = (props : IAccountProfileProps) => {

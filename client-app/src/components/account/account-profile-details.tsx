@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { IAccountProfileProps } from './account-profile';
 import React from 'react';
-import AuthContext from '@/context/AuthContext';
+import AuthContext, { UserRole } from '@/context/AuthContext';
 import IManager from '@/model/IManager';
 
 export const AccountProfileDetails = (props : IAccountProfileProps) => {
@@ -29,7 +29,7 @@ export const AccountProfileDetails = (props : IAccountProfileProps) => {
   const [sportsHall, setSportsHall] = useState((user as IManager).sportsHall)
   const [dateEmployment, setDateEmployment] = useState((user as IManager).dateEmployment)
   const [open, setOpen] = useState(false);
-  const {editUser, editManager} = useContext(AuthContext)
+  const {editUser, editManager, role, editAdmin} = useContext(AuthContext)
 
   const handleClick = () => {
     setOpen(true);
@@ -82,15 +82,24 @@ export const AccountProfileDetails = (props : IAccountProfileProps) => {
         }
     }
 
-    if(((user as IManager).sportsHall)){
+
+    if(role == UserRole.MANAGER){
       const response = await editManager(email, dateBirth, name, lastName, sportsHall, dateEmployment);
       console.log("here")
       if (response.ok) {
         setOpen(true)
     } else
       console.log("error")
-    }else{
+    }else if(role == UserRole.USER){
       const response = await editUser(email, dateBirth, name, lastName);
+      if (response.ok) {
+          setOpen(true)
+      } else
+        console.log("error")
+  
+      console.log("ok")
+    }else if(role == UserRole.ADMIN){
+      const response = await editAdmin(email, dateBirth, name, lastName);
       if (response.ok) {
           setOpen(true)
       } else

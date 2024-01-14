@@ -8,6 +8,7 @@ import { useContext } from 'react';
 import IUser from '@/model/IUser';
 import AccountChangePassword from '@/components/account/account-change-password';
 import IManager from '@/model/IManager';
+import IAdmin from '@/model/IAdmin';
 
   const EditPage = () => {
 
@@ -47,7 +48,7 @@ import IManager from '@/model/IManager';
                 >
                   {role == UserRole.USER ? <AccountProfile user={user as IUser}/> : <></>}
                   {role == UserRole.MANAGER ? <AccountProfile user={user as IManager}/> : <></>}
-                  
+                  {role == UserRole.ADMIN ? <AccountProfile user={user as IUser}/> : <></>}
                 </Grid>
                 <Grid
                   xs={12}
@@ -56,7 +57,7 @@ import IManager from '@/model/IManager';
                 >
                   {role == UserRole.USER ? <AccountProfileDetails user={user as IUser}/> : <></>}
                   {role == UserRole.MANAGER ? <AccountProfileDetails user={user as IManager}/> : <></>}
-                  
+                  {role == UserRole.ADMIN ? <AccountProfileDetails user={user as IAdmin}/> : <></>}
                 </Grid>
               </Grid>
               <Grid>
