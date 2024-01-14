@@ -1,4 +1,4 @@
-import {API_SIGN_UP_USER, API_SIGN_IN_USER, API_EDIT_ADMIN, API_GET_MYSELF_USER, API_SING_IN_MANAGER, API_GET_MYSELF_MANAGER, API_SING_IN_ADMIN, API_GET_MYSELF_ADMIN, API_SIGN_UP_MANAGER, API_EDIT_USER, API_CHANGE_PASSWORD_USER, API_EDIT_MANAGER, API_CHANGE_PASSWORD_MANAGER} from "@/api/constants";
+import {API_SIGN_UP_USER, API_SIGN_IN_USER, API_EDIT_ADMIN, API_GET_MYSELF_USER, API_SING_IN_MANAGER, API_GET_MYSELF_MANAGER, API_SING_IN_ADMIN, API_GET_MYSELF_ADMIN, API_SIGN_UP_MANAGER, API_EDIT_USER, API_CHANGE_PASSWORD_USER, API_EDIT_MANAGER, API_CHANGE_PASSWORD_MANAGER, API_GET_ALL_USERS} from "@/api/constants";
 
 
 export const sendLoginRequestUser = async (username: string, password: string) => {
@@ -90,6 +90,12 @@ export const changePasswordUser = (oldPassword: string, newPassword: string, tok
         method: 'POST',
         headers: {'Accept': 'application/json', 'Content-Type': 'application/json', "Authorization": "Bearer " + token},
         body: JSON.stringify({oldPassword, newPassword}),
+});
+
+export const getAllUsers = (token: string) =>
+    fetch(API_GET_ALL_USERS, {
+        method: 'GET',
+        headers: {'Accept': 'application/json', 'Content-Type': 'application/json', "Authorization": "Bearer " + token},
 });
 
 export const changePasswordManager = (oldPassword: string, newPassword: string, token: string) =>

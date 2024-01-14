@@ -91,6 +91,10 @@ const UserPage = () => {
     filterName,
   });
 
+  useEffect(()=>{
+    
+  }, [])
+
   const notFound = !dataFiltered.length && !!filterName;
 
   return (

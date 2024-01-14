@@ -5,14 +5,18 @@ import UserTableHead from "@/sections/user/user-table-head";
 import NotificationTableRow from "@/sections/user/notification-table-row";
 import UserTableToolbar from "@/sections/user/user-table-toolbar";
 import { UserView } from "@/sections/user/view"
-import { Button, Card, Container, Stack, Table, TableBody, TableContainer, TablePagination, Typography } from "@mui/material";
+import { Button, Card, Container, Stack, Table, TableBody, TableContainer, TablePagination, TextField, Typography } from "@mui/material";
 import { SetStateAction, use, useEffect, useState } from "react";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 //import { messages } from "@/_mock/user";
 import TableEmptyRows from "@/sections/user/table-empty-rows";
 import { applyFilter, emptyRows, getComparator } from "@/sections/user/utils";
-import { sendGetMyNotifications } from "@/api/notifications/route";
+import { sendGetMyNotifications, sendGetMyNotificationsFiltered } from "@/api/notifications/route";
 import { useContext } from 'react';
 import AuthContext from "@/context/AuthContext";
+import { size } from "lodash";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import dayjs, { Dayjs }  from 'dayjs';
 
 export interface IMessage {
   username: string,
@@ -37,9 +41,14 @@ const Notifications = () => {
     const [filterName, setFilterName] = useState('');
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [messages, setMessages] = useState<IMessage[] | null>([]) 
+    const [messsageCount, setMessageCount] = useState(0)
     const [dateSent, setDateSent] = useState("23.04.2002")
     const [message, setMessage] = useState("Neka poruka")
     const [type, setType] = useState("Register poruka")
+    const [filterTypeName, setFilterTypeName] = useState('')
+    const [filterEmail, setFilterEmail] = useState('')
+    const [filterDateFrom, setFilterDateFrom] = useState<Dayjs | null>(null);
+    const [filterDatetTo, setFilterDateTo] = useState<Dayjs | null>(null);
 
     const handleSort = (event: any, id: SetStateAction<string>) => {
       const isAsc = orderBy === id && order === 'asc';
@@ -77,13 +86,70 @@ const Notifications = () => {
       setSelected(newSelected);
     };
   
-    const handleChangePage = (event : any, newPage : any) => {
+    const handleChangePage = async (event : any, newPage : any) => {
       setPage(newPage);
+
+      const payload = {
+        type_name: filterTypeName || null,
+        email: filterEmail || null,
+        date_from: filterDateFrom?.toISOString() || null,
+        date_to: filterDatetTo?.toISOString() || null
+      }
+
+      try {
+        // @ts-ignore
+        const response  = await sendGetMyNotificationsFiltered(token, newPage, rowsPerPage, payload);
+        if (response.ok) {
+          const ans = (await response.json());
+          console.log(ans)
+          setMessageCount(ans.totalElements)
+          setMessages(ans.content)
+        } 
+        else {
+          setMessageCount(0)
+          setMessages([])
+        }
+      } catch (error) {
+        
+        setMessageCount(0)
+        setMessages([])
+        //@ts-ignore
+        console.error('Error:', error.message);
+      }
     };
   
-    const handleChangeRowsPerPage = (event : any) => {
+    const handleChangeRowsPerPage = async (event : any) => {
       setPage(0);
       setRowsPerPage(parseInt(event.target.value, 10));
+
+      const payload = {
+        type_name: filterTypeName || null,
+        email: filterEmail || null,
+        date_from: filterDateFrom?.toISOString() || null,
+        date_to: filterDatetTo?.toISOString() || null
+      }
+
+      try {
+        // @ts-ignore
+        const response  = await sendGetMyNotificationsFiltered(token, 0, parseInt(event.target.value, 10), payload);
+        if (response.ok) {
+          const ans = (await response.json());
+          console.log(ans)
+          setMessageCount(ans.totalElements)
+          setMessages(ans.content)
+        } 
+        else {
+          setMessageCount(0)
+          setMessages([])
+        }
+      } catch (error) {
+        
+        setMessageCount(0)
+        setMessages([])
+        //@ts-ignore
+        console.error('Error:', error.message);
+      }
+
     };
   
     const handleFilterByName = (event : any) => {
@@ -102,12 +168,23 @@ const Notifications = () => {
     useEffect(() => {
       const fetchData = async () => {
         try {
+
+          const payload = {
+            type_name: null,
+            email: null,
+            date_from: null,
+            date_to: null
+          }
+
           // @ts-ignore
-          const response  = await sendGetMyNotifications(token);
+          const response  = await sendGetMyNotificationsFiltered(token, page, rowsPerPage, payload);
           if (response.ok) {
             const ans = (await response.json());
+            setMessageCount(ans.totalElements)
             setMessages(ans.content)
           } else {
+            setMessageCount(0)
+            setMessages([])
           }
         } catch (error) {
           //@ts-ignore
@@ -125,11 +202,94 @@ const Notifications = () => {
 
     }, [messages])
 
+   const hanleSubmitFilter = async (event : any) =>{
+
+      const payload = {
+        type_name: filterTypeName || null,
+        email: filterEmail || null,
+        date_from: filterDateFrom?.toISOString() || null,
+        date_to: filterDatetTo?.toISOString() || null
+      }
+
+      try {
+        // @ts-ignore
+        const response  = await sendGetMyNotificationsFiltered(token, page, rowsPerPage, payload);
+        if (response.ok) {
+          const ans = (await response.json());
+          console.log(ans)
+          setMessageCount(ans.totalElements)
+          setMessages(ans.content)
+        } 
+        else {
+          setMessageCount(0)
+          setMessages([])
+        }
+      } catch (error) {
+        
+        setMessageCount(0)
+        setMessages([])
+        //@ts-ignore
+        console.error('Error:', error.message);
+      }
+
+     
+
+   }
 
     return (
         <Container suppressHydrationWarning>
           <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-            <Typography variant="h4">Notifications</Typography>
+            <Typography variant="h4">My notifications</Typography>
+          </Stack>
+          <Stack direction="row" spacing={2} justifyContent="space-evenly">
+            <TextField
+              name="typeName"
+              label="Type"
+              helperText="Enter type that you want to be displayed"
+              value={filterTypeName}
+              onChange={(event)=>{setFilterTypeName(event.target.value)}}
+              fullWidth
+              margin="normal"
+              sx={{ flex: 1 }}
+            />
+             <TextField
+              name="email"
+              label="Email"
+              value={filterEmail}
+              fullWidth
+              onChange={(event)=>{setFilterEmail(event.target.value)}}
+              helperText="Enter email that you want to be displayed"
+              sx={{ flex: 1 }}
+              margin="normal"
+            /> 
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateTimePicker
+                value={filterDateFrom}
+                label="Date from"
+                ampm={false}
+                onChange={(value) => setFilterDateFrom(value)}
+                sx={{ flex: 1 }}
+              />
+              <DateTimePicker
+                value={filterDatetTo}
+                onChange={(value) => setFilterDateTo(value)}
+                label="Date to"
+                ampm={false}
+                sx={{ flex: 1 }}
+              />
+            </LocalizationProvider>
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              style={{ background: 'royalblue' }}
+              sx={{ flex: 1 }}
+              onClick={hanleSubmitFilter}
+              className="max-h-12"
+            >
+              Submit filters
+            </Button>
           </Stack>
           <Card>
            
@@ -151,7 +311,7 @@ const Notifications = () => {
                 />
                 <TableBody>
                   {dataFiltered
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row : IMessage, index: any) => (
                       <NotificationTableRow
                         key={index}
@@ -165,7 +325,7 @@ const Notifications = () => {
                     ))}
                   <TableEmptyRows
                     height={77}
-                    emptyRows={emptyRows(page, rowsPerPage, messages?.length)}
+                    emptyRows={emptyRows(page, rowsPerPage, message.length)}
                   />
                   {notFound && <TableNoData query={filterName} />}
                 </TableBody>
@@ -176,7 +336,7 @@ const Notifications = () => {
             <TablePagination
               page={page}
               component="div"
-              count={messages?.length || 0}
+              count={messsageCount || 0}
               rowsPerPage={rowsPerPage}
               onPageChange={handleChangePage}
               rowsPerPageOptions={[5, 10, 25]}
