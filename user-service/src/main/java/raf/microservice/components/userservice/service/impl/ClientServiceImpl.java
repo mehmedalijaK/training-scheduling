@@ -246,7 +246,7 @@ public class ClientServiceImpl implements ClientService {
         HashMap<String, String> paramsMap = new HashMap<>();
         paramsMap.put("%name%", userNew.getName());
         paramsMap.put("%lastname%", userNew.getLastName());
-        TransferDto transferDto = new TransferDto(userNew.getEmail(), "CHANGE_PASSWORD", paramsMap, userNew.getUsername());
+        TransferDto transferDto = new TransferDto(userNew.getEmail(), "CHANGED_PASSWORD", paramsMap, userNew.getUsername());
         jmsTemplate.convertAndSend(sendEmailDestination, messageHelper.createTextMessage(transferDto));
 
 

@@ -235,7 +235,7 @@ public class ManagerServiceImpl implements ManagerService {
         HashMap<String, String> paramsMap = new HashMap<>();
         paramsMap.put("%name%", managerNew.getName());
         paramsMap.put("%lastname%", managerNew.getLastName());
-        TransferDto transferDto = new TransferDto(managerNew.getEmail(), "CHANGE_PASSWORD", paramsMap, managerNew.getUsername());
+        TransferDto transferDto = new TransferDto(managerNew.getEmail(), "CHANGED_PASSWORD", paramsMap, managerNew.getUsername());
         jmsTemplate.convertAndSend(sendEmailDestination, messageHelper.createTextMessage(transferDto));
     }
 
