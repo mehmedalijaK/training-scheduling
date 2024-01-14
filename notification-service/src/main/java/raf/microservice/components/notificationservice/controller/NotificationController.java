@@ -27,7 +27,7 @@ public class NotificationController {
         return new ResponseEntity<>(notificationService.findMe(authorization, pageable) ,HttpStatus.OK);
     }
 
-    @GetMapping("/me/filter")
+    @PostMapping("/me/filter")
     public ResponseEntity<Page<NotificationDto>> getMyNotificationsFiltered(@RequestHeader("Authorization") String authorization,
                                                                     Pageable pageable, @RequestBody @Valid FilterDto filterDto){
         return new ResponseEntity<>(notificationService.findMeFiltered(authorization, pageable, filterDto) ,HttpStatus.OK);

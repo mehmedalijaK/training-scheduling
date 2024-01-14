@@ -67,6 +67,8 @@ public class NotificationServiceImpl implements NotificationService {
         Optional<Type> typeOptional = typeRepository.findTypeByName(filterDto.getType());
 
         if(typeOptional.isPresent()) type = typeOptional.get().getId();
+        if(filterDto.getType() != null && typeOptional.isEmpty())
+            throw new NotFoundException("Notification list not found");
 
         System.out.println(type);
         System.out.println(filterDto.getEmail());
