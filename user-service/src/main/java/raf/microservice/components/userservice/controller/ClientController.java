@@ -2,6 +2,8 @@ package raf.microservice.components.userservice.controller;
 
 import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
@@ -74,6 +76,10 @@ public class ClientController {
         return new ResponseEntity<>(clientService.editTrainingCount(clientDto), HttpStatus.OK);
     }
 
-
+    @ApiOperation(value = "Get all users")
+    @GetMapping("/all")
+    public ResponseEntity<Page<ClientDto>> allUsers(@RequestHeader("Authorization") String authorization, Pageable pageable){
+        return new ResponseEntity<>(clientService.getAllUsers(pageable), HttpStatus.OK);
+    }
 
 }

@@ -1,5 +1,7 @@
 package raf.microservice.components.userservice.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import raf.microservice.components.userservice.dto.*;
 import raf.microservice.components.userservice.model.Client;
 
@@ -13,4 +15,5 @@ public interface ClientService {
     void verify(String id);
     void changePassword(ChangePasswordDto changePasswordDto, String authorization);
     ClientDto editTrainingCount(ClientDto clientDto);
+    Page<ClientDto> getAllUsers(Pageable pageable);
 }

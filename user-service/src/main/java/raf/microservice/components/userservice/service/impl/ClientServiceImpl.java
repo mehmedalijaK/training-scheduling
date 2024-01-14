@@ -1,6 +1,9 @@
 package raf.microservice.components.userservice.service.impl;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -261,6 +265,19 @@ public class ClientServiceImpl implements ClientService {
         userNew.setScheduledTrainingCount(clientDto.getScheduledTrainingCount());
         clientRepository.save(userNew);
         return clientMapper.clientToClientDto(userNew);
+    }
+
+    @Override
+    public Page<ClientDto> getAllUsers(Pageable pageable) {
+        Page<Client> clients = clientRepository.findAll(pageable);
+
+        if(clients.isEmpty()) throw new NotFoundException("There are no users");
+
+        List<ClientDto> clientsDtoList = clients
+                .stream()
+                .map(clientMapper::clientToClientDto).collect(Collectors.toList());
+
+        return new PageImpl<>(clientsDtoList, pageable, clients.getTotalElements());
     }
 
 
