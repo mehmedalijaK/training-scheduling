@@ -3,6 +3,8 @@ package raf.microservice.components.userservice.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,5 +68,11 @@ public class ManagerController {
     public ResponseEntity<ManagerDto> edit(@RequestHeader("Authorization") String authorization,
                                         @RequestBody @Valid ManagerEditDto managerEditDto){
         return new ResponseEntity<>(managerService.edit(authorization, managerEditDto), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Get all managers")
+    @GetMapping("/all")
+    public ResponseEntity<Page<ManagerDto>> allManagers(@RequestHeader("Authorization") String authorization, Pageable pageable){
+        return new ResponseEntity<>(managerService.getAllManagers(pageable), HttpStatus.OK);
     }
 }

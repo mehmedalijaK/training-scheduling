@@ -1,6 +1,9 @@
 package raf.microservice.components.userservice.service.impl;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -237,6 +241,19 @@ public class ManagerServiceImpl implements ManagerService {
         paramsMap.put("%lastname%", managerNew.getLastName());
         TransferDto transferDto = new TransferDto(managerNew.getEmail(), "CHANGED_PASSWORD", paramsMap, managerNew.getUsername());
         jmsTemplate.convertAndSend(sendEmailDestination, messageHelper.createTextMessage(transferDto));
+    }
+
+    @Override
+    public Page<ManagerDto> getAllManagers(Pageable pageable) {
+        Page<Manager> managers = managerRepository.findAll(pageable);
+
+        if(managers.isEmpty()) throw new NotFoundException("There are no managers");
+
+        List<ManagerDto> managerDtoList = managers
+                .stream()
+                .map(managerMapper::managerToManagerDto).collect(Collectors.toList());
+
+        return new PageImpl<>(managerDtoList, pageable, managers.getTotalElements());
     }
 
     private void revokeAllUserTokens(Manager user) { // TODO: transfer to JWT class

@@ -1,5 +1,7 @@
 package raf.microservice.components.userservice.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import raf.microservice.components.userservice.dto.*;
 import raf.microservice.components.userservice.model.Manager;
 
@@ -17,4 +19,6 @@ public interface ManagerService {
     void verify(String id);
 
     void changePassword(ChangePasswordDto changePasswordDto, String authorization);
+
+    Page<ManagerDto> getAllManagers(Pageable pageable);
 }

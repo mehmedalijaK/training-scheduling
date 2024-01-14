@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/manager/me").hasRole("MANAGER")
                         .requestMatchers("/api/manager/edit").hasRole("MANAGER")
                         .requestMatchers("/api/client/all").hasRole("ADMIN")
+                        .requestMatchers("/api/manager/all").hasRole("ADMIN")
                         .requestMatchers(WHITE_LIST_URL).permitAll() //  allow paths to access without auth
                         .anyRequest().authenticated() // all other paths need auth
                 )
