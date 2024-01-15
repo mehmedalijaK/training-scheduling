@@ -18,3 +18,4 @@ export const API_GET_MYSELF_ADMIN = `${API_URL}/api/admin/me`;
 
 export const NOTIFICATIONS_GET_ME = `${NOTIFICATIONS_URL}/notification/me`;
 export const NOTIFICATIONS_GET_ME_FILTERED = `${NOTIFICATIONS_URL}/notification/me/filter`;
+export const NOTIFICATIONS_GET_ALL_FILTERED = `${NOTIFICATIONS_URL}/notification/all`;

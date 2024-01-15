@@ -1,4 +1,4 @@
-import { NOTIFICATIONS_GET_ME, NOTIFICATIONS_GET_ME_FILTERED } from "../constants";
+import { NOTIFICATIONS_GET_ALL_FILTERED, NOTIFICATIONS_GET_ME, NOTIFICATIONS_GET_ME_FILTERED } from "../constants";
 
 export const sendGetMyNotifications = (token: string, page: number, size: number) =>
     fetch(NOTIFICATIONS_GET_ME+"?page="+page+"&size="+size, {
@@ -8,6 +8,13 @@ export const sendGetMyNotifications = (token: string, page: number, size: number
 
 export const sendGetMyNotificationsFiltered = (token: string, page: number, size: number, payload: any) =>
     fetch(NOTIFICATIONS_GET_ME_FILTERED+"?page="+page+"&size="+size, {
+        method: 'POST',
+        headers: {'Accept': 'application/json', 'Content-Type': 'application/json', "Authorization": "Bearer " + token},
+        body: JSON.stringify(payload)
+});
+
+export const sendGetAllNotifications = (token: string, page: number, size: number, payload: any) =>
+    fetch(NOTIFICATIONS_GET_ALL_FILTERED+"?page="+page+"&size="+size, {
         method: 'POST',
         headers: {'Accept': 'application/json', 'Content-Type': 'application/json', "Authorization": "Bearer " + token},
         body: JSON.stringify(payload)

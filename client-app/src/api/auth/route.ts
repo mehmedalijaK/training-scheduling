@@ -92,8 +92,8 @@ export const changePasswordUser = (oldPassword: string, newPassword: string, tok
         body: JSON.stringify({oldPassword, newPassword}),
 });
 
-export const getAllUsers = (token: string) =>
-    fetch(API_GET_ALL_USERS, {
+export const getAllUsers = (token: string, page: number, size: number) =>
+    fetch(API_GET_ALL_USERS+"?page="+page+"&size="+size, {
         method: 'GET',
         headers: {'Accept': 'application/json', 'Content-Type': 'application/json', "Authorization": "Bearer " + token},
 });

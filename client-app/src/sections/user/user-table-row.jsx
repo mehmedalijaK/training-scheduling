@@ -19,11 +19,12 @@ import Iconify from '@/components/iconify';
 export default function UserTableRow({
   selected,
   name,
-  avatarUrl,
-  company,
-  role,
-  isVerified,
-  status,
+  lastName,
+  email,
+  dateBirth,
+  membershipCardId,
+  scheduledTrainingCount,
+  username,
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
