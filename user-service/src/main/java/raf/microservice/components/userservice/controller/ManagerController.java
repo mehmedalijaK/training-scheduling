@@ -72,7 +72,7 @@ public class ManagerController {
 
     @ApiOperation(value = "Get all managers")
     @GetMapping("/all")
-    public ResponseEntity<Page<ManagerDto>> allManagers(@RequestHeader("Authorization") String authorization, Pageable pageable){
+    public ResponseEntity<Page<ManagerAllDto>> allManagers(@RequestHeader("Authorization") String authorization, Pageable pageable){
         return new ResponseEntity<>(managerService.getAllManagers(pageable), HttpStatus.OK);
     }
 }

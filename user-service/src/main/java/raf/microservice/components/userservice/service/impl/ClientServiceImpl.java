@@ -268,14 +268,14 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Page<ClientDto> getAllUsers(Pageable pageable) {
+    public Page<ClientAllDto> getAllUsers(Pageable pageable) {
         Page<Client> clients = clientRepository.findAll(pageable);
 
         if(clients.isEmpty()) throw new NotFoundException("There are no users");
 
-        List<ClientDto> clientsDtoList = clients
+        List<ClientAllDto> clientsDtoList = clients
                 .stream()
-                .map(clientMapper::clientToClientDto).collect(Collectors.toList());
+                .map(clientMapper::clientToClientAllDto).collect(Collectors.toList());
 
         return new PageImpl<>(clientsDtoList, pageable, clients.getTotalElements());
     }

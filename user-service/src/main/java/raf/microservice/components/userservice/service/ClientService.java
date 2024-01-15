@@ -15,5 +15,5 @@ public interface ClientService {
     void verify(String id);
     void changePassword(ChangePasswordDto changePasswordDto, String authorization);
     ClientDto editTrainingCount(ClientDto clientDto);
-    Page<ClientDto> getAllUsers(Pageable pageable);
+    Page<ClientAllDto> getAllUsers(Pageable pageable);
 }

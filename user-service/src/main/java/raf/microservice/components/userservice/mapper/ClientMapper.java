@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import raf.microservice.components.userservice.dto.ClientAllDto;
 import raf.microservice.components.userservice.dto.ClientCreateDto;
 import raf.microservice.components.userservice.dto.ClientDto;
 import raf.microservice.components.userservice.model.Client;
@@ -47,5 +48,20 @@ public class ClientMapper {
         propertyMapper.addMapping(Client::getScheduledTrainingCount, ClientDto::setScheduledTrainingCount);
 
         return modelMapper.map(client, ClientDto.class);
+    }
+
+    public ClientAllDto clientToClientAllDto(Client client) {
+        ClientAllDto clientAllDto = new ClientAllDto();
+        clientAllDto.setId(client.getId());
+        clientAllDto.setEmail(client.getEmail());
+        clientAllDto.setDateBirth(client.getDateBirth());
+        clientAllDto.setName(client.getName());
+        clientAllDto.setLastName(client.getLastName());
+        clientAllDto.setUsername(client.getUsername());
+        clientAllDto.setRole(client.getRole());
+        clientAllDto.setMembershipCardId(client.getMembershipCardId());
+        clientAllDto.setScheduledTrainingCount(client.getScheduledTrainingCount());
+
+        return  clientAllDto;
     }
 }

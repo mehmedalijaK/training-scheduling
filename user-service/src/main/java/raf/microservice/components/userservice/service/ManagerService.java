@@ -20,5 +20,5 @@ public interface ManagerService {
 
     void changePassword(ChangePasswordDto changePasswordDto, String authorization);
 
-    Page<ManagerDto> getAllManagers(Pageable pageable);
+    Page<ManagerAllDto> getAllManagers(Pageable pageable);
 }

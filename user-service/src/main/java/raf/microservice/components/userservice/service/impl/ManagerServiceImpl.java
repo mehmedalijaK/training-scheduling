@@ -244,14 +244,14 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public Page<ManagerDto> getAllManagers(Pageable pageable) {
+    public Page<ManagerAllDto> getAllManagers(Pageable pageable) {
         Page<Manager> managers = managerRepository.findAll(pageable);
 
         if(managers.isEmpty()) throw new NotFoundException("There are no managers");
 
-        List<ManagerDto> managerDtoList = managers
+        List<ManagerAllDto> managerDtoList = managers
                 .stream()
-                .map(managerMapper::managerToManagerDto).collect(Collectors.toList());
+                .map(managerMapper::managerToManagerAllDto).collect(Collectors.toList());
 
         return new PageImpl<>(managerDtoList, pageable, managers.getTotalElements());
     }

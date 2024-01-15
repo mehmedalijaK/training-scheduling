@@ -5,6 +5,7 @@ import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import raf.microservice.components.userservice.dto.ManagerAllDto;
 import raf.microservice.components.userservice.dto.ManagerCreateDto;
 import raf.microservice.components.userservice.dto.ManagerDto;
 import raf.microservice.components.userservice.model.Manager;
@@ -51,5 +52,20 @@ public class ManagerMapper {
         propertyMapper.addMapping(Manager::getDateEmployment, ManagerDto::setDateEmployment);
 
         return modelMapper.map(manager, ManagerDto.class);
+    }
+
+    public ManagerAllDto managerToManagerAllDto(Manager manager) {
+        ManagerAllDto managerAllDto = new ManagerAllDto();
+        managerAllDto.setId(manager.getId());
+        managerAllDto.setDateEmployment(manager.getDateEmployment());
+        managerAllDto.setName(manager.getName());
+        managerAllDto.setEmail(manager.getEmail());
+        managerAllDto.setLastName(manager.getLastName());
+        managerAllDto.setDateBirth(manager.getDateBirth());
+        managerAllDto.setRole(manager.getRole());
+        managerAllDto.setSportsHall(manager.getSportsHall());
+        managerAllDto.setUsername(manager.getUsername());
+
+        return  managerAllDto;
     }
 }

@@ -78,7 +78,7 @@ public class ClientController {
 
     @ApiOperation(value = "Get all users")
     @GetMapping("/all")
-    public ResponseEntity<Page<ClientDto>> allUsers(@RequestHeader("Authorization") String authorization, Pageable pageable){
+    public ResponseEntity<Page<ClientAllDto>> allUsers(@RequestHeader("Authorization") String authorization, Pageable pageable){
         return new ResponseEntity<>(clientService.getAllUsers(pageable), HttpStatus.OK);
     }
 
