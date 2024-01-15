@@ -38,9 +38,26 @@ public class NotificationServiceImpl implements NotificationService {
 
 
     @Override
-    public Page<NotificationDto> findAll(Pageable pageable) {
-        return notificationRepository.findAll(pageable)
-                .map(notificationMapper::notificationToNotificationDto);
+    public Page<NotificationDto> findAll(Pageable pageable, FilterDto filterDto) {
+
+        Long type = null;
+        Optional<Type> typeOptional = typeRepository.findTypeByName(filterDto.getType());
+
+        if(typeOptional.isPresent()) type = typeOptional.get().getId();
+        if(filterDto.getType() != null && typeOptional.isEmpty())
+            throw new NotFoundException("Notification list not found");
+
+        Page<Notification> notificationList = notificationRepository.findByFiltersAll(type, filterDto.getEmail(),
+                filterDto.getDateFrom(), filterDto.getDateTo(), pageable);
+
+
+        if(notificationList.isEmpty())  throw new NotFoundException("Notification list not found");
+
+        List<NotificationDto> notificationDtoList = notificationList
+                .stream()
+                .map(notificationMapper::notificationToNotificationDto).collect(Collectors.toList());
+
+        return new PageImpl<>(notificationDtoList, pageable, notificationList.getTotalElements());
     }
 
     @Override
@@ -61,6 +78,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public Page<NotificationDto> findMeFiltered(String authorization, Pageable pageable, FilterDto filterDto) {
+
         Long type = null;
         String token = authorization.substring(7);
 
@@ -69,11 +87,6 @@ public class NotificationServiceImpl implements NotificationService {
         if(typeOptional.isPresent()) type = typeOptional.get().getId();
         if(filterDto.getType() != null && typeOptional.isEmpty())
             throw new NotFoundException("Notification list not found");
-
-        System.out.println(type);
-        System.out.println(filterDto.getEmail());
-        System.out.println(filterDto.getDateFrom());
-        System.out.println(filterDto.getDateTo());
 
         Page<Notification> notificationList = notificationRepository.findByFilters(jwtService.extractUsername(token),
                 type, filterDto.getEmail(), filterDto.getDateFrom(), filterDto.getDateTo(), pageable);

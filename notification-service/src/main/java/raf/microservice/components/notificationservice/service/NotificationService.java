@@ -6,7 +6,7 @@ import raf.microservice.components.notificationservice.dto.FilterDto;
 import raf.microservice.components.notificationservice.dto.NotificationDto;
 
 public interface NotificationService {
-    Page<NotificationDto> findAll(Pageable pageable);
+    Page<NotificationDto> findAll(Pageable pageable, FilterDto filterDto);
 
     Page<NotificationDto> findMe(String authorization, Pageable pageable);
 

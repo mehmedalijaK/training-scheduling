@@ -33,8 +33,8 @@ public class NotificationController {
         return new ResponseEntity<>(notificationService.findMeFiltered(authorization, pageable, filterDto) ,HttpStatus.OK);
     }
 
-    @GetMapping("/all")  //
-    public ResponseEntity<Page<NotificationDto>> getAllNotifications(Pageable pageable){
-        return new ResponseEntity<>(notificationService.findAll(pageable) ,HttpStatus.OK);
+    @PostMapping("/all")  //
+    public ResponseEntity<Page<NotificationDto>> getAllNotifications(Pageable pageable, @RequestBody @Valid FilterDto filterDto){
+        return new ResponseEntity<>(notificationService.findAll(pageable, filterDto) ,HttpStatus.OK);
     }
 }
