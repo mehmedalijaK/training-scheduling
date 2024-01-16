@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/gyms")
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class GymController {
 
     private GymService gymService;
@@ -36,7 +37,7 @@ public class GymController {
     }
 
     @PostMapping
-    @CheckSecurity(roles = {"ROLE_ADMIN"})
+    @CheckSecurity(roles = {"ROLE_MANAGER"})
     public ResponseEntity<GymDto> add(@RequestHeader("Authorization") String authorization, @RequestBody @Valid GymDto gymDto) {
         return new ResponseEntity<>(gymService.add(gymDto), HttpStatus.CREATED);
     }

@@ -14,6 +14,7 @@ import raf.microservice.scheduletraining.service.TrainingService;
 import java.util.List;
 @RestController
 @RequestMapping("/trainings")
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class TrainingController {
 
     private TrainingService trainingService;
