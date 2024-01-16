@@ -39,6 +39,7 @@ public class ClientMapper {
     public ClientDto clientToClientDto(Client client){
         ModelMapper modelMapper = new ModelMapper();
         TypeMap<Client, ClientDto> propertyMapper = modelMapper.createTypeMap(Client.class, ClientDto.class);
+        propertyMapper.addMapping(Client::getId, ClientDto::setId);
         propertyMapper.addMapping(Client::getUsername, ClientDto::setUsername);
         propertyMapper.addMapping(Client::getEmail, ClientDto::setEmail);
         propertyMapper.addMapping(Client::getDateBirth, ClientDto::setDateBirth);

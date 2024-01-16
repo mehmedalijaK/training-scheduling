@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 public class ClientDto {
 
+    private long id;
     private String username;
     private String email;
     private LocalDate dateBirth;
@@ -66,5 +67,13 @@ public class ClientDto {
 
     public void setScheduledTrainingCount(int scheduledTrainingCount) {
         this.scheduledTrainingCount = scheduledTrainingCount;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

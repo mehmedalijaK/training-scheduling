@@ -71,7 +71,7 @@ public class AppointmentController {
     public ResponseEntity<AppointmentDto> add(@RequestHeader("Authorization") String authorization, @RequestBody @Valid AppointmentDto appointmentDto) {
         return new ResponseEntity<>(appointmentService.add(appointmentDto,authorization), HttpStatus.CREATED);
     }
-    @PostMapping
+    @PostMapping("/add/sport")
     @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_CLIENT"})
     public ResponseEntity<AppointmentDto> addWithSport(@RequestHeader("Authorization") String authorization, @RequestBody @Valid AppointmentDto appointmentDto,@RequestBody @Valid String sport) {
         return new ResponseEntity<>(appointmentService.addWithSport(appointmentDto,authorization,sport), HttpStatus.CREATED);

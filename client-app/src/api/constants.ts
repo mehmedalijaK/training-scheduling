@@ -31,4 +31,7 @@ export const SCHEDULER_ADD_GYM = `${SCHEDULER_URL}/api/gyms`;
 export const SCHEDULER_FIND_GYM_BY_MANAGER_ID = `${SCHEDULER_URL}/api/gyms/manager`;
 export const SCHEDULER_EDIT_GYM_BY_GYM_ID = `${SCHEDULER_URL}/api/gyms`;
 export const SCHEDULER_FIND_ALL_FREE_APPOINTMENTS = `${SCHEDULER_URL}/api/appointments/free`;
+export const SCHEDULER_FIND_ALL_SPORTS = `${SCHEDULER_URL}/api/gyms/sports/all`;
+export const SCHEDULER_RESERVE_WITH_SPORT = `${SCHEDULER_URL}/api/appointments/add/sport`;
+
 

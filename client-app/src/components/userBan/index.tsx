@@ -2,7 +2,7 @@ import { banUser, getAllUsers, unbanUser } from "@/api/auth/route";
 import { IMessage } from "@/app/notifications/page";
 import AuthContext from "@/context/AuthContext";
 import IUserAll from "@/model/IUserAll";
-import { Box, Button, Checkbox, Chip, TableCell, TableHead, TableRow, TableSortLabel, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Chip, Modal, TableCell, TableHead, TableRow, TableSortLabel, Typography } from "@mui/material";
 import { DataGrid, DataGridProps, GridPaginationModel } from "@mui/x-data-grid";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
@@ -170,10 +170,8 @@ const UserBan = () => {
                   rowCount={userCount}
                   pageSizeOptions={[5, 10, 25]}
                   paginationMode="server"
-              />
-                      
+              />            
           </div>
-
         </>
     )
 }

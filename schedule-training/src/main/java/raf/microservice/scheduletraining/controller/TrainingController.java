@@ -43,7 +43,6 @@ public class TrainingController {
     @PostMapping("/{id}")
     @CheckSecurity(roles = {"ROLE_ADMIN"})
     public ResponseEntity<TrainingDto> changePrice(@RequestHeader("Authorization") String authorization, @RequestBody @Valid TrainingDto trainingDto, @PathVariable String id) {
-
         return new ResponseEntity<>(trainingService.updateById(Long.valueOf(id),trainingDto.getPrice()), HttpStatus.CREATED);
     }
 

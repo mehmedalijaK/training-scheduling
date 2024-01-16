@@ -6,9 +6,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import raf.microservice.scheduletraining.domain.Sport;
 import raf.microservice.scheduletraining.dto.AppointmentDto;
 import raf.microservice.scheduletraining.dto.EditGymDto;
 import raf.microservice.scheduletraining.dto.GymDto;
+import raf.microservice.scheduletraining.dto.SportDto;
+import raf.microservice.scheduletraining.repository.SportRepository;
 import raf.microservice.scheduletraining.security.CheckSecurity;
 import raf.microservice.scheduletraining.service.GymService;
 
@@ -20,9 +23,11 @@ import java.util.List;
 public class GymController {
 
     private GymService gymService;
+    private final SportRepository sportRepository;
 
-    public GymController(GymService gymService) {
+    public GymController(GymService gymService, SportRepository sportRepository) {
         this.gymService = gymService;
+        this.sportRepository = sportRepository;
     }
 
     @GetMapping
@@ -35,6 +40,12 @@ public class GymController {
     @CheckSecurity
     public ResponseEntity<GymDto> findById(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id) {
         return new ResponseEntity<>(gymService.findById(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/sports/all")
+    @CheckSecurity
+    public ResponseEntity<List<Sport>> findAllSports(@RequestHeader("Authorization") String authorization) {
+        return new ResponseEntity<>(sportRepository.findAll(), HttpStatus.OK);
     }
 
     @GetMapping("/manager/{id}")
