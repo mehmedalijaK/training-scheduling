@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import raf.microservice.scheduletraining.domain.Sport;
 import raf.microservice.scheduletraining.dto.AppointmentDto;
+import raf.microservice.scheduletraining.dto.ClientIdDto;
 import raf.microservice.scheduletraining.dto.FreeAppointmentDto;
 
 import java.time.DayOfWeek;
@@ -21,8 +22,8 @@ public interface AppointmentService {
     List<FreeAppointmentDto> filterByType(boolean individual);
     List<FreeAppointmentDto> filterByDay(String day);
     List<FreeAppointmentDto> sortByTime();
-    void cancelForManager(Long id, String aut);
-    void deleteById(Long apId, String aut);
+    void cancelForManager(Long id, ClientIdDto clientIdDto, String auth);
+    void deleteById(Long apId, String aut, ClientIdDto clientIdDto);
     List<AppointmentDto> findAllForClientId(Long id);
 
 

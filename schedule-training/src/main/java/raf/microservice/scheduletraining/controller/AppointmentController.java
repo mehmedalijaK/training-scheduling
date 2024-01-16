@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import raf.microservice.scheduletraining.domain.Appointment;
 import raf.microservice.scheduletraining.dto.AppointmentDto;
+import raf.microservice.scheduletraining.dto.ClientIdDto;
 import raf.microservice.scheduletraining.dto.FreeAppointmentDto;
 import raf.microservice.scheduletraining.dto.GymDto;
 import raf.microservice.scheduletraining.security.CheckSecurity;
@@ -66,12 +67,12 @@ public class AppointmentController {
         return new ResponseEntity<>(appointmentService.findAllForClientId(id), HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping("/add/sport")
     @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_CLIENT"})
     public ResponseEntity<AppointmentDto> add(@RequestHeader("Authorization") String authorization, @RequestBody @Valid AppointmentDto appointmentDto) {
         return new ResponseEntity<>(appointmentService.add(appointmentDto,authorization), HttpStatus.CREATED);
     }
-    @PostMapping("/add/sport")
+    @PostMapping("/add")
     @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_CLIENT"})
     public ResponseEntity<AppointmentDto> addWithSport(@RequestHeader("Authorization") String authorization, @RequestBody @Valid AppointmentDto appointmentDto) {
         return new ResponseEntity<>(appointmentService.addWithSport(appointmentDto,authorization), HttpStatus.CREATED);
@@ -84,14 +85,16 @@ public class AppointmentController {
 
     @DeleteMapping("/{id}")
     @CheckSecurity(roles = "ROLE_CLIENT")
-    public ResponseEntity<?> delete(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id) {
-        appointmentService.deleteById(id,authorization);
+    public ResponseEntity<?> delete(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id,
+                                    @RequestBody @Valid ClientIdDto clientIdDto) {
+        appointmentService.deleteById(id,authorization, clientIdDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @DeleteMapping("/delete/{id}")
     @CheckSecurity(roles ="ROLE_MANAGER")
-    public ResponseEntity<?> deleteForManager(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id) {
-        appointmentService.cancelForManager(id,authorization);
+    public ResponseEntity<?> deleteForManager(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id,
+    @RequestBody @Valid ClientIdDto clientIdDto) {
+        appointmentService.cancelForManager(id, clientIdDto, authorization);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

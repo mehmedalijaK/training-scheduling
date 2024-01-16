@@ -43,7 +43,7 @@ public class AppointmentMapper {
 
         Sport s = sportRepository.findBySportName(appointmentDto.getSportName());
         Gym g = gymRepository.findByGymName(appointmentDto.getGymName());
-
+        System.out.println(appointmentDto);
         if(g == null || s == null)throw new IllegalArgumentException("Wrong");
 
         Training training = trainingRepository.findTraining(g,s);

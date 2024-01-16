@@ -14,10 +14,7 @@ import raf.microservice.scheduletraining.domain.Appointment;
 import raf.microservice.scheduletraining.domain.Gym;
 import raf.microservice.scheduletraining.domain.Sport;
 import raf.microservice.scheduletraining.domain.Training;
-import raf.microservice.scheduletraining.dto.AppointmentDto;
-import raf.microservice.scheduletraining.dto.ClientDto;
-import raf.microservice.scheduletraining.dto.FreeAppointmentDto;
-import raf.microservice.scheduletraining.dto.TransferDto;
+import raf.microservice.scheduletraining.dto.*;
 import raf.microservice.scheduletraining.helper.MessageHelper;
 import raf.microservice.scheduletraining.mapper.AppointmentMapper;
 import raf.microservice.scheduletraining.repository.AppointmentRepository;
@@ -53,7 +50,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         Appointment appointment = appointmentMapper.appointmentDtoToAppointment(apDTO);
         if(appointment.getScheduledTime().isAfter(LocalDateTime.now().plusWeeks(2)))
             throw new IllegalArgumentException("You can't schedule that much earlier!");
-        if(appointmentRepository.findAppointmentByTimeAndGym(appointment.getScheduledTime(),appointment.getTraining().getGym()) != null)
+        if(appointmentRepository.findAppointmentByTimeAndGym(appointment.getScheduledTime(),appointment.getTraining().getGym()).size()!=0)
             throw new IllegalArgumentException("You can't schedule taken appointment!");
 
         HttpHeaders hh = new HttpHeaders();
@@ -86,13 +83,14 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public AppointmentDto addWithSport(AppointmentDto apDTO, String aut) {
         Appointment appointment = appointmentMapper.appointmentDtoToAppointment(apDTO);
-        Appointment tmpp = appointmentRepository.findAppointmentByTimeAndGym(appointment.getScheduledTime(),appointment.getTraining().getGym());
+        List<Appointment> tmp = appointmentRepository.findAppointmentByTimeAndGym(appointment.getScheduledTime(),appointment.getTraining().getGym());
+        Appointment tmpp = tmp.get(0);
         Sport t = tmpp.getTraining().getSport();
         appointment.getTraining().setSport(t);
         if(appointment.getScheduledTime().isAfter(LocalDateTime.now().plusWeeks(2)))
             throw new IllegalArgumentException("You can't schedule that much earlier!");
-        if(appointmentRepository.findAppointmentByTimeAndGym(appointment.getScheduledTime(),appointment.getTraining().getGym()) != null)
-            throw new IllegalArgumentException("You can't schedule taken appointment!");
+//        if(appointmentRepository.findAppointmentByTimeAndGym(appointment.getScheduledTime(),appointment.getTraining().getGym()) != null)
+//            throw new IllegalArgumentException("You can't schedule taken appointment!");
 
         HttpHeaders hh = new HttpHeaders();
         hh.add("Authorization",aut);
@@ -173,10 +171,13 @@ public class AppointmentServiceImpl implements AppointmentService {
                 int h = ldt.getHour() - ldt.getHour()%duration;
                 ldt = ldt.withHour(h);
                 for(int i = 0; i< 24 ; i+=duration, ldt = ldt.plusHours(duration)){
-                    Appointment tmp;
+                    Appointment tmp = null;
                     FreeAppointmentDto dto = appointmentMapper.makeAppointmentDto(gym, ldt);
+                    List<Appointment> tmpp = appointmentRepository.findAppointmentByTimeAndGym(ldt,gym);
+                    if(!tmpp.isEmpty())
+                        tmp = tmpp.get(0);
 
-                    if((tmp = appointmentRepository.findAppointmentByTimeAndGym(ldt, gym)) != null){
+                    if(tmp != null){
                         if(tmp.getTraining().getSport().isIndividual())
                             continue;
 
@@ -232,8 +233,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void cancelForManager(Long id,String aut) {
-        Long idM = ph.giveMeId(aut);
+    public void cancelForManager(Long id, ClientIdDto clientIdDto, String aut) {
+        Long idM = clientIdDto.getId();
         List<Appointment> appointmentList = appointmentRepository.findAllReservedForManager(idM);
         Appointment a = appointmentRepository.findById(id).orElseThrow();
         Training trainingA = a.getTraining();
@@ -269,9 +270,12 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void deleteById(Long apId, String aut) {
-        Long id = ph.giveMeId(aut);
-        List<Appointment> appointmentList = appointmentRepository.findAllReservedForUser(id);
+    public void deleteById(Long apId, String aut, ClientIdDto clientIdDto) {
+        Long id = clientIdDto.getId();
+        System.out.println(id);
+        List<Appointment> appointmentList = appointmentRepository.findAllByClientId(id);
+        System.out.println(appointmentList);
+
         Appointment a = appointmentRepository.findById(apId).orElseThrow();
         if(!appointmentList.isEmpty() && appointmentList.contains(a)){
             appointmentRepository.deleteById(apId);
