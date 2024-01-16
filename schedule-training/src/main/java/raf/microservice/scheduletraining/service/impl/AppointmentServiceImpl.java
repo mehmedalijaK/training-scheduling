@@ -84,9 +84,10 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public AppointmentDto addWithSport(AppointmentDto apDTO, String sportName, String aut) {
+    public AppointmentDto addWithSport(AppointmentDto apDTO, String aut) {
         Appointment appointment = appointmentMapper.appointmentDtoToAppointment(apDTO);
-        Sport t = sportRepository.findBySportName(sportName);
+        Appointment tmpp = appointmentRepository.findAppointmentByTimeAndGym(appointment.getScheduledTime(),appointment.getTraining().getGym());
+        Sport t = tmpp.getTraining().getSport();
         appointment.getTraining().setSport(t);
         if(appointment.getScheduledTime().isAfter(LocalDateTime.now().plusWeeks(2)))
             throw new IllegalArgumentException("You can't schedule that much earlier!");
