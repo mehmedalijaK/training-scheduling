@@ -18,9 +18,9 @@ public interface AppointmentService {
     AppointmentDto findById(Long apId);
     List<AppointmentDto> findAllReserved();
     List<FreeAppointmentDto> findAllFree();
-    List<AppointmentDto> filterByType(boolean individual);
-    List<AppointmentDto> filterByDay(String day);
-    List<AppointmentDto> sortByTime();
+    List<FreeAppointmentDto> filterByType(boolean individual);
+    List<FreeAppointmentDto> filterByDay(String day);
+    List<FreeAppointmentDto> sortByTime();
     void cancelForManager(Long id, String aut);
     void deleteById(Long apId, String aut);
     List<AppointmentDto> findAllForClientId(Long id);
