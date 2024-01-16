@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import raf.microservice.scheduletraining.domain.Appointment;
 import raf.microservice.scheduletraining.domain.Gym;
+import raf.microservice.scheduletraining.domain.Training;
 import raf.microservice.scheduletraining.dto.AppointmentDto;
 
 import java.time.DayOfWeek;
@@ -34,5 +35,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findAllByOrderByScheduledTimeAsc();
     @Query("SELECT a FROM Appointment a WHERE a.training.gym.manager_id= :managerId")
     List<Appointment> findAllReservedForManager(Long managerId);
+    @Query("SELECT a FROM Appointment a WHERE a.training=:training AND a.scheduledTime=:sched")
+    List<Appointment>findAppsForTrainingAndTime(Training training, LocalDateTime sched);
 
 }

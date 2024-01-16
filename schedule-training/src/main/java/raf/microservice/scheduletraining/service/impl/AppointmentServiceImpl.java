@@ -7,10 +7,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import raf.microservice.scheduletraining.domain.Appointment;
 import raf.microservice.scheduletraining.domain.Gym;
+import raf.microservice.scheduletraining.domain.Training;
 import raf.microservice.scheduletraining.dto.AppointmentDto;
 import raf.microservice.scheduletraining.dto.ClientDto;
 import raf.microservice.scheduletraining.dto.FreeAppointmentDto;
@@ -25,6 +27,7 @@ import raf.microservice.scheduletraining.service.AppointmentService;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @AllArgsConstructor
 @Service
@@ -188,9 +191,30 @@ public class AppointmentServiceImpl implements AppointmentService {
         Long idM = ph.giveMeId(aut);
         List<Appointment> appointmentList = appointmentRepository.findAllReservedForManager(idM);
         Appointment a = appointmentRepository.findById(id).orElseThrow();
-        if(!appointmentList.isEmpty() && appointmentList.contains(a)) {
-            a.setCanceled(true);
-            appointmentRepository.save(a);
+        Training trainingA = a.getTraining();
+        LocalDateTime scheduledTime = a.getScheduledTime();
+        List<Appointment> allForDelete = appointmentRepository.findAppsForTrainingAndTime(trainingA,scheduledTime);
+        for(Appointment appointment: allForDelete) {
+            if (!appointmentList.isEmpty() && appointmentList.contains(appointment)) {
+                a.setCanceled(true);
+                appointmentRepository.save(a);
+            }
+        }
+
+            HttpHeaders hh = new HttpHeaders();
+            hh.add("Authorization",aut);
+            for(Appointment idClient: allForDelete){
+                Long ids = idClient.getClientId();
+                ResponseEntity<ClientDto> res =  userServiceRestTemplate.exchange
+                        ("/client/find/"+ids,HttpMethod.GET,new HttpEntity<>(hh),ClientDto.class);
+
+                HashMap<String, String> paramsMap = new HashMap<>();
+                paramsMap.put("%date%", idClient.getScheduledTime().toString());
+            TransferDto transferDto = new TransferDto(res.getBody().getEmail(),"SCHED_TR", paramsMap,
+                    res.getBody().getUsername());
+
+            jmsTemplate.convertAndSend("send_mail_destination",
+                    messageHelper.createTextMessage(transferDto));
         }
     }
 
@@ -199,7 +223,53 @@ public class AppointmentServiceImpl implements AppointmentService {
         Long id = ph.giveMeId(aut);
         List<Appointment> appointmentList = appointmentRepository.findAllReservedForUser(id);
         Appointment a = appointmentRepository.findById(apId).orElseThrow();
-        if(!appointmentList.isEmpty() && appointmentList.contains(a))
+        if(!appointmentList.isEmpty() && appointmentList.contains(a)){
             appointmentRepository.deleteById(apId);
+
+            HttpHeaders hh = new HttpHeaders();
+            hh.add("Authorization",aut);
+
+            ResponseEntity<ClientDto> res =  userServiceRestTemplate.exchange
+                    ("/client/find/"+id,HttpMethod.GET,new HttpEntity<>(hh),ClientDto.class);
+
+            HashMap<String, String> paramsMap = new HashMap<>();
+            paramsMap.put("%date%", a.getScheduledTime().toString());
+            TransferDto transferDto = new TransferDto(res.getBody().getEmail(),"SCHED_TR", paramsMap,
+                    res.getBody().getUsername());
+
+            jmsTemplate.convertAndSend("send_mail_destination",
+                    messageHelper.createTextMessage(transferDto));
+        }
+
+    }
+
+    @Scheduled(fixedRate = 30, timeUnit = TimeUnit.MINUTES)
+    public void lessThen24Hours(){
+        LocalDateTime now = LocalDateTime.now();
+        for(Appointment tmp: appointmentRepository.findAll()){
+            if(tmp.isCanceled())
+                continue;
+            if(!now.plusDays(1).isBefore(tmp.getScheduledTime()) &&
+                    !tmp.getTraining().getSport().isIndividual() &&
+                    appointmentRepository.findAppointmentsByGroupTraining(tmp.getScheduledTime(),tmp.getTraining().getGym())<3){
+                tmp.setCanceled(true);
+
+                Long ids = tmp.getClientId();
+                HttpHeaders hh = new HttpHeaders();
+                hh.add("Authorization",sh);
+                ResponseEntity<ClientDto> res =  userServiceRestTemplate.exchange
+                        ("/client/find/"+ids,HttpMethod.GET,new HttpEntity<>(hh),ClientDto.class);
+
+                HashMap<String, String> paramsMap = new HashMap<>();
+                paramsMap.put("%date%", tmp.getScheduledTime().toString());
+                TransferDto transferDto = new TransferDto(res.getBody().getEmail(),"CANCELED_TR", paramsMap,
+                        res.getBody().getUsername());
+
+                jmsTemplate.convertAndSend("send_mail_destination",
+                        messageHelper.createTextMessage(transferDto));
+            }
+
+        }
+
     }
 }
