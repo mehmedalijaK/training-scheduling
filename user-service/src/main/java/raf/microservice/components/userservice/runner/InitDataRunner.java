@@ -36,26 +36,26 @@ public class InitDataRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Role roleUser = new Role("ROLE_CLIENT", "Client role");
-        Role roleAdmin = new Role("ROLE_ADMIN", "Admin role");
-        Role roleManager = new Role("ROLE_MANAGER", "Manager role");
-        Role roleBanned = new Role("ROLE_BANNED", "Banned role");
-        Role rolePending = new Role("ROLE_PENDING", "Pending role");
-        roleRepository.save(roleUser);
-        roleRepository.save(roleAdmin);
-        roleRepository.save(roleManager);
-        roleRepository.save(roleBanned);
-        roleRepository.save(rolePending);
-
-        Admin admin = new Admin();
-        admin.setEmail("karisik.mehmedalija@gmail.com");
-        admin.setUsername("karisikm");
-        admin.setPassword(passwordEncoder.encode("biguser123"));
-        admin.setRole(roleAdmin);
-        admin.setDateBirth(LocalDate.of(2002, Month.APRIL, 23));
-        admin.setName("Mehmedalija");
-        admin.setLastName("Karisik");
-
-        adminRepository.save(admin);
+//        Role roleUser = new Role("ROLE_CLIENT", "Client role");
+//        Role roleAdmin = new Role("ROLE_ADMIN", "Admin role");
+//        Role roleManager = new Role("ROLE_MANAGER", "Manager role");
+//        Role roleBanned = new Role("ROLE_BANNED", "Banned role");
+//        Role rolePending = new Role("ROLE_PENDING", "Pending role");
+//        roleRepository.save(roleUser);
+//        roleRepository.save(roleAdmin);
+//        roleRepository.save(roleManager);
+//        roleRepository.save(roleBanned);
+//        roleRepository.save(rolePending);
+//
+//        Admin admin = new Admin();
+//        admin.setEmail("karisik.mehmedalija@gmail.com");
+//        admin.setUsername("karisikm");
+//        admin.setPassword(passwordEncoder.encode("biguser123"));
+//        admin.setRole(roleAdmin);
+//        admin.setDateBirth(LocalDate.of(2002, Month.APRIL, 23));
+//        admin.setName("Mehmedalija");
+//        admin.setLastName("Karisik");
+//
+//        adminRepository.save(admin);
     }
 }

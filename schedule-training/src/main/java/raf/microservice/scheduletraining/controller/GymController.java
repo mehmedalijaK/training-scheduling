@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import raf.microservice.scheduletraining.dto.AppointmentDto;
+import raf.microservice.scheduletraining.dto.EditGymDto;
 import raf.microservice.scheduletraining.dto.GymDto;
 import raf.microservice.scheduletraining.security.CheckSecurity;
 import raf.microservice.scheduletraining.service.GymService;
@@ -34,6 +35,12 @@ public class GymController {
     @CheckSecurity
     public ResponseEntity<GymDto> findById(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id) {
         return new ResponseEntity<>(gymService.findById(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/manager/{id}")
+    @CheckSecurity(roles = {"ROLE_MANAGER"})
+    public ResponseEntity<EditGymDto> findByManagerId(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id) {
+        return new ResponseEntity<>(gymService.findByManagerId(id), HttpStatus.OK);
     }
 
     @PostMapping

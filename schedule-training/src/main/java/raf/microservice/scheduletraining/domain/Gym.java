@@ -28,11 +28,11 @@ public class Gym {
 
 
 
-    public Gym(String gymName, String shortDescription, int numberOfCoaches, int trainingDuration) {
+    public Gym(String gymName, String shortDescription, int numberOfCoaches, int trainingDuration, Long manager_id) {
         this.gymName = gymName;
         this.shortDescription = shortDescription;
         this.numberOfCoaches = numberOfCoaches;
         this.trainingDuration = trainingDuration;
-
+        this.manager_id = manager_id;
     }
 }

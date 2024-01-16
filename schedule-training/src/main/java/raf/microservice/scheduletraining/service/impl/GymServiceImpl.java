@@ -6,12 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import raf.microservice.scheduletraining.domain.Gym;
+import raf.microservice.scheduletraining.dto.EditGymDto;
 import raf.microservice.scheduletraining.dto.GymDto;
 import raf.microservice.scheduletraining.mapper.GymMapper;
 import raf.microservice.scheduletraining.repository.GymRepository;
 import raf.microservice.scheduletraining.service.GymService;
 
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -45,6 +47,14 @@ public class GymServiceImpl implements GymService {
                         new RuntimeException(String.format
                                 ("Gym with id: %d does not exists.", gymId)));
     //todo: promeniti obavezno exception ovaj
+    }
+
+    @Override
+    public EditGymDto findByManagerId(Long managerId) {
+        Optional<Gym> gymOptional = gymRepository.findGymByManagerId(managerId);
+        if(gymOptional.isEmpty()) throw new RuntimeException(String.format("Gym with manager id: %d does not exists.", managerId));
+        return new EditGymDto(gymOptional.get().getId(), gymOptional.get().getGymName(), gymOptional.get().getShortDescription(),
+                gymOptional.get().getTrainingDuration(), gymOptional.get().getNumberOfCoaches(), gymOptional.get().getManager_id());
     }
 
     @Override

@@ -14,7 +14,7 @@ import java.util.UUID;
 @Table(name = "clients")
 public class Client extends Users implements UserDetails {
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
     @Column(name = "password", nullable = false)
     private String password;

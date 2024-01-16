@@ -28,3 +28,5 @@ export const API_UNBAN_USER = `${API_URL}/api/admin/unban/user`;
 export const API_UNBAN_MANAGER = `${API_URL}/api/admin/unban/manager`;
 
 export const SCHEDULER_ADD_GYM = `${SCHEDULER_URL}/api/gyms`;
+export const SCHEDULER_FIND_GYM_BY_MANAGER_ID = `${SCHEDULER_URL}/api/gyms/manager`;
+export const SCHEDULER_EDIT_GYM_BY_GYM_ID = `${SCHEDULER_URL}/api/gyms`;
