@@ -32,6 +32,7 @@ const Links = () => {
                     <>
                         {role == UserRole.ADMIN && <NavbarLink item={{title: "Admin", path: "/admin"}}/>}
                         {role == UserRole.MANAGER && <NavbarLink item={{title: "Manager", path: "/manager"}}/>}
+                        {role == UserRole.MANAGER && <NavbarLink item={{title: "My gym", path: "/my-gym"}}/>}
                         <NavbarLink item={{title: "My profile", path: "/my-profile"}}/>
                         <NavbarLink item={{title: "Trainings", path: "/trainings"}}/>
                         <NavbarLink item={{title: "Notifications", path: "/notifications"}}/>

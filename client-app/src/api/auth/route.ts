@@ -1,4 +1,4 @@
-import {API_SIGN_UP_USER, API_SIGN_IN_USER, API_EDIT_ADMIN, API_GET_MYSELF_USER, API_SING_IN_MANAGER, API_GET_MYSELF_MANAGER, API_SING_IN_ADMIN, API_GET_MYSELF_ADMIN, API_SIGN_UP_MANAGER, API_EDIT_USER, API_CHANGE_PASSWORD_USER, API_EDIT_MANAGER, API_CHANGE_PASSWORD_MANAGER, API_GET_ALL_USERS, API_BAN_USER, API_UNBAN_USER} from "@/api/constants";
+import {API_SIGN_UP_USER, API_SIGN_IN_USER, API_EDIT_ADMIN, API_GET_MYSELF_USER, API_SING_IN_MANAGER, API_GET_MYSELF_MANAGER, API_SING_IN_ADMIN, API_GET_MYSELF_ADMIN, API_SIGN_UP_MANAGER, API_EDIT_USER, API_CHANGE_PASSWORD_USER, API_EDIT_MANAGER, API_CHANGE_PASSWORD_MANAGER, API_GET_ALL_USERS, API_BAN_USER, API_UNBAN_USER, API_GET_ALL_MANAGERS, API_BAN_MANAGER, API_UNBAN_MANAGER} from "@/api/constants";
 
 
 export const sendLoginRequestUser = async (username: string, password: string) => {
@@ -98,6 +98,12 @@ export const getAllUsers = (token: string, page: number, size: number) =>
         headers: {'Accept': 'application/json', 'Content-Type': 'application/json', "Authorization": "Bearer " + token},
 });
 
+export const getAllManagers = (token: string, page: number, size: number) =>
+    fetch(API_GET_ALL_MANAGERS+"?page="+page+"&size="+size, {
+        method: 'GET',
+        headers: {'Accept': 'application/json', 'Content-Type': 'application/json', "Authorization": "Bearer " + token},
+});
+
 export const changePasswordManager = (oldPassword: string, newPassword: string, token: string) =>
     fetch(API_CHANGE_PASSWORD_MANAGER, {
         method: 'POST',
@@ -107,6 +113,18 @@ export const changePasswordManager = (oldPassword: string, newPassword: string, 
 
 export const banUser = (token: string, id: number) =>
     fetch(API_BAN_USER+"/"+id, {
+        method: 'POST',
+        headers: {'Accept': 'application/json', 'Content-Type': 'application/json', "Authorization": "Bearer " + token},
+});
+
+export const banManager = (token: string, id: number) =>
+    fetch(API_BAN_MANAGER+"/"+id, {
+        method: 'POST',
+        headers: {'Accept': 'application/json', 'Content-Type': 'application/json', "Authorization": "Bearer " + token},
+});
+
+export const unbanManager = (token: string, id: number) =>
+    fetch(API_UNBAN_MANAGER+"/"+id, {
         method: 'POST',
         headers: {'Accept': 'application/json', 'Content-Type': 'application/json', "Authorization": "Bearer " + token},
 });

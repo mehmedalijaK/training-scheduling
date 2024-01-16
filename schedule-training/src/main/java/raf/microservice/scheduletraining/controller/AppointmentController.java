@@ -21,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/appointments")
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class AppointmentController {
 
     private AppointmentService appointmentService;

@@ -1,4 +1,5 @@
 export default interface IManager{
+    id: number
     username: string
     email: string
     dateBirth: Date
