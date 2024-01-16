@@ -172,10 +172,10 @@ public class AppointmentServiceImpl implements AppointmentService {
                 int duration = gym.getTrainingDuration();
                 int h = ldt.getHour() - ldt.getHour()%duration;
                 ldt = ldt.withHour(h);
-                for(int i = 0; i< 24 ; i+=duration){
+                for(int i = 0; i< 24 ; i+=duration, ldt = ldt.plusHours(duration)){
                     Appointment tmp;
                     FreeAppointmentDto dto = appointmentMapper.makeAppointmentDto(gym, ldt);
-                    ldt = ldt.plusHours(duration);
+
                     if((tmp = appointmentRepository.findAppointmentByTimeAndGym(ldt, gym)) != null){
                         if(tmp.getTraining().getSport().isIndividual())
                             continue;
@@ -187,6 +187,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                             dto.setSport(sport);
                         }
                     }
+
 
                     dto.setId(c++);
                     free.add(dto);
