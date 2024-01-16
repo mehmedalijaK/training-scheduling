@@ -18,6 +18,7 @@ export interface IAuthContext {
     user: IUser | IManager | IAdmin | null;
     loading: boolean;
     role: UserRole;
+    getManager: (token: string) => Promise<IAuthResponse>;
     loginUser: (username: string, password: string) => Promise<IAuthResponse>;
     loginManager: (username: string, password: string) => Promise<IAuthResponse>;
     loginAdmin: (username: string, password: string) => Promise<IAuthResponse>;
@@ -202,7 +203,7 @@ export const AuthProvider = ({children}: { children: JSX.Element | JSX.Element[]
     };
 
     return (
-        <AuthContext.Provider value={{authenticated: !!user, user, role, editAdmin, editUser, loginUser, loginManager, loginAdmin, loading, token, registerUser, logout, registerManager, editManager }}>
+        <AuthContext.Provider value={{authenticated: !!user, user, role, getManager, editAdmin, editUser, loginUser, loginManager, loginAdmin, loading, token, registerUser, logout, registerManager, editManager }}>
             {loading ? <p>Loading</p> : children}
         </AuthContext.Provider>
     )

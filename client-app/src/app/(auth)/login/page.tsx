@@ -20,6 +20,8 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { sendGetMyselfManager } from '@/api/auth/route';
+import { schedulerAddGym } from '@/api/schedule/route';
 
 const defaultTheme = createTheme();
 
@@ -40,7 +42,7 @@ const LoginPage = () => {
   const router = useRouter();
   const [usernameError, setUsernameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-  const {loginUser, loginManager, user} = useContext(AuthContext)
+  const {loginUser, loginManager, user, getManager} = useContext(AuthContext)
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -73,7 +75,16 @@ const LoginPage = () => {
     }else{
       const {response, data} = await loginManager(username, password);
       if (response.ok) {
-          await router.push("/");
+          //@ts-ignore
+          const res = await sendGetMyselfManager(data?.access_token)
+          if(res.ok){
+            const manager = (await res.json());
+            //@ts-ignore
+            const resp = await schedulerAddGym(data?.access_token, manager.sportsHall, "", 1, 1, manager.id)
+            if(resp.ok){
+              await router.push("/");
+            }
+          }
       } else
         console.log("error")
     }
