@@ -48,8 +48,8 @@ public class AppointmentController {
     }
     @GetMapping("/type/{val}")
     @CheckSecurity
-    public ResponseEntity<List<FreeAppointmentDto>>filterByType(@RequestHeader("Authorization") String authorization,@PathVariable String val) {
-        return new ResponseEntity<>(appointmentService.filterByType( Boolean.parseBoolean(val)), HttpStatus.OK);
+    public ResponseEntity<List<AppointmentDto>>filterByType(@RequestHeader("Authorization") String authorization,@PathVariable String val,@PathVariable("id") Long id) {
+        return new ResponseEntity<>(appointmentService.filterByType( Boolean.parseBoolean(val),id), HttpStatus.OK);
     }
     @GetMapping("/day/{val}")
     @CheckSecurity
