@@ -280,5 +280,12 @@ public class ClientServiceImpl implements ClientService {
         return new PageImpl<>(clientsDtoList, pageable, clients.getTotalElements());
     }
 
+    @Override
+    public ClientDto getUserById(Long id) {
+        Optional<Client> client = clientRepository.findById(id);
+        if(client.isEmpty()) throw new NotFoundException("There are no users");
+        return clientMapper.clientToClientDto(client.get());
+    }
+
 
 }
