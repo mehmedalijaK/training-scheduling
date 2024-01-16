@@ -31,7 +31,7 @@ public class Manager extends Users implements UserDetails {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "sports_hall", nullable = false)
+    @Column(name = "sports_hall", nullable = false, unique = true)
     private String sportsHall;
 
     @Column(name = "date_employment", nullable = false)

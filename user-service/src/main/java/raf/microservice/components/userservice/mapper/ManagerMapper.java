@@ -43,6 +43,7 @@ public class ManagerMapper {
     public ManagerDto managerToManagerDto(Manager manager){
         ModelMapper modelMapper = new ModelMapper();
         TypeMap<Manager, ManagerDto> propertyMapper = modelMapper.createTypeMap(Manager.class, ManagerDto.class);
+        propertyMapper.addMapping(Manager::getId, ManagerDto::setId);
         propertyMapper.addMapping(Manager::getUsername, ManagerDto::setUsername);
         propertyMapper.addMapping(Manager::getEmail, ManagerDto::setEmail);
         propertyMapper.addMapping(Manager::getDateBirth, ManagerDto::setDateBirth);
