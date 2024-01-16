@@ -22,6 +22,8 @@ import raf.microservice.scheduletraining.helper.MessageHelper;
 import raf.microservice.scheduletraining.mapper.AppointmentMapper;
 import raf.microservice.scheduletraining.repository.AppointmentRepository;
 import raf.microservice.scheduletraining.repository.GymRepository;
+import raf.microservice.scheduletraining.repository.SportRepository;
+import raf.microservice.scheduletraining.repository.TrainingRepository;
 import raf.microservice.scheduletraining.security.ParseHelper;
 import raf.microservice.scheduletraining.security.service.impl.TokenServiceImpl;
 import raf.microservice.scheduletraining.service.AppointmentService;
@@ -37,6 +39,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private AppointmentRepository appointmentRepository;
     private AppointmentMapper appointmentMapper;
     private GymRepository gymRepository;
+    private SportRepository sportRepository;
     private RestTemplate userServiceRestTemplate;
     private JmsTemplate jmsTemplate;
     private MessageHelper messageHelper;
@@ -48,6 +51,43 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public AppointmentDto add(AppointmentDto apDTO, String aut) {
         Appointment appointment = appointmentMapper.appointmentDtoToAppointment(apDTO);
+        if(appointment.getScheduledTime().isAfter(LocalDateTime.now().plusWeeks(2)))
+            throw new IllegalArgumentException("You can't schedule that much earlier!");
+        if(appointmentRepository.findAppointmentByTimeAndGym(appointment.getScheduledTime(),appointment.getTraining().getGym()) != null)
+            throw new IllegalArgumentException("You can't schedule taken appointment!");
+
+        HttpHeaders hh = new HttpHeaders();
+        hh.add("Authorization",aut);
+        ResponseEntity<ClientDto> res =  userServiceRestTemplate.exchange
+                ("/client/me",HttpMethod.GET,new HttpEntity<>(hh),ClientDto.class);
+
+        int discount =  Objects.requireNonNull(res.getBody()).getScheduledTrainingCount();
+        discount++;
+        if (discount % appointment.getTraining().getGym().getDiscountAfter() == 0)
+            appointment.getTraining().setPrice(0);
+        appointmentRepository.save(appointment);
+        res.getBody().setScheduledTrainingCount(discount);
+        hh = new HttpHeaders();
+
+        hh.add("Authorization","Bearer " + sh);
+        userServiceRestTemplate.exchange
+                ("/client/edit/training-count",HttpMethod.PUT,new HttpEntity<>(res.getBody()),ClientDto.class);
+
+
+        TransferDto transferDto = new TransferDto(res.getBody().getEmail(),"SCHED_TR", new HashMap<>(),
+                res.getBody().getUsername());
+
+        jmsTemplate.convertAndSend("send_mail_destination",
+                messageHelper.createTextMessage(transferDto));
+
+        return appointmentMapper.appointmentToAppointmentDto(appointment);
+    }
+
+    @Override
+    public AppointmentDto addWithSport(AppointmentDto apDTO, String sportName, String aut) {
+        Appointment appointment = appointmentMapper.appointmentDtoToAppointment(apDTO);
+        Sport t = sportRepository.findBySportName(sportName);
+        appointment.getTraining().setSport(t);
         if(appointment.getScheduledTime().isAfter(LocalDateTime.now().plusWeeks(2)))
             throw new IllegalArgumentException("You can't schedule that much earlier!");
         if(appointmentRepository.findAppointmentByTimeAndGym(appointment.getScheduledTime(),appointment.getTraining().getGym()) != null)
