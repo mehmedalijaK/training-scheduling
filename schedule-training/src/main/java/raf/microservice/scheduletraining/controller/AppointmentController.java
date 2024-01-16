@@ -78,7 +78,7 @@ public class AppointmentController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @DeleteMapping("/delete/{id}")
-    @CheckSecurity(roles ="ROLE_CLIENT")
+    @CheckSecurity(roles ="ROLE_MANAGER")
     public ResponseEntity<?> deleteForManager(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id) {
         appointmentService.cancelForManager(id,authorization);
         return new ResponseEntity<>(HttpStatus.OK);
