@@ -206,7 +206,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             for(Appointment idClient: allForDelete){
                 Long ids = idClient.getClientId();
                 ResponseEntity<ClientDto> res =  userServiceRestTemplate.exchange
-                        ("/client/find/"+ids,HttpMethod.GET,new HttpEntity<>(hh),ClientDto.class);
+                        ("/client/"+ids,HttpMethod.GET,new HttpEntity<>(hh),ClientDto.class);
 
                 HashMap<String, String> paramsMap = new HashMap<>();
                 paramsMap.put("%date%", idClient.getScheduledTime().toString());
@@ -230,7 +230,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             hh.add("Authorization",aut);
 
             ResponseEntity<ClientDto> res =  userServiceRestTemplate.exchange
-                    ("/client/find/"+id,HttpMethod.GET,new HttpEntity<>(hh),ClientDto.class);
+                    ("/client/"+id,HttpMethod.GET,new HttpEntity<>(hh),ClientDto.class);
 
             HashMap<String, String> paramsMap = new HashMap<>();
             paramsMap.put("%date%", a.getScheduledTime().toString());
@@ -241,6 +241,18 @@ public class AppointmentServiceImpl implements AppointmentService {
                     messageHelper.createTextMessage(transferDto));
         }
 
+    }
+
+    @Override
+    public List<AppointmentDto> findAllForClientId(Long id) {
+
+        List<Appointment> apps =  appointmentRepository.findAllAppointmentsForClient(id);
+        List<AppointmentDto>dtList = new ArrayList<>();
+        for(Appointment a: apps){
+            dtList.add(appointmentMapper.appointmentToAppointmentDto(a));
+        }
+
+        return dtList;
     }
 
     @Scheduled(fixedRate = 30, timeUnit = TimeUnit.MINUTES)
@@ -258,7 +270,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 HttpHeaders hh = new HttpHeaders();
                 hh.add("Authorization",sh);
                 ResponseEntity<ClientDto> res =  userServiceRestTemplate.exchange
-                        ("/client/find/"+ids,HttpMethod.GET,new HttpEntity<>(hh),ClientDto.class);
+                        ("/client/"+ids,HttpMethod.GET,new HttpEntity<>(hh),ClientDto.class);
 
                 HashMap<String, String> paramsMap = new HashMap<>();
                 paramsMap.put("%date%", tmp.getScheduledTime().toString());

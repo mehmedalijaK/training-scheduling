@@ -21,4 +21,5 @@ public interface AppointmentService {
     List<AppointmentDto> sortByTime();
     void cancelForManager(Long id, String aut);
     void deleteById(Long apId, String aut);
+    List<AppointmentDto> findAllForClientId(Long id);
 }

@@ -60,6 +60,11 @@ public class AppointmentController {
     public ResponseEntity<List<AppointmentDto>> sortByTime(@RequestHeader("Authorization") String authorization) {
         return new ResponseEntity<>(appointmentService.sortByTime(), HttpStatus.OK);
     }
+    @GetMapping("/client/{id}")
+    @CheckSecurity
+    public ResponseEntity<List<AppointmentDto>> clientAppointments(@RequestHeader("Authorization") String authorization,@PathVariable("id") Long id) {
+        return new ResponseEntity<>(appointmentService.findAllForClientId(id), HttpStatus.OK);
+    }
 
     @PostMapping
     @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_CLIENT"})
@@ -84,4 +89,6 @@ public class AppointmentController {
         appointmentService.cancelForManager(id,authorization);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
 }
