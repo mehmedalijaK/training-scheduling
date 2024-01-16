@@ -23,6 +23,7 @@ public class AppointmentMapper {
     TrainingRepository trainingRepository;
     public AppointmentDto appointmentToAppointmentDto(Appointment appointment) {
         AppointmentDto appointmentDto = new AppointmentDto();
+        appointmentDto.setId(appointment.getId());
         appointmentDto.setClientId(appointment.getClientId());
         appointmentDto.setIndividual(appointment.getTraining().getSport().isIndividual());
         appointmentDto.setPrice(appointment.getTraining().getPrice());
@@ -36,7 +37,7 @@ public class AppointmentMapper {
 
     public Appointment appointmentDtoToAppointment(AppointmentDto appointmentDto) {
         Appointment appointment = new Appointment();
-        //gym.setId(gymDto.getId());
+        appointment.setId(appointmentDto.getId());
         appointment.setClientId(appointmentDto.getClientId());
         appointment.setScheduledTime(appointmentDto.getScheduledTime());
 
