@@ -84,9 +84,10 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public AppointmentDto addWithSport(AppointmentDto apDTO, String sportName, String aut) {
+    public AppointmentDto addWithSport(AppointmentDto apDTO, String aut) {
         Appointment appointment = appointmentMapper.appointmentDtoToAppointment(apDTO);
-        Sport t = sportRepository.findBySportName(sportName);
+        Appointment tmpp = appointmentRepository.findAppointmentByTimeAndGym(appointment.getScheduledTime(),appointment.getTraining().getGym());
+        Sport t = tmpp.getTraining().getSport();
         appointment.getTraining().setSport(t);
         if(appointment.getScheduledTime().isAfter(LocalDateTime.now().plusWeeks(2)))
             throw new IllegalArgumentException("You can't schedule that much earlier!");
@@ -197,33 +198,36 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<AppointmentDto> filterByType(boolean individual) {
-        List<AppointmentDto> dtList = new ArrayList<>();
-        List<Appointment> apps = appointmentRepository.findAppointmentByType(individual);
-        for(Appointment a: apps){
-            dtList.add(appointmentMapper.appointmentToAppointmentDto(a));
+    public List<FreeAppointmentDto> filterByType(boolean individual) {
+        List<FreeAppointmentDto> dtList = new ArrayList<>();
+        List<FreeAppointmentDto> apps = findAllFree();
+        for(FreeAppointmentDto a: apps){
+            if(a.getSport().isIndividual() == individual)
+                dtList.add(a);
         }
         return dtList;
     }
 
     @Override
-    public List<AppointmentDto> filterByDay(String day) {
-        List<AppointmentDto> dtList = new ArrayList<>();
-        List<Appointment> apps = appointmentRepository.findAppointmentsByDay(day);
-        for(Appointment a: apps){
-            dtList.add(appointmentMapper.appointmentToAppointmentDto(a));
+    public List<FreeAppointmentDto> filterByDay(String day) {
+        List<FreeAppointmentDto> dtList = new ArrayList<>();
+        List<FreeAppointmentDto> apps = findAllFree();
+        for(FreeAppointmentDto a: apps){
+            if(a.getScheduledTime().getDayOfWeek().name().equalsIgnoreCase(day))
+                dtList.add(a);
         }
         return dtList;
     }
 
     @Override
-    public List<AppointmentDto> sortByTime() {
-        List<AppointmentDto> dtList = new ArrayList<>();
-        List<Appointment> apps =appointmentRepository.findAllByOrderByScheduledTimeAsc();
-        for(Appointment a: apps){
-            dtList.add(appointmentMapper.appointmentToAppointmentDto(a));
-        }
-        return dtList;
+    public List<FreeAppointmentDto> sortByTime() {
+        List<FreeAppointmentDto> dtList = new ArrayList<>();
+        List<FreeAppointmentDto> apps =this.findAllFree();
+
+        //for(Appointment a: apps){
+            //dtList.add(appointmentMapper.appointmentToAppointmentDto(a));
+       // }
+        return apps;
     }
 
     @Override
@@ -255,6 +259,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 
             jmsTemplate.convertAndSend("send_mail_destination",
                     messageHelper.createTextMessage(transferDto));
+
+                int tr = res.getBody().getScheduledTrainingCount();
+                res.getBody().setScheduledTrainingCount(--tr);
+                userServiceRestTemplate.exchange
+                        ("/client/edit/training-count",HttpMethod.PUT,new HttpEntity<>(res.getBody()),ClientDto.class);
         }
     }
 
@@ -279,6 +288,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 
             jmsTemplate.convertAndSend("send_mail_destination",
                     messageHelper.createTextMessage(transferDto));
+
+            int tr = res.getBody().getScheduledTrainingCount();
+            res.getBody().setScheduledTrainingCount(--tr);
+            userServiceRestTemplate.exchange
+                    ("/client/edit/training-count",HttpMethod.PUT,new HttpEntity<>(res.getBody()),ClientDto.class);
         }
 
     }
@@ -319,6 +333,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 
                 jmsTemplate.convertAndSend("send_mail_destination",
                         messageHelper.createTextMessage(transferDto));
+                int tr = res.getBody().getScheduledTrainingCount();
+                res.getBody().setScheduledTrainingCount(--tr);
+                userServiceRestTemplate.exchange
+                        ("/client/edit/training-count",HttpMethod.PUT,new HttpEntity<>(res.getBody()),ClientDto.class);
             }
 
         }

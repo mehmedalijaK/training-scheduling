@@ -47,17 +47,17 @@ public class AppointmentController {
     }
     @GetMapping("/type/{val}")
     @CheckSecurity
-    public ResponseEntity<List<AppointmentDto>>filterByType(@RequestHeader("Authorization") String authorization,@PathVariable String val) {
+    public ResponseEntity<List<FreeAppointmentDto>>filterByType(@RequestHeader("Authorization") String authorization,@PathVariable String val) {
         return new ResponseEntity<>(appointmentService.filterByType( Boolean.parseBoolean(val)), HttpStatus.OK);
     }
     @GetMapping("/day/{val}")
     @CheckSecurity
-    public ResponseEntity<List<AppointmentDto>>filterByDay(@RequestHeader("Authorization") String authorization, @PathVariable String val) {
+    public ResponseEntity<List<FreeAppointmentDto>>filterByDay(@RequestHeader("Authorization") String authorization, @PathVariable String val) {
         return new ResponseEntity<>(appointmentService.filterByDay(val), HttpStatus.OK);
     }
     @GetMapping("/sort")
     @CheckSecurity
-    public ResponseEntity<List<AppointmentDto>> sortByTime(@RequestHeader("Authorization") String authorization) {
+    public ResponseEntity<List<FreeAppointmentDto>> sortByTime(@RequestHeader("Authorization") String authorization) {
         return new ResponseEntity<>(appointmentService.sortByTime(), HttpStatus.OK);
     }
     @GetMapping("/client/{id}")
@@ -73,8 +73,8 @@ public class AppointmentController {
     }
     @PostMapping("/add/sport")
     @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_CLIENT"})
-    public ResponseEntity<AppointmentDto> addWithSport(@RequestHeader("Authorization") String authorization, @RequestBody @Valid AppointmentDto appointmentDto,@RequestBody @Valid String sport) {
-        return new ResponseEntity<>(appointmentService.addWithSport(appointmentDto,authorization,sport), HttpStatus.CREATED);
+    public ResponseEntity<AppointmentDto> addWithSport(@RequestHeader("Authorization") String authorization, @RequestBody @Valid AppointmentDto appointmentDto) {
+        return new ResponseEntity<>(appointmentService.addWithSport(appointmentDto,authorization), HttpStatus.CREATED);
     }
     @PostMapping("/{id}")
     @CheckSecurity(roles = "ROLE_ADMIN")
