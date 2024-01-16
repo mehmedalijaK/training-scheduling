@@ -17,12 +17,12 @@ import raf.microservice.scheduletraining.dto.FreeAppointmentDto;
 import raf.microservice.scheduletraining.dto.TransferDto;
 import raf.microservice.scheduletraining.helper.MessageHelper;
 import raf.microservice.scheduletraining.mapper.AppointmentMapper;
-import raf.microservice.scheduletraining.mapper.GymMapper;
 import raf.microservice.scheduletraining.repository.AppointmentRepository;
 import raf.microservice.scheduletraining.repository.GymRepository;
+import raf.microservice.scheduletraining.security.ParseHelper;
+import raf.microservice.scheduletraining.security.service.impl.TokenServiceImpl;
 import raf.microservice.scheduletraining.service.AppointmentService;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -38,6 +38,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private MessageHelper messageHelper;
     @Value("${secret.help}")
     private String sh;
+    private ParseHelper ph;
 
 
     @Override
@@ -183,14 +184,22 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void cancelForManager(Long id) {
+    public void cancelForManager(Long id,String aut) {
+        Long idM = ph.giveMeId(aut);
+        List<Appointment> appointmentList = appointmentRepository.findAllReservedForManager(idM);
         Appointment a = appointmentRepository.findById(id).orElseThrow();
-        a.setCanceled(true);
-        appointmentRepository.save(a);
+        if(!appointmentList.isEmpty() && appointmentList.contains(a)) {
+            a.setCanceled(true);
+            appointmentRepository.save(a);
+        }
     }
 
     @Override
-    public void deleteById(Long apId) {
-        appointmentRepository.deleteById(apId);
+    public void deleteById(Long apId, String aut) {
+        Long id = ph.giveMeId(aut);
+        List<Appointment> appointmentList = appointmentRepository.findAllReservedForUser(id);
+        Appointment a = appointmentRepository.findById(apId).orElseThrow();
+        if(!appointmentList.isEmpty() && appointmentList.contains(a))
+            appointmentRepository.deleteById(apId);
     }
 }

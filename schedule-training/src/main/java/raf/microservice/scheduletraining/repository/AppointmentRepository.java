@@ -28,7 +28,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     int findAppointmentsByGroupTraining(LocalDateTime scheduledTime, Gym gym);
     @Query("SELECT COUNT(a) FROM Appointment a WHERE a.clientId = :id")
     int countClientDiscount(Long id);
+    @Query("SELECT a FROM Appointment a WHERE a.clientId = :clientId")
+    List<Appointment> findAllReservedForUser(Long clientId);
 
     List<Appointment> findAllByOrderByScheduledTimeAsc();
+    @Query("SELECT a FROM Appointment a WHERE a.training.gym.manager_id= :managerId")
+    List<Appointment> findAllReservedForManager(Long managerId);
 
 }

@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+server:
+  port: '7777'
+eureka:
+  client:
+    enabled: true
+  instance:
+    preferIpAddress: true
+    lease-renewal-interval-in-seconds: '30'
