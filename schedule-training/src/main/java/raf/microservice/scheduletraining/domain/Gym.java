@@ -24,6 +24,7 @@ public class Gym {
     @Divides24
     private int trainingDuration = 6;//in hours
     private int discountAfter = 10;//discount after given number of trainings
+    private Long manager_id;
 
 
 

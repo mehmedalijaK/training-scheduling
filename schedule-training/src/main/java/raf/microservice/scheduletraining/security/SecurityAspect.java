@@ -1,6 +1,7 @@
 package raf.microservice.scheduletraining.security;
 
 import io.jsonwebtoken.Claims;
+import lombok.AllArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -20,9 +21,6 @@ import raf.microservice.scheduletraining.security.service.TokenService;
 @Aspect
 @Configuration
 public class SecurityAspect {
-
-    @Value("${jwt.secret.key}")
-    private String jwtSecret;
 
     private TokenService tokenService;
 

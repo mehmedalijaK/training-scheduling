@@ -8,5 +8,6 @@ public class GymDto {
     private String shortDescription;
     private int trainingDuration;
     private int numberOfCoaches;
+    private Long manager_id;
 
 }

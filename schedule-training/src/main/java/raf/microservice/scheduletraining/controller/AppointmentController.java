@@ -72,15 +72,15 @@ public class AppointmentController {
     }
 
     @DeleteMapping("/{id}")
-    @CheckSecurity(roles = {"ROLE_ADMIN","ROLE_CLIENT"})
+    @CheckSecurity(roles = "ROLE_CLIENT")
     public ResponseEntity<?> delete(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id) {
-        appointmentService.deleteById(id);
+        appointmentService.deleteById(id,authorization);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @DeleteMapping("/delete/{id}")
-    @CheckSecurity(roles = {"ROLE_ADMIN","ROLE_CLIENT"})
+    @CheckSecurity(roles ="ROLE_CLIENT")
     public ResponseEntity<?> deleteForManager(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id) {
-        appointmentService.cancelForManager(id);
+        appointmentService.cancelForManager(id,authorization);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
