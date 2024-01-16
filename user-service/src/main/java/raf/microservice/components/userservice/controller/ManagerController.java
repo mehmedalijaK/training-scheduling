@@ -31,9 +31,9 @@ public class ManagerController {
 
     @ApiOperation(value = "Verify manager")
     @GetMapping("/verify/{id}")
-    public ResponseEntity<Void> findById(@PathVariable("id") String id) {
+    public String findById(@PathVariable("id") String id) {
         managerService.verify(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Account Verification</title><style>body {font-family: Arial, sans-serif;background-color: #f4f4f4;color: #333;text-align: center;margin: 50px;}h1 {color: #007bff;}</style></head><body><div><h1>Account Verification Successful</h1><p>Your account has been successfully verified. Thank you!</p></div></body></html>";
     }
 
 

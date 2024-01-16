@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import raf.microservice.scheduletraining.domain.Appointment;
 import raf.microservice.scheduletraining.domain.Gym;
+import raf.microservice.scheduletraining.domain.Sport;
 import raf.microservice.scheduletraining.domain.Training;
 import raf.microservice.scheduletraining.dto.AppointmentDto;
 import raf.microservice.scheduletraining.dto.ClientDto;
@@ -124,6 +125,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         LocalDateTime end = ldt.plusWeeks(2);
         List<FreeAppointmentDto> free = new ArrayList<>();
         List<Gym> allGyms = gymRepository.findAll();
+        long c = 0;
         for(Gym gym: allGyms){
             while(ldt.isBefore(end)){
                 int duration = gym.getTrainingDuration();
@@ -131,23 +133,21 @@ public class AppointmentServiceImpl implements AppointmentService {
                 ldt = ldt.withHour(h);
                 for(int i = 0; i< 24 ; i+=duration){
                     Appointment tmp;
+                    FreeAppointmentDto dto = appointmentMapper.makeAppointmentDto(gym, ldt);
                     ldt = ldt.plusHours(duration);
-
                     if((tmp = appointmentRepository.findAppointmentByTimeAndGym(ldt, gym)) != null){
                         if(tmp.getTraining().getSport().isIndividual())
                             continue;
 
                         if(appointmentRepository.findAppointmentsByGroupTraining(ldt,gym) == 12)
                             continue;
-
-                        if(!now.plusDays(1).isBefore(tmp.getScheduledTime()) &&
-                                !tmp.getTraining().getSport().isIndividual() &&
-                                appointmentRepository.findAppointmentsByGroupTraining(tmp.getScheduledTime(),tmp.getTraining().getGym())<3)
-                            tmp.setCanceled(true);
-                        if(tmp.isCanceled())
-                            continue;
+                        if(appointmentRepository.findAppointmentsByGroupTraining(ldt,gym) > 0){
+                            Sport sport = tmp.getTraining().getSport();
+                            dto.setSport(sport);
+                        }
                     }
-                    FreeAppointmentDto dto = appointmentMapper.makeAppointmentDto(gym, ldt);
+
+                    dto.setId(c++);
                     free.add(dto);
                 }
             }

@@ -156,23 +156,23 @@ const UserBan = () => {
 
     return (
         <>
-        <div className="-mx-36">
-            <Typography variant="h5" >All users</Typography>
-            <DataGrid
-                rows={users || []}
-                columns={columns}
-                initialState={{
-                    pagination: { paginationModel: { pageSize: rowsPerPage, page: page}, },
-                }}
-                
-                
-                onPaginationModelChange={async (val) => handlePageSize(val)}
-                rowCount={userCount}
-                pageSizeOptions={[5, 10, 25]}
-                paginationMode="server"
-            />
-                     
-        </div>
+          <div className="-mx-36">
+              <Typography variant="h5" >All users</Typography>
+              <DataGrid
+                  rows={users || []}
+                  columns={columns}
+                  initialState={{
+                      pagination: { paginationModel: { pageSize: rowsPerPage, page: page}, },
+                  }}
+                  
+                  
+                  onPaginationModelChange={async (val) => handlePageSize(val)}
+                  rowCount={userCount}
+                  pageSizeOptions={[5, 10, 25]}
+                  paginationMode="server"
+              />
+                      
+          </div>
 
         </>
     )

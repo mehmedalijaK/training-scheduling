@@ -1,5 +1,5 @@
 import { IEditGym } from "@/model/IEditGym";
-import { SCHEDULER_ADD_GYM, SCHEDULER_EDIT_GYM_BY_GYM_ID, SCHEDULER_FIND_GYM_BY_MANAGER_ID } from "../constants";
+import { SCHEDULER_ADD_GYM, SCHEDULER_EDIT_GYM_BY_GYM_ID, SCHEDULER_FIND_ALL_FREE_APPOINTMENTS, SCHEDULER_FIND_GYM_BY_MANAGER_ID } from "../constants";
 
 export const schedulerAddGym = (token: string, name: string, shortDescription: string, trainingDuration: number,
     numberOfCoaches: number, manager_id: number) =>
@@ -20,4 +20,10 @@ export const editGymByGymId = (token: string, gymId: number, payload: IEditGym) 
         method: 'POST',
         headers: {'Accept': 'application/json', 'Content-Type': 'application/json', "Authorization": "Bearer " + token},
         body: JSON.stringify(payload)
+});
+
+export const findAllFreeAppointments = (token: string) =>
+    fetch(SCHEDULER_FIND_ALL_FREE_APPOINTMENTS, {
+        method: 'GET',
+        headers: {'Accept': 'application/json', 'Content-Type': 'application/json', "Authorization": "Bearer " + token},
 });

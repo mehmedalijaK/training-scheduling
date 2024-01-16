@@ -76,6 +76,7 @@ public class AppointmentMapper {
         dto.setName(gym.getGymName());
         dto.setShortDescription(gym.getShortDescription());
         dto.setNumberOfCoaches(dto.getNumberOfCoaches());
+        dto.setId(gym.getId());
         return dto;
     }
 }

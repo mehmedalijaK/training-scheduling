@@ -7,7 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import raf.microservice.components.userservice.dto.*;
 import raf.microservice.components.userservice.security.CheckExists;
 import raf.microservice.components.userservice.service.ClientService;
@@ -33,9 +35,9 @@ public class ClientController {
 
     @ApiOperation(value = "Verify user")
     @GetMapping("/verify/{id}")
-    public ResponseEntity<Void> findById(@PathVariable("id") String id) {
+    public String verifyUser(@PathVariable("id") String id) {
         clientService.verify(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Account Verification</title><style>body {font-family: Arial, sans-serif;background-color: #f4f4f4;color: #333;text-align: center;margin: 50px;}h1 {color: #007bff;}</style></head><body><div><h1>Account Verification Successful</h1><p>Your account has been successfully verified. Thank you!</p></div></body></html>";
     }
 
     @ApiOperation(value = "Login user")
