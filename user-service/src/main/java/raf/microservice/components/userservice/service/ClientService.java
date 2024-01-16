@@ -16,4 +16,5 @@ public interface ClientService {
     void changePassword(ChangePasswordDto changePasswordDto, String authorization);
     ClientDto editTrainingCount(ClientDto clientDto);
     Page<ClientAllDto> getAllUsers(Pageable pageable);
+    ClientDto getUserById(Long id);
 }

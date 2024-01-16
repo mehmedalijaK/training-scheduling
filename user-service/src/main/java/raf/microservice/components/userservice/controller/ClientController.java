@@ -64,6 +64,12 @@ public class ClientController {
         return new ResponseEntity<>(clientService.getMe(authorization), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Get user id information")
+    @GetMapping("/{id}")
+    public ResponseEntity<ClientDto> getClient(@PathVariable("id") Long id){
+        return new ResponseEntity<>(clientService.getUserById(id), HttpStatus.OK);
+    }
+
     @ApiOperation(value = "Edit user")
     @PutMapping("/edit")
     public ResponseEntity<ClientDto> edit(@RequestHeader("Authorization") String authorization, @RequestBody @Valid ClientEditDto clientEditDto){
