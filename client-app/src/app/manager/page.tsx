@@ -1,16 +1,16 @@
 "use client"
 
-import { cancelMyReservation, filterByDay, filterByType, findMyReservations } from "@/api/schedule/route"
 import AuthContext from "@/context/AuthContext"
 import { IAppointmentDto } from "@/model/IAppointmentDto"
+import { useContext, useEffect, useState } from "react"
+import { findMyReservationsManager } from "@/api/schedule/route"
 import { Button, Chip, IconButton, MenuItem, Select, SelectChangeEvent, Snackbar, Stack, Typography } from "@mui/material"
 import { DataGrid, GridPaginationModel } from "@mui/x-data-grid"
-import React, { use } from "react"
-import { useContext, useEffect, useState } from "react"
+import { cancelMyReservationManager } from "@/api/schedule/route"
+import React from "react"
 
-
-const MyAppointmentsPage = () => {
-
+const ManagerPage = () => {
+    
     const {token, user} = useContext(AuthContext)
     const [appointments, setAppointments] = useState<IAppointmentDto[] | null>()
     const [appointmentCount, setAppointmentsCount] = useState()
@@ -22,7 +22,7 @@ const MyAppointmentsPage = () => {
     useEffect(()=>{
         const fetchData = async () =>{
             //@ts-ignore
-            const response = await findMyReservations(token || "", user?.id)
+            const response = await findMyReservationsManager(token || "", user?.id)
 
             if(response.ok){
                 const ans = await response.json()
@@ -34,6 +34,20 @@ const MyAppointmentsPage = () => {
 
         fetchData()
     },[])
+
+    function handlePageSize(val: GridPaginationModel): void | PromiseLike<void> {
+
+        setPage(val.page)
+        setRowsPerPage(val.pageSize)
+    }
+
+    const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpen(false);
+      };
 
     const columns = [
         { field: "id", headerName: "ID", flex: 0.1 },
@@ -62,6 +76,7 @@ const MyAppointmentsPage = () => {
     
               return (
                 //@ts-ignore
+
                 <Chip label={labelText} color={color}/>
 
               );
@@ -85,19 +100,10 @@ const MyAppointmentsPage = () => {
                     
                     console.log(params.row.id) 
                     //@ts-ignore
-                    const response = await cancelMyReservation(token||"", params.row.id, user?.id);
+                    const response = await cancelMyReservationManager(token||"", params.row.id, user?.id);
                     if(response.ok){
                         console.log(response)
                         setOpen(true)
-                        //@ts-ignore
-                        const res = await findMyReservations(token || "", user?.id)
-
-                        if(res.ok){
-                            const ans = await res.json()
-                            console.log(ans)
-                            setAppointments(ans)
-                            setAppointmentsCount(ans.length)
-                        }
                     }
                       
                 }}
@@ -108,20 +114,6 @@ const MyAppointmentsPage = () => {
         },
 
     ];
-
-    function handlePageSize(val: GridPaginationModel): void | PromiseLike<void> {
-
-        setPage(val.page)
-        setRowsPerPage(val.pageSize)
-    }
-
-    const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-          return;
-        }
-    
-        setOpen(false);
-      };
 
     const action = (
         <React.Fragment>
@@ -138,52 +130,13 @@ const MyAppointmentsPage = () => {
         </React.Fragment>
       );
 
-    return (
+
+
+
+    return(
         <>
             <div>
                 <Typography variant="h5" className="mb-3 mt-7">All my appointments</Typography>
-                <Stack direction="row" spacing={2} justifyContent="flex-start" className="my-3">
-                  <Select
-                      labelId="select-label"
-                      id="select-group"
-                      value={type}
-                      defaultValue="1"
-                      onChange={(event: SelectChangeEvent) => {
-                          SetType(event.target.value as string);
-                        }}
-                  >
-                      <MenuItem value={'1'}>Individual</MenuItem>
-                      <MenuItem value={'2'}>Group</MenuItem>
-                  </Select>
-                  <Button
-                      type="submit"
-                      fullWidth
-                      variant="contained"
-                      style={{ background: 'royalblue' }}
-                    
-                      onClick={async ()=>{
- 
-                          let typeNew = 'true'
-                          if(type == '2') typeNew = 'false'
-                          
-                          //@ts-ignore
-                          const response = await filterByType(token || "", typeNew, user?.id)
-
-                          if(response.ok){
-                              const ans = await response.json()
-                              setAppointments(ans)
-                              setAppointmentsCount(ans.length)
-                              console.log(ans)
-                          }
-
-
-
-                      }}
-                      className="max-h-12 w-44"
-                      >
-                  Submit filters
-                  </Button>
-                </Stack>
                 <DataGrid
                   rows={appointments?.slice(page*rowsPerPage, page*rowsPerPage+rowsPerPage) || []}
                   columns={columns}
@@ -204,8 +157,9 @@ const MyAppointmentsPage = () => {
                     action={action}
                 />
             </div>
+    
         </>
     )
 }
 
-export default MyAppointmentsPage
+export default ManagerPage;

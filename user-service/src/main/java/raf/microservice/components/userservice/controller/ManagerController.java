@@ -14,7 +14,6 @@ import raf.microservice.components.userservice.service.ManagerService;
 
 @RestController
 @RequestMapping("/api/manager")
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class ManagerController {
 
     private final ManagerService managerService;

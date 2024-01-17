@@ -12,7 +12,6 @@ import raf.microservice.components.notificationservice.service.NotificationServi
 
 @RestController
 @RequestMapping("/notification")
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class NotificationController {
 
     private final NotificationService notificationService;

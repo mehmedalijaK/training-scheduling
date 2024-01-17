@@ -1,5 +1,7 @@
 package raf.microservice.scheduletraining.mapper;
 
+import com.netflix.discovery.converters.Auto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import raf.microservice.scheduletraining.domain.Gym;
 import raf.microservice.scheduletraining.domain.Sport;
@@ -13,6 +15,12 @@ import raf.microservice.scheduletraining.repository.SportRepository;
 public class TrainingMapper {
     SportRepository sportRepository;
     GymRepository gymRepository;
+
+    @Autowired
+    public TrainingMapper(SportRepository sportRepository, GymRepository gymRepository) {
+        this.sportRepository = sportRepository;
+        this.gymRepository = gymRepository;
+    }
 
     public TrainingDto trainingToTrainingDto(Training training){
         TrainingDto trainingDto = new TrainingDto();

@@ -20,9 +20,7 @@ import raf.microservice.scheduletraining.mapper.AppointmentMapper;
 import raf.microservice.scheduletraining.repository.AppointmentRepository;
 import raf.microservice.scheduletraining.repository.GymRepository;
 import raf.microservice.scheduletraining.repository.SportRepository;
-import raf.microservice.scheduletraining.repository.TrainingRepository;
 import raf.microservice.scheduletraining.security.ParseHelper;
-import raf.microservice.scheduletraining.security.service.impl.TokenServiceImpl;
 import raf.microservice.scheduletraining.service.AppointmentService;
 
 import java.time.LocalDateTime;
@@ -200,12 +198,13 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<FreeAppointmentDto> filterByType(boolean individual) {
-        List<FreeAppointmentDto> dtList = new ArrayList<>();
-        List<FreeAppointmentDto> apps = findAllFree();
-        for(FreeAppointmentDto a: apps){
-            if(a.getSport().isIndividual() == individual)
-                dtList.add(a);
+    public List<AppointmentDto> filterByType(boolean individual,Long id) {
+        List<AppointmentDto> dtList = new ArrayList<>();
+        List<Appointment> apps = appointmentRepository.findAllByClientId(id);
+        for(Appointment a: apps){
+            if(a.isCanceled()) continue;
+            if(a.getTraining().getSport().isIndividual() == individual)
+                dtList.add(appointmentMapper.appointmentToAppointmentDto(a));
         }
         return dtList;
     }
@@ -240,6 +239,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         Training trainingA = a.getTraining();
         LocalDateTime scheduledTime = a.getScheduledTime();
         List<Appointment> allForDelete = appointmentRepository.findAppsForTrainingAndTime(trainingA,scheduledTime);
+        System.out.println(allForDelete);
         for(Appointment appointment: allForDelete) {
             if (!appointmentList.isEmpty() && appointmentList.contains(appointment)) {
                 a.setCanceled(true);
@@ -256,7 +256,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
                 HashMap<String, String> paramsMap = new HashMap<>();
                 paramsMap.put("%date%", idClient.getScheduledTime().toString());
-            TransferDto transferDto = new TransferDto(res.getBody().getEmail(),"SCHED_TR", paramsMap,
+            TransferDto transferDto = new TransferDto(res.getBody().getEmail(),"CANCELED_TR", paramsMap,
                     res.getBody().getUsername());
 
             jmsTemplate.convertAndSend("send_mail_destination",
@@ -288,7 +288,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
             HashMap<String, String> paramsMap = new HashMap<>();
             paramsMap.put("%date%", a.getScheduledTime().toString());
-            TransferDto transferDto = new TransferDto(res.getBody().getEmail(),"SCHED_TR", paramsMap,
+            TransferDto transferDto = new TransferDto(res.getBody().getEmail(),"CANCELED_TR", paramsMap,
                     res.getBody().getUsername());
 
             jmsTemplate.convertAndSend("send_mail_destination",
@@ -308,11 +308,25 @@ public class AppointmentServiceImpl implements AppointmentService {
         List<Appointment> apps =  appointmentRepository.findAllAppointmentsForClient(id);
         List<AppointmentDto>dtList = new ArrayList<>();
         for(Appointment a: apps){
+            if(a.isCanceled()) continue;
             dtList.add(appointmentMapper.appointmentToAppointmentDto(a));
         }
 
         return dtList;
     }
+
+    @Override
+    public List<AppointmentDto> findAllReservedForManager(Long id) {
+        List<AppointmentDto>dts = new ArrayList<>();
+        List<Appointment>mngList = appointmentRepository.findAllReservedForManager(id);
+        for(Appointment a: mngList){
+            if(a.isCanceled()) continue;
+            dts.add(appointmentMapper.appointmentToAppointmentDto(a));
+        }
+
+        return dts;
+    }
+
 
     @Scheduled(fixedRate = 30, timeUnit = TimeUnit.MINUTES)
     public void lessThen24Hours(){

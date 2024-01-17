@@ -19,7 +19,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/gyms")
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class GymController {
 
     private GymService gymService;
