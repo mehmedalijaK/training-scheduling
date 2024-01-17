@@ -200,12 +200,12 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<FreeAppointmentDto> filterByType(boolean individual) {
-        List<FreeAppointmentDto> dtList = new ArrayList<>();
-        List<FreeAppointmentDto> apps = findAllFree();
-        for(FreeAppointmentDto a: apps){
-            if(a.getSport().isIndividual() == individual)
-                dtList.add(a);
+    public List<AppointmentDto> filterByType(boolean individual,Long id) {
+        List<AppointmentDto> dtList = new ArrayList<>();
+        List<Appointment> apps = appointmentRepository.findAllByClientId(id);
+        for(Appointment a: apps){
+            if(a.getTraining().getSport().isIndividual() == individual)
+                dtList.add(appointmentMapper.appointmentToAppointmentDto(a));
         }
         return dtList;
     }
@@ -312,6 +312,16 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         return dtList;
+    }
+
+    @Override
+    public List<AppointmentDto> findAllReservedForManager(Long id) {
+        List<AppointmentDto>dts = new ArrayList<>();
+        List<Appointment>mngList = appointmentRepository.findAllReservedForManager(id);
+        for(Appointment a: mngList)
+            dts.add(appointmentMapper.appointmentToAppointmentDto(a));
+
+        return dts;
     }
 
     @Scheduled(fixedRate = 30, timeUnit = TimeUnit.MINUTES)

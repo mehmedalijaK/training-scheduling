@@ -19,12 +19,14 @@ public interface AppointmentService {
     AppointmentDto findById(Long apId);
     List<AppointmentDto> findAllReserved();
     List<FreeAppointmentDto> findAllFree();
-    List<FreeAppointmentDto> filterByType(boolean individual);
+    List<AppointmentDto> filterByType(boolean individual,Long id);
     List<FreeAppointmentDto> filterByDay(String day);
     List<FreeAppointmentDto> sortByTime();
     void cancelForManager(Long id, ClientIdDto clientIdDto, String auth);
     void deleteById(Long apId, String aut, ClientIdDto clientIdDto);
     List<AppointmentDto> findAllForClientId(Long id);
+
+    List<AppointmentDto>findAllReservedForManager(Long id);
 
 
 }
