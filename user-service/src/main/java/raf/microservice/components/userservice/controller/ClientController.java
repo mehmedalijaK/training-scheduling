@@ -16,7 +16,6 @@ import raf.microservice.components.userservice.service.ClientService;
 
 @RestController
 @RequestMapping("/api/client")
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class ClientController {
 
     private final ClientService clientService;
@@ -27,7 +26,7 @@ public class ClientController {
 
     @ApiOperation(value = "Register new user")
     @PostMapping("/register")
-    @CheckExists  //  TODO: SHOULD SEND AN EMAIL AND RETURN JUST STATUS CREATED!
+    @CheckExists
     public ResponseEntity<Void> saveUser(@RequestBody @Valid ClientCreateDto clientCreateDto){
         clientService.add(clientCreateDto);
         return new ResponseEntity<>(HttpStatus.CREATED);

@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import raf.microservice.scheduletraining.domain.Appointment;
 import raf.microservice.scheduletraining.dto.AppointmentDto;
@@ -22,7 +23,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/appointments")
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class AppointmentController {
 
     private AppointmentService appointmentService;
@@ -41,15 +41,22 @@ public class AppointmentController {
         return new ResponseEntity<>(appointmentService.findAllFree(), HttpStatus.OK);
     }
 
+    @GetMapping("/manager/{id}")
+    @CheckSecurity
+    public ResponseEntity<List<AppointmentDto>> managerAppointments(@RequestHeader("Authorization") String authorization,@PathVariable("id") Long id) {
+        return new ResponseEntity<>(appointmentService.findAllReservedForManager(id), HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     @CheckSecurity
     public ResponseEntity<AppointmentDto> findById(@RequestHeader("Authorization") String authorization, @PathVariable("id") Long id) {
         return new ResponseEntity<>(appointmentService.findById(id), HttpStatus.OK);
     }
-    @GetMapping("/type/{val}")
+    @PostMapping("/type/{val}")
     @CheckSecurity
-    public ResponseEntity<List<AppointmentDto>>filterByType(@RequestHeader("Authorization") String authorization,@PathVariable String val,@PathVariable("id") Long id) {
-        return new ResponseEntity<>(appointmentService.filterByType( Boolean.parseBoolean(val),id), HttpStatus.OK);
+    public ResponseEntity<List<AppointmentDto>>filterByType(@RequestHeader("Authorization") String authorization, @PathVariable String val,
+                                                            @RequestBody @Valid Long id) {
+        return new ResponseEntity<>(appointmentService.filterByType(Boolean.parseBoolean(val), id), HttpStatus.OK);
     }
     @GetMapping("/day/{val}")
     @CheckSecurity

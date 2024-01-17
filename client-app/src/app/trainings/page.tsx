@@ -1,10 +1,10 @@
 "use client"
-import { findAllFreeAppointments, findAllSports, reserve, reserveWithSport } from "@/api/schedule/route"
+import { filterByDay, findAllFreeAppointments, findAllSports, reserve, reserveWithSport } from "@/api/schedule/route"
 import AuthContext from "@/context/AuthContext"
 import IAppointment from "@/model/IAppointment"
 import ISport from "@/model/ISport"
 import ISportDto from "@/model/ISportDto"
-import { Box, Button, InputLabel, MenuItem, Modal, Select, SelectChangeEvent, Typography } from "@mui/material"
+import { Box, Button, InputLabel, MenuItem, Modal, Select, SelectChangeEvent, Stack, TextField, Typography } from "@mui/material"
 import { DataGrid, GridPaginationModel } from "@mui/x-data-grid"
 import { useContext, useEffect, useState } from "react"
 
@@ -19,7 +19,8 @@ const Trainings = () => {
     const [appointmentsCount, setAppointmentsCount] = useState(0)
     const [open, setOpen] = useState(false)
     const [selectedId, setSelectedId] = useState()
-
+    const [day, setDay] = useState('1')
+    const dayWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
     useEffect(()=> {
         const fetchData = async () => {
@@ -50,8 +51,7 @@ const Trainings = () => {
                 console.log(error)
             }
         }
-
-
+        
         fetchData()
         fetchSports()
     }, [])
@@ -91,6 +91,7 @@ const Trainings = () => {
                             gymName: appointments[params.row.id].name,
                             //@ts-ignore
                             scheduledTime: appointments[params.row.id].scheduledTime,
+                            //@ts-ignore
                             sportName: appointments[params.row.id].sport.sportName
                         }
                         console.log(payload)
@@ -156,7 +157,53 @@ const Trainings = () => {
     return(
         <>
           <div className="">
+
               <Typography variant="h5" className="mb-3 mt-7">All available appointments</Typography>
+              <Stack direction="row" spacing={2} justifyContent="flex-start" className="my-3">
+                <Select
+                    labelId="select-label"
+                    id="select-group"
+                    value={day}
+                    defaultValue="1"
+                    onChange={(event: SelectChangeEvent) => {
+                        setDay(event.target.value as string);
+                      }}
+                >
+                    <MenuItem value={'1'}>Monday</MenuItem>
+                    <MenuItem value={'2'}>Tuesday</MenuItem>
+                    <MenuItem value={'3'}>Wednesday</MenuItem>
+                    <MenuItem value={'4'}>Thursday</MenuItem>
+                    <MenuItem value={'5'}>Friday</MenuItem>
+                    <MenuItem value={'6'}>Saturday</MenuItem>
+                    <MenuItem value={'7'}>Sunday</MenuItem>
+                </Select>
+                <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    style={{ background: 'royalblue' }}
+                   
+                    onClick={async ()=>{
+                         //@ts-ignore
+                        const dayW = dayWeek[day-1]
+                        
+                        const response = await filterByDay(token || "", dayW)
+
+                        if(response.ok){
+                            const ans = await response.json()
+                            setAppointments(ans)
+                            setAppointmentsCount(ans.length)
+                            console.log(ans)
+                        }
+
+
+
+                    }}
+                    className="max-h-12 w-44"
+                    >
+                Submit filters
+                </Button>
+              </Stack>
               <DataGrid
                   rows={appointments?.slice(page*rowsPerPage, page*rowsPerPage+rowsPerPage) || []}
                   columns={columns}

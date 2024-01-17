@@ -14,7 +14,6 @@ import raf.microservice.scheduletraining.service.TrainingService;
 import java.util.List;
 @RestController
 @RequestMapping("/trainings")
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class TrainingController {
 
     private TrainingService trainingService;
@@ -36,7 +35,6 @@ public class TrainingController {
     }
 
     @PostMapping
-    @CheckSecurity(roles = {"ROLE_ADMIN"})
     public ResponseEntity<TrainingDto> add(@RequestHeader("Authorization") String authorization, @RequestBody @Valid TrainingDto trainingDto) {
         return new ResponseEntity<>(trainingService.add(trainingDto), HttpStatus.CREATED);
     }

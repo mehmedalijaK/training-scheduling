@@ -21,7 +21,7 @@ import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { sendGetMyselfManager } from '@/api/auth/route';
-import { schedulerAddGym } from '@/api/schedule/route';
+import { addTrainingToGym, schedulerAddGym } from '@/api/schedule/route';
 
 const defaultTheme = createTheme();
 
@@ -81,9 +81,12 @@ const LoginPage = () => {
             const manager = (await res.json());
             //@ts-ignore
             const resp = await schedulerAddGym(data?.access_token, manager.sportsHall, "", 1, 1, manager.id)
-            if(resp.ok){
-              await router.push("/");
-            }
+            if(resp.ok)console.log()
+            const resp1 = await addTrainingToGym(data?.access_token, "pilates", false, manager.sportsHall, "", 6, 1500)
+            const resp2 = await addTrainingToGym(data?.access_token, "powerlifting", true, manager.sportsHall, "", 6, 2500)
+              if(resp1.ok && resp2.ok)
+                await router.push("/");
+           
           }
       } else
         console.log("error")

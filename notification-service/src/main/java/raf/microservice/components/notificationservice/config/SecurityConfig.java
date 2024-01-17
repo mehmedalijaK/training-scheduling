@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .requestMatchers(WHITE_LIST_URL).permitAll() //  allow paths to access without auth
                         .anyRequest().authenticated() // all other paths need auth
                 )
+                .cors(AbstractHttpConfigurer::disable)
                 .sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);  //  add filter which will check every request
 
