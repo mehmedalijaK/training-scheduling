@@ -2,9 +2,10 @@ import { banUser, getAllUsers, unbanUser } from "@/api/auth/route";
 import { IMessage } from "@/app/notifications/page";
 import AuthContext from "@/context/AuthContext";
 import IUserAll from "@/model/IUserAll";
-import { Box, Button, Checkbox, Chip, Modal, TableCell, TableHead, TableRow, TableSortLabel, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Chip, IconButton, Modal, Snackbar, TableCell, TableHead, TableRow, TableSortLabel, Typography } from "@mui/material";
 import { DataGrid, DataGridProps, GridPaginationModel } from "@mui/x-data-grid";
 import { useRouter } from "next/navigation";
+import React from "react";
 import { useContext, useEffect, useState } from "react";
 
 const UserBan = () => {
@@ -13,6 +14,8 @@ const UserBan = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [users, setUsers] = useState<IUserAll[] | null>([]) 
     const [userCount, setUserCount] = useState(0)
+    const [open, setOpen] = useState(false)
+    const [openSecond, setOpenSecond] = useState(false)
     const router = useRouter();
     
     useEffect(() => {
@@ -119,7 +122,7 @@ const UserBan = () => {
           if (res.ok) {
             const ans = (await res.json());
             setUserCount(ans.totalElements)
-       
+            setOpen(true)
             setUsers(ans.content)
           } else {
             setUserCount(0)
@@ -137,7 +140,7 @@ const UserBan = () => {
               if (res.ok) {
                 const ans = (await res.json());
                 setUserCount(ans.totalElements)
-             
+                setOpenSecond(true)
                 setUsers(ans.content)
               } else {
                 setUserCount(0)
@@ -154,9 +157,57 @@ const UserBan = () => {
         setRowsPerPage(val.pageSize)
     }
 
+    const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+  
+      setOpen(false);
+    };
+
+    const handleCloseSecond = (event: React.SyntheticEvent | Event, reason?: string) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+
+      setOpenSecond(false);
+    };
+
+
+    const action = (
+      <React.Fragment>
+        <Button color="secondary" size="small" onClick={handleClose}>
+          CLOSE
+        </Button>
+        <IconButton
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={handleClose}
+        >
+        </IconButton>
+      </React.Fragment>
+    );
+
+    const actionSecond = (
+      <React.Fragment>
+        <Button color="secondary" size="small" onClick={handleCloseSecond}>
+          CLOSE
+        </Button>
+        <IconButton
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={handleCloseSecond}
+        >
+        </IconButton>
+      </React.Fragment>
+    );
+
+
     return (
         <>
-          <div className="-mx-36">
+          <div className="-mx-36 mt-5">
               <Typography variant="h5" >All users</Typography>
               <DataGrid
                   rows={users || []}
@@ -172,6 +223,20 @@ const UserBan = () => {
                   paginationMode="server"
               />            
           </div>
+          <Snackbar
+            open={open}
+            autoHideDuration={6000}
+            onClose={handleClose}
+            message="Successfully banned user"
+            action={action}
+          />
+          <Snackbar
+            open={openSecond}
+            autoHideDuration={6000}
+            onClose={handleCloseSecond}
+            message="Successfully unbanned user"
+            action={actionSecond}
+          />
         </>
     )
 }

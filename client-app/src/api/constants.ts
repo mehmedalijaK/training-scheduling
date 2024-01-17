@@ -21,6 +21,8 @@ export const API_GET_MYSELF_ADMIN = `${API_URL}/api/admin/me`;
 export const NOTIFICATIONS_GET_ME = `${NOTIFICATIONS_URL}/notification/me`;
 export const NOTIFICATIONS_GET_ME_FILTERED = `${NOTIFICATIONS_URL}/notification/me/filter`;
 export const NOTIFICATIONS_GET_ALL_FILTERED = `${NOTIFICATIONS_URL}/notification/all`;
+export const NOTIFICATIONS_GET_ALL_TYPES = `${NOTIFICATIONS_URL}/type/all`;
+export const NOTIFICATIONS_GET_ALL_TYPES_ADD = `${NOTIFICATIONS_URL}/type/add`;
 
 export const API_BAN_USER = `${API_URL}/api/admin/ban/user`;
 export const API_BAN_MANAGER = `${API_URL}/api/admin/ban/manager`;

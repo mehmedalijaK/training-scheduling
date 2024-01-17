@@ -18,6 +18,7 @@ import { size } from "lodash";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs, { Dayjs }  from 'dayjs';
 import AllUsersNotification from "@/components/notifications";
+import NotificationType from "@/components/notificationType";
 
 export interface IMessage {
   username: string,
@@ -347,7 +348,7 @@ const Notifications = () => {
           </Card>
         </Container>
         {role == UserRole.ADMIN ? <AllUsersNotification/> : <></>}
-        
+        {role == UserRole.ADMIN ?  <NotificationType/> : <></>}
       </>
 
       );

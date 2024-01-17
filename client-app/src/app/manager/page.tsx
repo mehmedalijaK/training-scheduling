@@ -104,6 +104,16 @@ const ManagerPage = () => {
                     if(response.ok){
                         console.log(response)
                         setOpen(true)
+
+                        //@ts-ignore
+                        const res = await findMyReservationsManager(token || "", user?.id)
+
+                        if(res.ok){
+                            const ans = await res.json()
+                            console.log(ans)
+                            setAppointments(ans)
+                            setAppointmentsCount(ans.length)
+                        }
                     }
                       
                 }}

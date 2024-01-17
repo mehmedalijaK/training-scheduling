@@ -10,7 +10,7 @@ public class TypeMapper {
 
     public TypeDto typeToTypeDto(Type type) {
         TypeDto typeDto = new TypeDto();
-
+        typeDto.setId(type.getId());
         typeDto.setName(type.getName());
         typeDto.setFormat(type.getFormat());
 

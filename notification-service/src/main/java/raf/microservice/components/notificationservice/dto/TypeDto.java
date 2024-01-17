@@ -8,6 +8,8 @@ import lombok.Setter;
 @Setter
 public class TypeDto {
 
+
+    private Long id;
     @NotBlank
     private String name;
     @NotBlank

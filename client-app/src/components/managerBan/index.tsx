@@ -1,9 +1,10 @@
 import { banManager, getAllManagers, unbanManager } from "@/api/auth/route";
 import AuthContext from "@/context/AuthContext";
 import IManagerAll from "@/model/IManagerAll";
-import { Box, Button, Checkbox, Chip, TableCell, TableHead, TableRow, TableSortLabel, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Chip, IconButton, Snackbar, TableCell, TableHead, TableRow, TableSortLabel, Typography } from "@mui/material";
 import { DataGrid, DataGridProps, GridPaginationModel } from "@mui/x-data-grid";
 import { useRouter } from "next/navigation";
+import React from "react";
 import { useContext, useEffect, useState } from "react";
 
 const ManagerBan = () => {
@@ -12,6 +13,8 @@ const ManagerBan = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [users, setUsers] = useState<IManagerAll[] | null>([]) 
     const [userCount, setUserCount] = useState(0)
+    const [open, setOpen] = useState(false)
+    const [openSecond, setOpenSecond] = useState(false)
     const router = useRouter();
     
     useEffect(() => {
@@ -118,7 +121,7 @@ const ManagerBan = () => {
           if (res.ok) {
             const ans = (await res.json());
             setUserCount(ans.totalElements)
-       
+            setOpen(true)
             setUsers(ans.content)
           } else {
             setUserCount(0)
@@ -136,7 +139,7 @@ const ManagerBan = () => {
               if (res.ok) {
                 const ans = (await res.json());
                 setUserCount(ans.totalElements)
-             
+                setOpenSecond(true)
                 setUsers(ans.content)
               } else {
                 setUserCount(0)
@@ -153,9 +156,56 @@ const ManagerBan = () => {
         setRowsPerPage(val.pageSize)
     }
 
+    const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+  
+      setOpen(false);
+    };
+
+    const handleCloseSecond = (event: React.SyntheticEvent | Event, reason?: string) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+
+      setOpenSecond(false);
+    };
+
+
+    const action = (
+      <React.Fragment>
+        <Button color="secondary" size="small" onClick={handleClose}>
+          CLOSE
+        </Button>
+        <IconButton
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={handleClose}
+        >
+        </IconButton>
+      </React.Fragment>
+    );
+
+    const actionSecond = (
+      <React.Fragment>
+        <Button color="secondary" size="small" onClick={handleCloseSecond}>
+          CLOSE
+        </Button>
+        <IconButton
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={handleCloseSecond}
+        >
+        </IconButton>
+      </React.Fragment>
+    );
+
     return (
         <>
-        <div className="-mx-36">
+        <div className="-mx-36 mt-5">
             <Typography variant="h5" >All managers</Typography>
             <DataGrid
                 rows={users || []}
@@ -170,9 +220,23 @@ const ManagerBan = () => {
                 pageSizeOptions={[5, 10, 25]}
                 paginationMode="server"
             />
+
                      
         </div>
-
+            <Snackbar
+              open={open}
+              autoHideDuration={6000}
+              onClose={handleClose}
+              message="Successfully banned manager"
+              action={action}
+            />
+            <Snackbar
+              open={openSecond}
+              autoHideDuration={6000}
+              onClose={handleCloseSecond}
+              message="Successfully unbanned manager"
+              action={actionSecond}
+            />
         </>
     )
 }

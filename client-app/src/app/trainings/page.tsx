@@ -99,6 +99,13 @@ const Trainings = () => {
                         if(response.ok){
                             console.log(response)
                             console.log("ok boomer")
+                            const res  = await findAllFreeAppointments(token || "")
+                            if(res.ok){
+                                const ans = await res.json()
+                                setAppointments(ans)
+                                setAppointmentsCount(ans.length)
+                                console.log(ans)
+                            }
                         }
                     }
                        
@@ -148,6 +155,13 @@ const Trainings = () => {
             console.log(response)
             const ans = await response.json()
             console.log(ans)
+            const res  = await findAllFreeAppointments(token || "")
+            if(res.ok){
+                const ans = await res.json()
+                setAppointments(ans)
+                setAppointmentsCount(ans.length)
+                console.log(ans)
+            }
         }
 
         
