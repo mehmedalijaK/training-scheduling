@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -40,7 +41,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private MessageHelper messageHelper;
     @Value("${secret.help}")
     private String sh;
-    private ParseHelper ph;
+    private RetryTemplate retryTemplate;
 
 
     @Override
@@ -51,10 +52,13 @@ public class AppointmentServiceImpl implements AppointmentService {
         if(appointmentRepository.findAppointmentByTimeAndGym(appointment.getScheduledTime(),appointment.getTraining().getGym()).size()!=0)
             throw new IllegalArgumentException("You can't schedule taken appointment!");
 
-        HttpHeaders hh = new HttpHeaders();
-        hh.add("Authorization",aut);
-        ResponseEntity<ClientDto> res =  userServiceRestTemplate.exchange
-                ("/client/me",HttpMethod.GET,new HttpEntity<>(hh),ClientDto.class);
+
+        ResponseEntity<ClientDto> res = retryTemplate.execute(x-> {
+            HttpHeaders hh = new HttpHeaders();
+            hh.add("Authorization",aut);
+            return userServiceRestTemplate.exchange
+                    ("/client/me", HttpMethod.GET, new HttpEntity<>(hh), ClientDto.class);
+        });
 
         int discount =  Objects.requireNonNull(res.getBody()).getScheduledTrainingCount();
         discount++;
@@ -62,7 +66,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             appointment.getTraining().setPrice(0);
         appointmentRepository.save(appointment);
         res.getBody().setScheduledTrainingCount(discount);
-        hh = new HttpHeaders();
+        HttpHeaders hh = new HttpHeaders();
 
         hh.add("Authorization","Bearer " + sh);
         userServiceRestTemplate.exchange
