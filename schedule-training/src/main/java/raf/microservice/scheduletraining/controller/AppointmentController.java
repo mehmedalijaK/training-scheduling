@@ -73,11 +73,6 @@ public class AppointmentController {
     public ResponseEntity<List<AppointmentDto>> clientAppointments(@RequestHeader("Authorization") String authorization,@PathVariable("id") Long id) {
         return new ResponseEntity<>(appointmentService.findAllForClientId(id), HttpStatus.OK);
     }
-    @GetMapping("/manager/{id}")
-    @CheckSecurity
-    public ResponseEntity<List<AppointmentDto>> managerAppointments(@RequestHeader("Authorization") String authorization,@PathVariable("id") Long id) {
-        return new ResponseEntity<>(appointmentService.findAllReservedForManager(id), HttpStatus.OK);
-    }
 
     @PostMapping("/add/sport")
     @CheckSecurity(roles = {"ROLE_ADMIN", "ROLE_CLIENT"})
